@@ -1,1 +1,3214 @@
 
+<!--
+  S-Sınav Pro
+  Copyright (C) 2026  sebasmobil
+
+  Bu program özgür yazılımdır: Free Software Foundation tarafından
+  yayımlanan GNU Affero Genel Kamu Lisansı'nın 3. sürümü ya da
+  (tercihinize bağlı olarak) daha sonraki bir sürümü kapsamında
+  yeniden dağıtabilir ve/veya değiştirebilirsiniz.
+
+  Bu program, yararlı olacağı umuduyla dağıtılmaktadır; ancak
+  HİÇBİR GARANTİ VERMEZ; SATILABİLİRLİK veya BELİRLİ BİR AMACA
+  UYGUNLUK için zımni garanti dahil. Ayrıntılar için GNU Affero
+  Genel Kamu Lisansı'na bakınız.
+
+  Bu programla birlikte GNU Affero Genel Kamu Lisansı'nın bir
+  kopyasını almış olmalısınız.
+  Almadıysanız, bkz. <https://www.gnu.org/licenses/>.
+
+  ---
+
+  S-Sınav Pro
+  Copyright (C) 2026  sebasmobil
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public
+  License along with this program. If not, see
+  <https://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="license" content="GNU Affero General Public License v3.0 - https://www.gnu.org/licenses/agpl-3.0.html"/>
+<meta name="copyright" content="Copyright (C) 2026 sebasmobil"/>
+<title>S-Sınav Pro 8.5</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --surface2: #f0f0f0;
+    --border: #e0e0e0;
+    --accent: #2563eb;
+    --accent2: #3b82f6;
+    --text: #1a1a1a;
+    --muted: #888;
+    --radius: 12px;
+  }
+
+  body.theme-dark {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --accent: #d4a853;
+    --accent2: #e8c87a;
+    --text: #f0ece4;
+    --muted: #888;
+  }
+
+  body.theme-green {
+    --bg: #f0fdf4;
+    --surface: #ffffff;
+    --surface2: #dcfce7;
+    --border: #bbf7d0;
+    --accent: #16a34a;
+    --accent2: #22c55e;
+    --text: #14532d;
+    --muted: #6b7280;
+  }
+
+  body.theme-purple {
+    --bg: #faf5ff;
+    --surface: #ffffff;
+    --surface2: #f3e8ff;
+    --border: #e9d5ff;
+    --accent: #7c3aed;
+    --accent2: #8b5cf6;
+    --text: #3b0764;
+    --muted: #6b7280;
+  }
+
+  body.theme-dark-blue {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #334155;
+    --border: #475569;
+    --accent: #38bdf8;
+    --accent2: #7dd3fc;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+    padding-top: 44px;
+    padding-bottom: 120px;
+  }
+
+  /* ── Sabit Üst Bar ── */
+  .fixed-top-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+  }
+  .fixed-top-bar-row1 {
+    height: 44px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .fixed-top-bar-row2 {
+    display: none;
+    align-items: center; justify-content: space-between;
+    padding: 0 12px 8px 12px;
+    gap: 10px;
+  }
+  .fixed-top-bar-row2.has-photos { display: flex; }
+  .top-stats {
+    font-size: 0.73rem; color: var(--muted);
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .top-stats strong { color: var(--accent2); }
+  .top-brand {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem; font-weight: 800;
+    color: var(--accent);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .top-brand-badge {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.58rem; font-weight: 700;
+    background: var(--accent); color: #fff;
+    border-radius: 3px; padding: 1px 4px;
+    line-height: 1.4;
+  }
+  .top-right-actions { display: flex; align-items: center; gap: 6px; }
+  .top-night-btn {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 50%; width: 32px; height: 32px;
+    font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .top-night-btn:hover { border-color: var(--accent); }
+  .btn-generate-top {
+    padding: 6px 14px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+  .btn-generate-top:hover { opacity: 0.85; }
+  .btn-generate-top:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; opacity: 1; }
+
+  /* ── Sekmeli İçerik ── */
+  .tab-section {
+    display: none;
+    padding: 16px 16px 0 16px;
+    max-width: 780px; margin: 0 auto;
+  }
+  .tab-section.active { display: block; }
+
+  /* ── PDF Bar (Ana Sayfa üstü) ── */
+  .pdf-action-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 14px;
+  }
+  .pdf-action-info { font-size: 0.82rem; color: var(--muted); flex: 1; min-width: 0; }
+  .pdf-action-info strong { color: var(--accent2); }
+
+  /* ── Alt Navigasyon ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+  }
+  .bottom-nav-top {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px 6px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .bottom-nav-progress {
+    flex: 1; min-width: 80px; max-width: 200px; display: none;
+  }
+  .bottom-nav-progress-label { font-size: 0.7rem; color: var(--muted); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bottom-nav-progress-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .bottom-nav-progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+  .bottom-nav-copyright { font-size: 0.72rem; color: var(--muted); flex: 1; }
+  .bottom-nav-copyright a { color: inherit; text-decoration: none; opacity: 0.75; font-size: 0.65em; }
+
+  .bottom-nav-tabs {
+    display: flex; align-items: stretch;
+  }
+  .nav-tab {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 3px; padding: 7px 4px 9px 4px;
+    background: none; border: none; cursor: pointer;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.6rem; font-weight: 500;
+    letter-spacing: 0.2px;
+    transition: color 0.15s;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-tab .nav-icon { font-size: 1.25rem; line-height: 1; }
+  .nav-tab.active { color: var(--accent); }
+  .nav-tab.active::before {
+    content: '';
+    position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+    background: var(--accent); border-radius: 0 0 3px 3px;
+  }
+  /* İletişim sekmesi özel */
+  .nav-tab-contact { border-left: 1px solid var(--border); }
+
+  /* Contact mini butonlar */
+  .contact-mini-btns { display: flex; gap: 6px; }
+  .contact-mini-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 7px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text);
+    text-decoration: none; font-size: 0.95rem;
+    transition: all 0.15s; cursor: pointer; flex-shrink: 0;
+  }
+  .contact-mini-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .container { max-width: 780px; margin: 0 auto; }
+
+  .top-bar {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 12px; gap: 12px;
+  }
+  header { text-align: center; flex: 1; padding-top: 0; padding-bottom: 0; }
+  header h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.6rem;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    margin-bottom: 2px;
+    line-height: 1.1;
+  }
+  header p { color: var(--muted); font-size: 0.88rem; font-weight: 300; margin: 0 0 18px 0; line-height: 1; letter-spacing: 0.2px; }
+
+  .theme-bar {
+    display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;
+  }
+  .theme-chip {
+    display: flex; align-items: center; justify-content: center;
+    padding: 6px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .theme-chip:hover { border-color: var(--accent); }
+  .theme-chip.active { border-color: var(--accent); background: var(--accent); }
+  .theme-chip .dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.12);
+    flex-shrink: 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title::before {
+    content: '';
+    width: 3px; height: 18px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 7px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  input[type="text"], textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 8px 36px 8px 14px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56,189,248,0.1); }
+  select option { background: var(--surface); color: var(--text); }
+
+  .form-row { margin-bottom: 18px; }
+  .form-row:last-child { margin-bottom: 0; }
+
+  .inline-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    margin-top: 6px;
+  }
+
+  .range-display {
+    font-size: 0.85rem;
+    color: var(--accent2);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(212, 168, 83, 0.04);
+  }
+  .upload-zone input { position: absolute; top:0; right:0; bottom:0; left:0; opacity: 0; cursor: pointer; }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.6; }
+  .upload-zone p { color: var(--muted); font-size: 0.9rem; }
+  .upload-zone strong { color: var(--accent); }
+
+  /* Photo list */
+  .photo-list { margin-top: 20px; display: flex; flex-direction: column; gap: 6px; }
+  .photo-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: grab;
+    transition: box-shadow 0.15s, border-color 0.15s;
+    user-select: none;
+    overflow: visible;
+  }
+  .photo-item:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+  .photo-item.dragging { opacity: 0.35; cursor: grabbing; }
+  .photo-item.drag-target { border-color: var(--accent); background: rgba(212,168,83,0.07); }
+
+  /* Row 1: thumb + name + move btns + remove */
+  .photo-item-top {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .photo-item .thumb {
+    width: 42px; height: 42px; min-width: 42px;
+    border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .photo-item .thumb img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  .photo-item .item-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem; color: var(--accent);
+    min-width: 18px; text-align: center;
+    flex-shrink: 0;
+  }
+  .photo-item .item-name {
+    flex: 1; font-size: 0.75rem; color: var(--muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .move-btns { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+  .move-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer;
+    width: 22px; height: 19px; border-radius: 4px;
+    font-size: 0.62rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .move-btn:hover { color: var(--accent); border-color: var(--accent); background: rgba(212,168,83,0.08); }
+  .move-btn:disabled { opacity: 0.2; cursor: default; }
+  .photo-item .remove-btn {
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 1rem; padding: 4px;
+    border-radius: 6px; transition: color 0.15s, background 0.15s;
+    line-height: 1; flex-shrink: 0;
+  }
+  .photo-item .remove-btn:hover { color: #e05555; background: rgba(224,85,85,0.1); }
+
+  /* Row 2: puan + span selector */
+  .photo-item-bottom {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 6px; padding-top: 6px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .photo-item-bottom-group {
+    display: flex; flex-direction: column; gap: 4px;
+    flex-shrink: 0;
+  }
+  .photo-item-bottom-label {
+    font-size: 0.65rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.4px;
+    white-space: nowrap;
+  }
+  .photo-item .point-wrap {
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0;
+  }
+  .photo-item .point-input {
+    width: 52px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 4px 6px;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .photo-item .point-input:focus { border-color: var(--accent); }
+
+  .span-divider { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; }
+
+  .span-selector { display: flex; gap: 3px; flex-shrink: 0; align-items: center; }
+  .span-col-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    min-width: 26px; height: 26px;
+    border-radius: 5px;
+    font-size: 0.72rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    padding: 0 4px;
+  }
+  .span-col-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .span-col-btn.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+
+  .divider-rule {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px;
+  }
+  .divider-rule select, .divider-rule input[type="number"] {
+    font-size: 0.78rem; padding: 4px 6px;
+    border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    outline: none; width: auto;
+  }
+  .divider-rule input[type="number"] { width: 52px; text-align: center; }
+  .divider-rule input[type="color"] {
+    width: 30px; height: 28px; padding: 2px;
+    border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface); cursor: pointer;
+  }
+  .divider-rule-label { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+  .divider-rule-del {
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 1rem; padding: 2px 4px;
+    border-radius: 5px; margin-left: auto;
+    transition: color 0.15s;
+  }
+  .divider-rule-del:hover { color: #e05555; }
+  .move-btns { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+  .move-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer;
+    width: 22px; height: 19px; border-radius: 4px;
+    font-size: 0.62rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .move-btn:hover { color: var(--accent); border-color: var(--accent); background: rgba(212,168,83,0.08); }
+  .move-btn:disabled { opacity: 0.2; cursor: default; }
+
+  .archive-row {
+    display: flex; align-items: center; gap: 12px; margin: 8px 0 10px;
+  }
+  .archive-save-btn {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; padding: 7px 14px; font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    font-weight: 600; white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+  .archive-save-btn:hover { opacity: 0.85; }
+  .title-archive {
+    display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px;
+  }
+  .archive-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px;
+  }
+  .archive-item-text {
+    flex: 1; font-size: 0.85rem; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    cursor: pointer;
+  }
+  .archive-item-text:hover { color: var(--accent); }
+  .archive-use-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--accent); border-radius: 6px; padding: 4px 10px;
+    font-size: 0.75rem; cursor: pointer; white-space: nowrap;
+    transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+  }
+  .archive-use-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .archive-del-btn {
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 1rem; padding: 2px 4px;
+    border-radius: 6px; transition: color 0.15s;
+  }
+  .archive-del-btn:hover { color: #e05555; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex; gap: 20px; align-items: center;
+    padding: 14px 18px;
+    background: var(--surface2);
+    border-radius: 8px;
+    margin-top: 18px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .stats-bar span strong { color: var(--accent2); }
+
+  /* Generate button */
+  .btn-generate {
+    padding: 10px 24px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-generate:hover { background: var(--accent2); }
+  .btn-generate:active { transform: scale(0.98); }
+  .btn-generate:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+  /* Sabit alt bar */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 999;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+  }
+  .bottom-bar-info {
+    flex: 1;
+    font-size: 0.78rem;
+    color: var(--muted);
+    min-width: 0;
+  }
+  .bottom-bar-info strong { color: var(--accent2); }
+  .bottom-bar-progress {
+    flex: 1;
+    min-width: 80px;
+    max-width: 180px;
+    display: none;
+  }
+  .bottom-bar-progress-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bottom-bar-progress-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .bottom-bar-progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+
+  /* Progress (eski, artık kullanılmıyor ama JS referans ediyor) */
+  .progress-wrap { display: none; }
+  .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+
+  .empty-hint { text-align: center; padding: 30px; color: var(--muted); font-size: 0.85rem; }
+
+  /* Color pickers */
+  .color-row { display: flex; align-items: center; gap: 12px; }
+  .color-row input[type="color"] {
+    width: 38px; height: 38px;
+    padding: 2px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--surface2);
+    cursor: pointer;
+  }
+  .color-row span { font-size: 0.82rem; color: var(--muted); }
+
+  /* Toggle switch */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+  .toggle-row span { font-size: 0.9rem; color: var(--text); }
+  .toggle { position: relative; width: 44px; height: 24px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; top:0; right:0; bottom:0; left:0;
+    background: var(--border); border-radius: 24px; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-slider::before {
+    content: ''; position: absolute;
+    width: 18px; height: 18px; left: 3px; top: 3px;
+    background: #fff; border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .toggle input:checked + .toggle-slider { background: var(--accent); }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+  input[type="number"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="number"]:focus { border-color: var(--accent); }
+
+  .label-preview {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: var(--accent2);
+    margin-top: 14px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    letter-spacing: 0.5px;
+  }
+
+  /* Font style buttons */
+  .style-btns { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .style-btn {
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .style-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .style-btn.bold-btn { font-weight: 700; }
+  .style-btn.italic-btn { font-style: italic; }
+
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .section-divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 18px 0;
+  }
+
+  .theme-menu-item {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; padding: 7px 10px; border: none;
+    background: none; color: var(--text); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+    border-radius: 7px; transition: background 0.15s;
+    text-align: left;
+  }
+  .theme-menu-item:hover { background: var(--surface2); }
+  .theme-menu-item.active { background: var(--surface2); font-weight: 600; color: var(--accent); }
+  .theme-menu-item .dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15); flex-shrink: 0;
+  }
+</style>
+</head>
+<body class="">
+
+<!-- ── Sabit Üst Bar ── -->
+<div class="fixed-top-bar">
+  <div class="fixed-top-bar-row1">
+    <div class="top-brand">
+      <span>S-Sınav</span>
+      <span class="top-brand-badge">Pro 8.5</span>
+      <span style="font-size:0.68rem; color:var(--muted); font-family:'DM Sans',sans-serif; font-weight:400; margin-left:4px;">© sebasmobil &nbsp;<a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer" style="color:inherit;opacity:0.75;text-decoration:none;">AGPL v3.0</a></span>
+    </div>
+    <div class="top-right-actions">
+      <button class="top-night-btn" id="dayNightBtn" onclick="toggleDayNight()" title="Gece/Gündüz">☀️</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SEKME 1 — ANA SAYFA (Fotoğraflar)
+     ══════════════════════════════════════ -->
+<div class="tab-section active" id="tab-anasayfa">
+
+  <!-- Sorular -->
+  <div class="card">
+    <div class="card-title">Sorular</div>
+    <div class="form-row">
+      <label>Yükleme kalitesi</label>
+      <select id="uploadQuality">
+        <option value="low">Düşük — hızlı, az yer (mobil önerilir)</option>
+        <option value="medium" selected>Orta — dengeli</option>
+        <option value="high">Yüksek — net, büyük dosya</option>
+        <option value="original">Orijinal — sıkıştırma yok</option>
+      </select>
+    </div>
+    <div class="upload-zone" id="dropZone">
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <div class="upload-icon">📷</div>
+      <p><strong>Tıklayın veya soruları buraya sürükleyin</strong></p>
+      <p style="margin-top:6px; font-size:0.8rem;">JPG, PNG, WEBP — Birden fazla seçebilirsiniz</p>
+    </div>
+
+    <div id="totalPointsBanner" style="display:none; margin-bottom:8px; padding:8px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; background:var(--surface2); transition:all 0.2s;">
+      <span id="totalPointsSpan">🎯 Toplam puan: <strong id="totalPoints">0</strong></span>
+    </div>
+    <div id="photoList" class="photo-list"></div>
+
+    <div id="statsBar" class="stats-bar" style="display:none; flex-direction:column; gap:10px;">
+      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+        <span>📋 <strong id="photoCountCard">0</strong> soru</span>
+        <span>📄 Tahminen <strong id="pageCountCard">~</strong> sayfa</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button onclick="shufflePhotos()" style="flex:1; background:none; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:5px 10px; font-size:0.75rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; white-space:nowrap;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🔀 Karıştır</button>
+        <button onclick="clearAllPhotos()" style="flex:1; background:none; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:5px 10px; font-size:0.75rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; white-space:nowrap;" onmouseover="this.style.borderColor='#e05555';this.style.color='#e05555'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🗑 Tümünü Sil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SEKME 2 — BELGE BİLGİLERİ
+     ══════════════════════════════════════ -->
+<div class="tab-section" id="tab-belge">
+  <div class="card">
+    <div class="card-title">Belge Bilgileri</div>
+
+    <div class="form-row">
+      <label>Başlık metni</label>
+      <textarea id="docTitle" rows="2" placeholder="Belgenin başlığını girin..."></textarea>
+    </div>
+    <div class="archive-row">
+      <button class="archive-save-btn" onclick="archiveSaveTitle()">＋ Arşive Kaydet</button>
+      <span style="font-size:0.78rem; color:var(--muted);">Kaydettikleriniz aşağıda listelenir</span>
+    </div>
+    <div id="titleArchive" class="title-archive"></div>
+    <div class="three-col">
+      <div class="form-row">
+        <label>Yazı boyutu (pt)</label>
+        <input type="number" id="titleSize" value="12" min="6" max="72">
+      </div>
+      <div class="form-row">
+        <label>Renk</label>
+        <div class="color-row"><input type="color" id="titleColor" value="#1a1a1a"></div>
+      </div>
+      <div class="form-row">
+        <label>Stil</label>
+        <div class="style-btns">
+          <button class="style-btn bold-btn active" id="titleBold" onclick="toggleStyle('titleBold')">K</button>
+          <button class="style-btn italic-btn" id="titleItalic" onclick="toggleStyle('titleItalic')">İ</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Hizalama</label>
+      <div class="style-btns">
+        <button class="style-btn" id="titleAlignLeft" onclick="setTitleAlign('left')">← Sol</button>
+        <button class="style-btn active" id="titleAlignCenter" onclick="setTitleAlign('center')">←→ Orta</button>
+        <button class="style-btn" id="titleAlignRight" onclick="setTitleAlign('right')">→ Sağ</button>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="three-col">
+      <div class="form-row">
+        <label>AD SOYAD / NO yazı boyutu (pt)</label>
+        <input type="number" id="studentSize" value="12" min="6" max="20">
+      </div>
+      <div class="form-row">
+        <label>Renk</label>
+        <div class="color-row"><input type="color" id="studentColor" value="#1a1a1a"></div>
+      </div>
+      <div class="form-row">
+        <label>Stil</label>
+        <div class="style-btns">
+          <button class="style-btn bold-btn active" id="studentBold" onclick="toggleStyle('studentBold')">K</button>
+          <button class="style-btn italic-btn" id="studentItalic" onclick="toggleStyle('studentItalic')">İ</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="form-row">
+      <label>İlk Sayfa Açıklama Metni</label>
+      <textarea id="docDesc" rows="3" placeholder="Kısa bir açıklama yazın..."></textarea>
+    </div>
+    <div class="archive-row">
+      <button class="archive-save-btn" onclick="archiveSaveDesc()">＋ Arşive Kaydet</button>
+      <span style="font-size:0.78rem; color:var(--muted);">Kaydettikleriniz aşağıda listelenir</span>
+    </div>
+    <div id="descArchive" class="title-archive"></div>
+    <div class="three-col">
+      <div class="form-row">
+        <label>Yazı boyutu (pt)</label>
+        <input type="number" id="descSize" value="12" min="6" max="48">
+      </div>
+      <div class="form-row">
+        <label>Renk</label>
+        <div class="color-row"><input type="color" id="descColor" value="#444444"></div>
+      </div>
+      <div class="form-row">
+        <label>Stil</label>
+        <div class="style-btns">
+          <button class="style-btn bold-btn" id="descBold" onclick="toggleStyle('descBold')">K</button>
+          <button class="style-btn italic-btn" id="descItalic" onclick="toggleStyle('descItalic')">İ</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Hizalama</label>
+      <div class="style-btns">
+        <button class="style-btn active" id="descAlignLeft" onclick="setDescAlign('left')">← Sol</button>
+        <button class="style-btn" id="descAlignCenter" onclick="setDescAlign('center')">←→ Orta</button>
+        <button class="style-btn" id="descAlignRight" onclick="setDescAlign('right')">→ Sağ</button>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="form-row">
+      <label>Son Sayfa Açıklama Metni</label>
+      <textarea id="footerText" rows="2" placeholder="Örn: Başarılar dileriz. — Fen Bilimleri Zümresi"></textarea>
+    </div>
+    <div class="archive-row">
+      <button class="archive-save-btn" onclick="archiveSaveFooter()">＋ Arşive Kaydet</button>
+      <span style="font-size:0.78rem; color:var(--muted);">Kaydettikleriniz aşağıda listelenir</span>
+    </div>
+    <div id="footerArchive" class="title-archive"></div>
+    <div class="three-col">
+      <div class="form-row">
+        <label>Yazı boyutu (pt)</label>
+        <input type="number" id="footerSize" value="12" min="6" max="36">
+      </div>
+      <div class="form-row">
+        <label>Renk</label>
+        <div class="color-row"><input type="color" id="footerColor" value="#444444"></div>
+      </div>
+      <div class="form-row">
+        <label>Stil</label>
+        <div class="style-btns">
+          <button class="style-btn bold-btn" id="footerBold" onclick="toggleStyle('footerBold')">K</button>
+          <button class="style-btn italic-btn" id="footerItalic" onclick="toggleStyle('footerItalic')">İ</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Hizalama</label>
+      <div class="style-btns">
+        <button class="style-btn" id="footerAlignLeft" onclick="setFooterAlign('left')">← Sol</button>
+        <button class="style-btn" id="footerAlignCenter" onclick="setFooterAlign('center')">←→ Orta</button>
+        <button class="style-btn active" id="footerAlignRight" onclick="setFooterAlign('right')">→ Sağ</button>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Alt boşluktan mesafe (mm)</label>
+      <input type="range" id="footerOffsetSlider" min="2" max="30" value="8" oninput="document.getElementById('footerOffsetVal').textContent=this.value+' mm'">
+      <div class="range-display" id="footerOffsetVal">8 mm</div>
+    </div>
+    <hr class="section-divider">
+
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>"Diğer sayfaya geçiniz…" ekle</span>
+        <label class="toggle">
+          <input type="checkbox" id="nextPageEnabled" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="nextPageOptions" style="margin-top:14px;">
+      <div class="inline-row">
+        <div class="form-row">
+          <label>Alt boşluktan mesafe (mm)</label>
+          <input type="range" id="nextPageOffsetSlider" min="2" max="30" value="8" oninput="document.getElementById('nextPageOffsetVal').textContent=this.value+' mm'">
+          <div class="range-display" id="nextPageOffsetVal">8 mm</div>
+        </div>
+        <div class="form-row">
+          <label>Yazı boyutu (pt)</label>
+          <input type="number" id="nextPageSize" value="9" min="6" max="20">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Hizalama</label>
+        <div class="style-btns">
+          <button class="style-btn" id="nextPageAlignLeft" onclick="selectNextPageAlign('left')">← Sol</button>
+          <button class="style-btn" id="nextPageAlignCenter" onclick="selectNextPageAlign('center')">←→ Orta</button>
+          <button class="style-btn active" id="nextPageAlignRight" onclick="selectNextPageAlign('right')">→ Sağ</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="form-row">
+      <label>Arka plan rengi</label>
+      <div class="color-row">
+        <input type="color" id="bgColor" value="#ffffff">
+        <span>Sayfa arka planı</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="tab-section" id="tab-duzen">
+  <div class="card">
+    <div class="card-title">Düzen Ayarları</div>
+    <div class="inline-row">
+      <div class="form-row">
+        <label>Sayfa yönü</label>
+        <div class="style-btns">
+          <button class="style-btn active" id="orientPortrait" onclick="selectOrientation('portrait')">↕ Dikey (A4)</button>
+          <button class="style-btn" id="orientLandscape" onclick="selectOrientation('landscape')">↔ Yatay (A4)</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Sütun sayısı</label>
+        <div class="style-btns">
+          <button class="style-btn" id="col1" onclick="selectCols(1)">1 Sütun</button>
+          <button class="style-btn active" id="col2" onclick="selectCols(2)">2 Sütun</button>
+          <button class="style-btn" id="col3" onclick="selectCols(3)">3 Sütun</button>
+          <button class="style-btn" id="col4" onclick="selectCols(4)">4 Sütun</button>
+        </div>
+      </div>
+    </div>
+    <div class="inline-row">
+      <div class="form-row">
+        <label>Soru arası boşluk (mm)</label>
+        <input type="range" id="gapSlider" min="1" max="15" value="4">
+        <div class="range-display" id="gapVal">4 mm</div>
+      </div>
+      <div class="form-row">
+        <label>Sayfa kenar boşluğu (mm)</label>
+        <input type="range" id="marginSlider" min="5" max="30" value="8">
+        <div class="range-display" id="marginVal">8 mm</div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div style="font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:12px;">Sütun Arası Çizgiler</div>
+    <div id="dividerList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;"></div>
+    <button onclick="addDividerRule()" style="width:100%; background:none; border:1px dashed var(--border); color:var(--muted); border-radius:8px; padding:8px; font-size:0.82rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">＋ Çizgi Ekle</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SEKME 3 — SORU DÜZENİ
+     ══════════════════════════════════════ -->
+<div class="tab-section" id="tab-soruduzen">
+  <div class="card">
+    <div class="card-title">Soru Düzeni</div>
+
+    <div style="font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:10px;">Soru Etiketi</div>
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>Her soruya "SORU X (Y Puan)" etiketi ekle</span>
+        <label class="toggle">
+          <input type="checkbox" id="labelEnabled" checked onchange="updatePreview()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="labelOptions">
+      <div class="form-row" style="margin-top:14px;">
+        <div class="toggle-row">
+          <span>Soru numarasını göster (SORU X)</span>
+          <label class="toggle">
+            <input type="checkbox" id="labelShowNumber" checked onchange="updatePreview()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="three-col" style="margin-top:16px;">
+        <div class="form-row">
+          <label>Başlangıç soru no</label>
+          <input type="number" id="startQuestion" value="1" min="1" oninput="updatePreview()">
+        </div>
+        <div class="form-row">
+          <label>Yazı boyutu (pt)</label>
+          <input type="number" id="labelSize" value="12" min="6" max="36" oninput="updatePreview()">
+        </div>
+        <div class="form-row">
+          <label>Renk</label>
+          <div class="color-row"><input type="color" id="labelColor" value="#003580" oninput="updatePreview()"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Stil</label>
+        <div class="style-btns">
+          <button class="style-btn bold-btn active" id="labelBold" onclick="toggleStyle('labelBold'); updatePreview()">K</button>
+          <button class="style-btn italic-btn" id="labelItalic" onclick="toggleStyle('labelItalic'); updatePreview()">İ</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Hizalama</label>
+        <div class="style-btns">
+          <button class="style-btn active" id="labelAlignLeft" onclick="setLabelAlign('left')">← Sol</button>
+          <button class="style-btn" id="labelAlignCenter" onclick="setLabelAlign('center')">←→ Orta</button>
+          <button class="style-btn" id="labelAlignRight" onclick="setLabelAlign('right')">→ Sağ</button>
+        </div>
+      </div>
+      <div class="label-preview" id="labelPreview" style="margin-top:12px;">SORU 1 &nbsp;&nbsp;(10 Puan)</div>
+      <div style="font-size:0.82rem; color:var(--muted); margin-top:8px;">Her soru için puan, soru listesinde ayrı ayrı girilecek.</div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="form-row">
+      <label>Soru hizalama (sütun içinde)</label>
+      <div class="style-btns">
+        <button class="style-btn active" id="alignLeft" onclick="selectAlign('left')">← Sol</button>
+        <button class="style-btn" id="alignCenter" onclick="selectAlign('center')">←→ Ortala</button>
+        <button class="style-btn" id="alignRight" onclick="selectAlign('right')">→ Sağ</button>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>Soruları belirli sayıda sayfaya sığdır</span>
+        <label class="toggle">
+          <input type="checkbox" id="fitPagesEnabled" checked onchange="toggleFitPages()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="fitPagesOptions" style="margin-top:12px;">
+      <div class="form-row">
+        <label>Hedef sayfa sayısı</label>
+        <div class="style-btns">
+          <button class="style-btn" id="fitPage1" onclick="selectFitPages(1)">1</button>
+          <button class="style-btn active" id="fitPage2" onclick="selectFitPages(2)">2</button>
+          <button class="style-btn" id="fitPage3" onclick="selectFitPages(3)">3</button>
+          <button class="style-btn" id="fitPage4" onclick="selectFitPages(4)">4</button>
+          <button class="style-btn" id="fitPage5" onclick="selectFitPages(5)">5</button>
+          <button class="style-btn" id="fitPage6" onclick="selectFitPages(6)">6</button>
+          <button class="style-btn" id="fitPage7" onclick="selectFitPages(7)">7</button>
+          <button class="style-btn" id="fitPage8" onclick="selectFitPages(8)">8</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>Soruları otomatik sırala (en verimli yerleşim)</span>
+        <label class="toggle">
+          <input type="checkbox" id="autoSortEnabled" checked onchange="applyAutoSort()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div style="font-size:0.78rem; color:var(--muted); margin-top:6px; line-height:1.5;">Çok sütunlu sorular öne alınır, her soru boşluğa en uygun şekilde yerleştirilir.</div>
+
+    <hr class="section-divider">
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>Her soruyu yuvarlatılmış çerçeve içine al</span>
+        <label class="toggle">
+          <input type="checkbox" id="borderEnabled" checked onchange="toggleBorderOptions()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="borderOptions">
+      <div class="three-col" style="margin-top:14px;">
+        <div class="form-row">
+          <label>Çizgi kalınlığı (pt)</label>
+          <input type="number" id="borderWidth" value="2" min="0.5" max="5" step="0.5">
+        </div>
+        <div class="form-row">
+          <label>Çerçeve rengi</label>
+          <div class="color-row"><input type="color" id="borderColor" value="#000000"></div>
+        </div>
+        <div class="form-row">
+          <label>Köşe yuvarlaklığı (mm)</label>
+          <input type="number" id="borderRadius" value="3" min="0" max="10">
+        </div>
+      </div>
+      <div class="inline-row">
+        <div class="form-row">
+          <label>İç dolgu — yatay (mm)</label>
+          <input type="range" id="borderPadH" min="0" max="8" value="2" oninput="document.getElementById('borderPadHVal').textContent=this.value+' mm'">
+          <div class="range-display" id="borderPadHVal">2 mm</div>
+        </div>
+        <div class="form-row">
+          <label>İç dolgu — dikey (mm)</label>
+          <input type="range" id="borderPadV" min="0" max="8" value="2" oninput="document.getElementById('borderPadVVal').textContent=this.value+' mm'">
+          <div class="range-display" id="borderPadVVal">2 mm</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SEKME 4 — FİLİGRAN
+     ══════════════════════════════════════ -->
+<div class="tab-section" id="tab-filigran">
+  <div class="card">
+    <div class="card-title">Filigran</div>
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>Filigran ekle</span>
+        <label class="toggle">
+          <input type="checkbox" id="watermarkEnabled" onchange="toggleWatermarkOptions()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div id="watermarkOptions" style="opacity:0.4; pointer-events:none; margin-top:16px;">
+      <div class="form-row">
+        <label>Filigran metni</label>
+        <input type="text" id="watermarkText" value="GİZLİ" placeholder="örn: TASLAK, GİZLİ, KOPYA...">
+      </div>
+      <div class="three-col" style="margin-top:4px;">
+        <div class="form-row">
+          <label>Yazı boyutu (pt)</label>
+          <input type="number" id="watermarkSize" value="60" min="10" max="200">
+        </div>
+        <div class="form-row">
+          <label>Renk</label>
+          <div class="color-row"><input type="color" id="watermarkColor" value="#000000"></div>
+        </div>
+        <div class="form-row">
+          <label>Saydamlık (%)</label>
+          <input type="number" id="watermarkOpacity" value="10" min="1" max="100">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Stil</label>
+        <div class="style-btns">
+          <button class="style-btn bold-btn active" id="watermarkBold" onclick="toggleStyle('watermarkBold')">K</button>
+          <button class="style-btn italic-btn" id="watermarkItalic" onclick="toggleStyle('watermarkItalic')">İ</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Açı (derece)</label>
+        <input type="range" id="watermarkAngle" min="-90" max="90" value="-45" oninput="document.getElementById('watermarkAngleVal').textContent=this.value+'°'">
+        <div class="range-display" id="watermarkAngleVal">-45°</div>
+      </div>
+      <div class="form-row">
+        <label>Konum</label>
+        <div class="style-btns">
+          <button class="style-btn" id="wmPosCenter" onclick="selectWatermarkPos('center')">Merkez</button>
+          <button class="style-btn active" id="wmPosTile" onclick="selectWatermarkPos('tile')">Döşeme</button>
+        </div>
+      </div>
+      <div id="watermarkTileOptions" style="margin-top:10px;">
+        <div class="inline-row">
+          <div class="form-row">
+            <label>Yatay aralık (mm)</label>
+            <input type="range" id="watermarkTileX" min="20" max="150" value="70" oninput="document.getElementById('watermarkTileXVal').textContent=this.value+' mm'">
+            <div class="range-display" id="watermarkTileXVal">70 mm</div>
+          </div>
+          <div class="form-row">
+            <label>Dikey aralık (mm)</label>
+            <input type="range" id="watermarkTileY" min="20" max="150" value="50" oninput="document.getElementById('watermarkTileYVal').textContent=this.value+' mm'">
+            <div class="range-display" id="watermarkTileYVal">50 mm</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Hangi sayfalara</label>
+        <div class="style-btns">
+          <button class="style-btn active" id="wmPageAll" onclick="selectWatermarkPages('all')">Tümü</button>
+          <button class="style-btn" id="wmPageFirst" onclick="selectWatermarkPages('first')">Sadece 1. Sayfa</button>
+          <button class="style-btn" id="wmPageLast" onclick="selectWatermarkPages('last')">Sadece Son Sayfa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ALT NAVİGASYON
+     ══════════════════════════════════════ -->
+<div class="bottom-nav">
+  <!-- Stats + PDF şeridi -->
+  <div class="bottom-nav-top">
+    <div class="top-stats" id="topStatsText" style="flex:1; font-size:0.72rem; color:var(--muted); display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <span>📋 <strong id="photoCount">0</strong> soru</span>
+      <span>·</span>
+      <span>📄 <strong id="pageCount">~</strong> sayfa</span>
+      <span>·</span>
+      <span>🎯 <strong id="totalPointsTop">0</strong> puan</span>
+    </div>
+    <div class="bottom-nav-progress" id="bottomBarProgress">
+      <div class="bottom-nav-progress-label" id="progressLabel">Hazırlanıyor...</div>
+      <div class="bottom-nav-progress-bar"><div class="bottom-nav-progress-fill" id="progressFill"></div></div>
+    </div>
+    <button class="btn-generate-top" id="generateBtn" disabled onclick="generatePDF()">⬇ PDF Oluştur</button>
+  </div>
+  <!-- Sekme butonları -->
+  <div class="bottom-nav-tabs">
+    <button class="nav-tab active" id="navtab-anasayfa" onclick="switchTab('anasayfa')">
+      <span class="nav-icon">📷</span>
+      <span>Sorular</span>
+    </button>
+    <button class="nav-tab" id="navtab-belge" onclick="switchTab('belge')">
+      <span class="nav-icon">📄</span>
+      <span>Belge</span>
+    </button>
+    <button class="nav-tab" id="navtab-duzen" onclick="switchTab('duzen')">
+      <span class="nav-icon">📐</span>
+      <span>Düzen</span>
+    </button>
+    <button class="nav-tab" id="navtab-soruduzen" onclick="switchTab('soruduzen')">
+      <span class="nav-icon">📝</span>
+      <span>Soru</span>
+    </button>
+    <button class="nav-tab" id="navtab-filigran" onclick="switchTab('filigran')">
+      <span class="nav-icon">💧</span>
+      <span>Filigran</span>
+    </button>
+    <div style="width:1px; background:var(--border); align-self:stretch; margin: 6px 0;"></div>
+    <div class="nav-tab" style="cursor:default; gap:4px;">
+      <div style="display:flex; gap:6px; margin-bottom:2px;">
+        <a href="https://instagram.com/sebasmobil" target="_blank" rel="noopener noreferrer" title="@sebasmobil" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all 0.15s;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="mailto:?subject=sebasmobil%20-%20ileti%C5%9Fim" title="E-posta" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all 0.15s;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+        </a>
+      </div>
+      <span style="font-size:0.55rem; color:var(--muted); letter-spacing:0.3px;">İLETİŞİM</span>
+    </div>
+  </div>
+</div>
+
+<!-- Progress wrap (JS uyumu için gizli) -->
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+</div>
+
+<script>
+const { jsPDF } = window.jspdf;
+
+// ── Sekme Geçişi ──
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const section = document.getElementById('tab-' + tabId);
+  const btn = document.getElementById('navtab-' + tabId);
+  if (section) section.classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+let photos = [];
+let dragSrcIdx = null;
+
+// --- Gece/Gündüz Toggle ---
+let isDarkMode = false;
+function toggleDayNight() {
+  isDarkMode = !isDarkMode;
+  document.body.className = isDarkMode ? 'theme-dark-blue' : '';
+  document.getElementById('dayNightBtn').textContent = isDarkMode ? '🌙' : '☀️';
+  localStorage.setItem('dayNight', isDarkMode ? 'dark' : 'light');
+}
+(function() {
+  const saved = localStorage.getItem('dayNight');
+  if (saved === 'dark') {
+    isDarkMode = true;
+    document.body.className = 'theme-dark-blue';
+    const btn = document.getElementById('dayNightBtn');
+    if (btn) btn.textContent = '🌙';
+  }
+})();
+
+let currentOrientation = 'portrait';
+let currentCols = 2;
+
+// Ekran dönüşünde orientation güncelle
+window.addEventListener('resize', () => {
+  const isLandscape = window.innerWidth > window.innerHeight;
+  const newOrientation = isLandscape ? 'landscape' : 'portrait';
+  if (newOrientation !== currentOrientation) {
+    currentOrientation = newOrientation;
+    document.getElementById('orientPortrait').classList.toggle('active', newOrientation === 'portrait');
+    document.getElementById('orientLandscape').classList.toggle('active', newOrientation === 'landscape');
+    updateStats();
+  }
+});
+
+function selectOrientation(val) {
+  currentOrientation = val;
+  document.getElementById('orientPortrait').classList.toggle('active', val === 'portrait');
+  document.getElementById('orientLandscape').classList.toggle('active', val === 'landscape');
+  updateStats();
+}
+
+function selectCols(n) {
+  currentCols = n;
+  [1,2,3,4].forEach(i => document.getElementById('col'+i).classList.toggle('active', i === n));
+  updateStats();
+  if (photos.length) renderList();
+  renderDividerList();
+  // Sütun sayısı değişince otomatik yeniden sırala
+  if (photos.length > 1 && document.getElementById('autoSortEnabled').checked) {
+    applyAutoSort();
+  }
+}
+
+// --- Otomatik Sıralama ---
+
+async function applyAutoSort() {
+  if (photos.length < 2) return;
+  const enabled = document.getElementById('autoSortEnabled').checked;
+
+  if (!enabled) {
+    // Pasif: ekleme sırasına göre (id) sırala
+    photos.sort((a, b) => a.id - b.id);
+    renderList();
+    return;
+  }
+
+  // Aktif: çok sütunlu sorular önce, geri kalanlar orijinal sırayla
+  const spans    = photos.filter(p => Math.min(p.spanCols || 1, currentCols) > 1);
+  const nonSpans = photos.filter(p => Math.min(p.spanCols || 1, currentCols) === 1);
+
+  // Span'liler kendi aralarında büyükten küçüğe (daha geniş olan önce)
+  spans.sort((a, b) => (b.spanCols || 1) - (a.spanCols || 1));
+
+  photos = [...spans, ...nonSpans];
+  renderList();
+}
+
+// --- Sütun Arası Çizgi Kuralları ---
+let dividerRules = []; // [{page, afterCol, style, width, color}]
+
+function addDividerRule() {
+  dividerRules.push({ page: 1, afterCol: 1, style: 'solid', width: 2, color: '#000000' });
+  renderDividerList();
+}
+
+function removeDividerRule(idx) {
+  dividerRules.splice(idx, 1);
+  renderDividerList();
+}
+
+function renderDividerList() {
+  const container = document.getElementById('dividerList');
+  if (!container) return;
+  container.innerHTML = '';
+  if (dividerRules.length === 0) {
+    container.innerHTML = '<div style="font-size:0.78rem;color:var(--muted);text-align:center;padding:6px 0;">Henüz çizgi eklenmedi</div>';
+    return;
+  }
+  const maxAfterCol = Math.max(1, currentCols - 1);
+  dividerRules.forEach((r, idx) => {
+    const div = document.createElement('div');
+    div.className = 'divider-rule';
+    div.innerHTML = `
+      <span class="divider-rule-label">Sayfa</span>
+      <input type="number" min="1" max="20" value="${r.page}" style="width:46px" oninput="dividerRules[${idx}].page=parseInt(this.value)||1">
+      <span class="divider-rule-label">Sütun</span>
+      <select onchange="dividerRules[${idx}].afterCol=parseInt(this.value)">
+        ${Array.from({length: maxAfterCol}, (_, i) => i+1).map(c =>
+          `<option value="${c}" ${r.afterCol===c?'selected':''}>${c}–${c+1} arası</option>`
+        ).join('')}
+      </select>
+      <span class="divider-rule-label">Stil</span>
+      <select onchange="dividerRules[${idx}].style=this.value">
+        <option value="solid" ${r.style==='solid'?'selected':''}>Düz</option>
+        <option value="dashed" ${r.style==='dashed'?'selected':''}>Kesik</option>
+        <option value="dotted" ${r.style==='dotted'?'selected':''}>Noktalı</option>
+      </select>
+      <span class="divider-rule-label">Kalınlık</span>
+      <input type="number" min="0.1" max="5" step="0.1" value="${r.width}" style="width:52px" oninput="dividerRules[${idx}].width=parseFloat(this.value)||0.5">
+      <span class="divider-rule-label">pt &nbsp;</span>
+      <input type="color" value="${r.color}" oninput="dividerRules[${idx}].color=this.value">
+      <button class="divider-rule-del" onclick="removeDividerRule(${idx})" title="Sil">✕</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+document.getElementById('gapSlider').addEventListener('input', function() {
+  document.getElementById('gapVal').textContent = this.value + ' mm';
+  updateStats();
+});
+document.getElementById('marginSlider').addEventListener('input', function() {
+  document.getElementById('marginVal').textContent = this.value + ' mm';
+  updateStats();
+});
+
+let fitPagesTarget = 2;
+
+function toggleFitPages() {
+  const enabled = document.getElementById('fitPagesEnabled').checked;
+  document.getElementById('fitPagesOptions').style.opacity = enabled ? '1' : '0.4';
+  document.getElementById('fitPagesOptions').style.pointerEvents = enabled ? '' : 'none';
+}
+
+function selectFitPages(n) {
+  fitPagesTarget = n;
+  [1,2,3,4,5,6,7,8].forEach(i => document.getElementById('fitPage'+i).classList.toggle('active', i === n));
+}
+
+let photoAlign = 'left';
+let labelAlign = 'left';
+
+function selectAlign(val) {
+  photoAlign = val;
+  ['left','center','right'].forEach(a => document.getElementById('align'+a.charAt(0).toUpperCase()+a.slice(1)).classList.toggle('active', a === val));
+}
+
+function toggleBorderOptions() {
+  const enabled = document.getElementById('borderEnabled').checked;
+  document.getElementById('borderOptions').style.opacity = enabled ? '1' : '0.4';
+  document.getElementById('borderOptions').style.pointerEvents = enabled ? '' : 'none';
+}
+
+// --- Filigran ---
+let watermarkPos = 'tile';
+let watermarkPages = 'all';
+
+function toggleWatermarkOptions() {
+  const enabled = document.getElementById('watermarkEnabled').checked;
+  document.getElementById('watermarkOptions').style.opacity = enabled ? '1' : '0.4';
+  document.getElementById('watermarkOptions').style.pointerEvents = enabled ? '' : 'none';
+}
+
+function selectWatermarkPos(val) {
+  watermarkPos = val;
+  ['Center','Tile'].forEach(p => document.getElementById('wmPos'+p).classList.toggle('active', p.toLowerCase() === val));
+  document.getElementById('watermarkTileOptions').style.display = val === 'tile' ? 'block' : 'none';
+}
+
+function selectWatermarkPages(val) {
+  watermarkPages = val;
+  ['All','First','Last'].forEach(p => document.getElementById('wmPage'+p).classList.toggle('active', p.toLowerCase() === val));
+}
+
+let descArchive = JSON.parse(localStorage.getItem('descArchive') || '[]');
+
+function archiveSaveDesc() {
+  const val = document.getElementById('docDesc').value.trim();
+  if (!val) return;
+  if (descArchive.includes(val)) return;
+  descArchive.unshift(val);
+  if (descArchive.length > 10) descArchive = descArchive.slice(0, 10);
+  localStorage.setItem('descArchive', JSON.stringify(descArchive));
+  renderDescArchive();
+}
+
+function archiveUseDesc(idx) {
+  document.getElementById('docDesc').value = descArchive[idx];
+}
+
+function archiveDeleteDesc(idx) {
+  descArchive.splice(idx, 1);
+  localStorage.setItem('descArchive', JSON.stringify(descArchive));
+  renderDescArchive();
+}
+
+function renderDescArchive() {
+  const container = document.getElementById('descArchive');
+  container.innerHTML = '';
+  if (descArchive.length === 0) return;
+  descArchive.forEach((t, idx) => {
+    const item = document.createElement('div');
+    item.className = 'archive-item';
+    item.innerHTML = `
+      <span class="archive-item-text" onclick="archiveUseDesc(${idx})" title="${t}">${t}</span>
+      <button class="archive-use-btn" onclick="archiveUseDesc(${idx})">Kullan</button>
+      <button class="archive-del-btn" onclick="archiveDeleteDesc(${idx})" title="Sil">✕</button>
+    `;
+    container.appendChild(item);
+  });
+}
+renderDescArchive();
+
+let titleArchive = JSON.parse(localStorage.getItem('titleArchive') || '[]');
+
+function archiveSaveTitle() {
+  const val = document.getElementById('docTitle').value.trim();
+  if (!val) return;
+  if (titleArchive.includes(val)) return;
+  titleArchive.unshift(val);
+  if (titleArchive.length > 10) titleArchive = titleArchive.slice(0, 10);
+  localStorage.setItem('titleArchive', JSON.stringify(titleArchive));
+  renderTitleArchive();
+}
+
+function archiveUseTitle(idx) {
+  document.getElementById('docTitle').value = titleArchive[idx];
+}
+
+function archiveDeleteTitle(idx) {
+  titleArchive.splice(idx, 1);
+  localStorage.setItem('titleArchive', JSON.stringify(titleArchive));
+  renderTitleArchive();
+}
+
+function renderTitleArchive() {
+  const container = document.getElementById('titleArchive');
+  container.innerHTML = '';
+  if (titleArchive.length === 0) return;
+  titleArchive.forEach((t, idx) => {
+    const item = document.createElement('div');
+    item.className = 'archive-item';
+    item.innerHTML = `
+      <span class="archive-item-text" onclick="archiveUseTitle(${idx})" title="${t}">${t}</span>
+      <button class="archive-use-btn" onclick="archiveUseTitle(${idx})">Kullan</button>
+      <button class="archive-del-btn" onclick="archiveDeleteTitle(${idx})" title="Sil">✕</button>
+    `;
+    container.appendChild(item);
+  });
+}
+renderTitleArchive();
+
+function toggleStyle(id) {
+  const btn = document.getElementById(id);
+  btn.classList.toggle('active');
+}
+
+function isActive(id) {
+  return document.getElementById(id).classList.contains('active');
+}
+
+function setLabelAlign(align) {
+  labelAlign = align;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('labelAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === align);
+  });
+}
+
+function updatePreview() {
+  const enabled = document.getElementById('labelEnabled').checked;
+  document.getElementById('labelOptions').style.opacity = enabled ? '1' : '0.4';
+  document.getElementById('labelOptions').style.pointerEvents = enabled ? '' : 'none';
+  const qNum = parseInt(document.getElementById('startQuestion').value) || 1;
+  const color = document.getElementById('labelColor').value;
+  const size = parseInt(document.getElementById('labelSize').value) || 9;
+  const bold = isActive('labelBold');
+  const italic = isActive('labelItalic');
+  const preview = document.getElementById('labelPreview');
+  const showNum = document.getElementById('labelShowNumber') ? document.getElementById('labelShowNumber').checked : true;
+  preview.textContent = showNum ? `SORU ${qNum}   (10 Puan)` : `SORU ……   (10 Puan)`;
+  preview.style.color = color;
+  preview.style.fontSize = Math.min(size * 1.2, 18) + 'px';
+  preview.style.fontWeight = bold ? '700' : '400';
+  preview.style.fontStyle = italic ? 'italic' : 'normal';
+}
+updatePreview();
+
+let nextPageAlign = 'right';
+
+function selectNextPageAlign(val) {
+  nextPageAlign = val;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('nextPageAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === val);
+  });
+}
+
+let titleAlign = 'center';
+
+function setTitleAlign(align) {
+  titleAlign = align;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('titleAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === align);
+  });
+}
+
+let descAlign = 'left';
+
+function setDescAlign(align) {
+  descAlign = align;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('descAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === align);
+  });
+}
+
+// Footer Arşivi
+let footerArchiveData = JSON.parse(localStorage.getItem('footerArchive') || '[]');
+
+function archiveSaveFooter() {
+  const val = document.getElementById('footerText').value.trim();
+  if (!val) return;
+  if (footerArchiveData.includes(val)) return;
+  footerArchiveData.unshift(val);
+  if (footerArchiveData.length > 10) footerArchiveData = footerArchiveData.slice(0, 10);
+  localStorage.setItem('footerArchive', JSON.stringify(footerArchiveData));
+  renderFooterArchive();
+}
+
+function archiveUseFooter(idx) {
+  document.getElementById('footerText').value = footerArchiveData[idx];
+  updateFooterPreview();
+}
+
+function archiveDeleteFooter(idx) {
+  footerArchiveData.splice(idx, 1);
+  localStorage.setItem('footerArchive', JSON.stringify(footerArchiveData));
+  renderFooterArchive();
+}
+
+function renderFooterArchive() {
+  const container = document.getElementById('footerArchive');
+  container.innerHTML = '';
+  if (footerArchiveData.length === 0) return;
+  footerArchiveData.forEach((t, idx) => {
+    const item = document.createElement('div');
+    item.className = 'archive-item';
+    item.innerHTML = `
+      <span class="archive-item-text" onclick="archiveUseFooter(${idx})" title="${t}">${t}</span>
+      <button class="archive-use-btn" onclick="archiveUseFooter(${idx})">Kullan</button>
+      <button class="archive-del-btn" onclick="archiveDeleteFooter(${idx})" title="Sil">✕</button>
+    `;
+    container.appendChild(item);
+  });
+}
+renderFooterArchive();
+renderDividerList();
+
+// --- Son girilen metinleri hatırla ---
+(function() {
+  const fields = ['docTitle', 'docDesc', 'footerText'];
+  // Restore
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const saved = localStorage.getItem('lastText_' + id);
+    if (saved) el.value = saved;
+  });
+  // Save on input
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      localStorage.setItem('lastText_' + id, el.value);
+    });
+  });
+  // Also trigger preview updates after restore
+  updateFooterPreview();
+})();
+
+// Footer (alt metin) fonksiyonları
+let footerAlign = 'right';
+
+function setFooterAlign(align) {
+  footerAlign = align;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('footerAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === align);
+  });
+  updateFooterPreview();
+}
+
+function updateFooterPreview() {
+  const preview = document.getElementById('footerPreview');
+  if (!preview) return;
+  const text = document.getElementById('footerText').value || 'Son sayfa açıklama metni';
+  const color = document.getElementById('footerColor').value;
+  const size = parseInt(document.getElementById('footerSize').value) || 12;
+  const bold = isActive('footerBold');
+  const italic = isActive('footerItalic');
+  preview.textContent = text;
+  preview.style.color = color;
+  preview.style.fontSize = Math.min(size * 1.2, 18) + 'px';
+  preview.style.fontWeight = bold ? '700' : '400';
+  preview.style.fontStyle = italic ? 'italic' : 'normal';
+  preview.style.textAlign = footerAlign;
+}
+
+document.getElementById('footerText').addEventListener('input', updateFooterPreview);
+document.getElementById('footerSize').addEventListener('input', updateFooterPreview);
+document.getElementById('footerColor').addEventListener('input', updateFooterPreview);
+
+document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
+
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+});
+
+function compressImage(dataUrl) {
+  return new Promise(resolve => {
+    const qualityEl = document.getElementById('uploadQuality');
+    const quality = (qualityEl && qualityEl.value) ? qualityEl.value : 'medium';
+    if (quality === 'original') { resolve(dataUrl); return; }
+
+    const presets = {
+      low:    { max: 900,  q: 0.65 },
+      medium: { max: 1200, q: 0.82 },
+      high:   { max: 1800, q: 0.93 },
+    };
+    const { max: MAX, q } = presets[quality];
+
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', q));
+    };
+    img.src = dataUrl;
+  });
+}
+
+function handleFiles(fileList) {
+  const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+  if (files.length === 0) return;
+
+  async function processSequentially() {
+    for (const file of files) {
+      await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = async e => {
+          const compressed = await compressImage(e.target.result);
+          photos.push({ id: Date.now() + Math.random(), file, dataUrl: compressed, name: file.name, points: 10 });
+          renderList();
+          resolve();
+        };
+        reader.readAsDataURL(file);
+      });
+      await new Promise(r => setTimeout(r, 10));
+    }
+    // Tüm dosyalar yüklendikten sonra otomatik sırala
+    if (document.getElementById('autoSortEnabled') && document.getElementById('autoSortEnabled').checked) {
+      applyAutoSort();
+    }
+  }
+
+  processSequentially();
+}
+
+function clearAllPhotos() {
+  if (photos.length === 0) return;
+  photos = [];
+  savePhotos();
+  renderList();
+}
+
+function savePhotos() {
+  // Oturum bazlı — localStorage'a kaydedilmez
+}
+
+function loadPhotos() {
+  // Oturum bazlı — önceki oturumdan yükleme yapılmaz
+}
+
+loadPhotos();
+
+function shufflePhotos() {
+  for (let i = photos.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [photos[i], photos[j]] = [photos[j], photos[i]];
+  }
+  renderList();
+}
+
+function movePhoto(idx, dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= photos.length) return;
+  const moved = photos.splice(idx, 1)[0];
+  photos.splice(newIdx, 0, moved);
+  renderList();
+}
+
+function renderList() {
+  const list = document.getElementById('photoList');
+  list.innerHTML = '';
+  const startQ = parseInt(document.getElementById('startQuestion').value) || 1;
+
+  photos.forEach((p, idx) => {
+    const item = document.createElement('div');
+    item.className = 'photo-item';
+    item.draggable = true;
+    item.dataset.idx = idx;
+    const qNum = startQ + idx;
+    item.innerHTML = `
+      <div class="photo-item-top">
+        <div class="move-btns">
+          <button class="move-btn" onclick="movePhoto(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} title="Yukarı">▲</button>
+          <button class="move-btn" onclick="movePhoto(${idx}, 1)" ${idx === photos.length-1 ? 'disabled' : ''} title="Aşağı">▼</button>
+        </div>
+        <div class="thumb"><img src="${p.dataUrl}" alt="${p.name}"></div>
+        <span class="item-num">${qNum}</span>
+        <span class="item-name" title="${p.name}">${p.name}</span>
+        <button class="remove-btn" onclick="removePhoto(${idx})" title="Sil">✕</button>
+      </div>
+      <div class="photo-item-bottom">
+        <div class="photo-item-bottom-group">
+          <span class="photo-item-bottom-label">Puan</span>
+          <div class="point-wrap">
+            <input class="point-input" type="text" inputmode="numeric" value="${p.points}" data-idx="${idx}" oninput="updatePoints(${idx}, this.value)" onfocus="this.select()">
+          </div>
+        </div>
+        ${currentCols > 1 ? `
+          <div class="span-divider"></div>
+          <div class="photo-item-bottom-group">
+            <span class="photo-item-bottom-label">Sütun genişliği</span>
+            <div class="span-selector">
+              ${Array.from({length: currentCols}, (_, s) => s+1).map(s => `<button class="span-col-btn ${(p.spanCols||1) === s ? 'active' : ''}" onclick="setSpanCols(${idx}, ${s})" title="${s} sütun">${s}</button>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+    item.addEventListener('dragstart', e => { dragSrcIdx = idx; item.classList.add('dragging'); });
+    item.addEventListener('dragend', () => { item.classList.remove('dragging'); document.querySelectorAll('.photo-item').forEach(t => t.classList.remove('drag-target')); });
+    item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-target'); });
+    item.addEventListener('dragleave', () => item.classList.remove('drag-target'));
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSrcIdx !== null && dragSrcIdx !== idx) {
+        const moved = photos.splice(dragSrcIdx, 1)[0];
+        photos.splice(idx, 0, moved);
+        renderList();
+      }
+    });
+    list.appendChild(item);
+  });
+
+  const statsBar = document.getElementById('statsBar');
+  const generateBtn = document.getElementById('generateBtn');
+  if (photos.length > 0) {
+    statsBar.style.display = 'flex';
+    generateBtn.disabled = false;
+    updateStats();
+    savePhotos();
+  } else {
+    statsBar.style.display = 'none';
+    generateBtn.disabled = true;
+    savePhotos();
+  }
+}
+
+function updatePoints(idx, val) {
+  photos[idx].points = parseInt(val) || 0;
+  savePhotos();
+  updateStats();
+}
+
+function setSpanCols(idx, cols) {
+  photos[idx].spanCols = cols;
+  savePhotos();
+  renderList();
+}
+
+function removePhoto(idx) {
+  photos.splice(idx, 1);
+  renderList();
+}
+
+document.getElementById('startQuestion').addEventListener('input', () => { if(photos.length) renderList(); });
+
+function updateStats() {
+  const cardPhotoCount = document.getElementById('photoCountCard');
+  if (cardPhotoCount) cardPhotoCount.textContent = photos.length;
+  const gap = parseFloat(document.getElementById('gapSlider').value);
+  const margin = parseFloat(document.getElementById('marginSlider').value);
+  const isLandscape = currentOrientation === 'landscape';
+  const pgW = isLandscape ? 297 : 210;
+  const pgH = isLandscape ? 210 : 297;
+  const colW = (pgW - margin * 2 - gap * (currentCols - 1)) / currentCols;
+  const avgH = colW / 1.33;
+  const usableH = pgH - margin * 2 - 30;
+  const perPage = Math.floor(usableH / (avgH + gap)) * currentCols;
+  const pages = Math.max(1, Math.ceil(photos.length / Math.max(1, perPage)));
+  const cardPageCount = document.getElementById('pageCountCard');
+  if (cardPageCount) cardPageCount.textContent = '~' + pages;
+
+  const total = photos.reduce((sum, p) => sum + (parseFloat(p.points) || 0), 0);
+  const totalEl = document.getElementById('totalPoints');
+  const spanEl = document.getElementById('totalPointsSpan');
+  const bannerEl = document.getElementById('totalPointsBanner');
+  totalEl.textContent = total;
+
+  if (photos.length === 0) {
+    bannerEl.style.display = 'none';
+  } else {
+    bannerEl.style.display = 'block';
+    if (total === 100) {
+      bannerEl.style.background = 'rgba(34,167,82,0.12)';
+      bannerEl.style.color = '#22a752';
+      spanEl.innerHTML = '✅ Toplam puan: <strong id="totalPoints">' + total + '</strong> — Tam 100!';
+    } else if (total > 100) {
+      bannerEl.style.background = 'rgba(224,85,85,0.12)';
+      bannerEl.style.color = '#e05555';
+      spanEl.innerHTML = '⚠️ Toplam puan: <strong id="totalPoints">' + total + '</strong> — 100\'den fazla!';
+    } else if (total === 0) {
+      bannerEl.style.background = 'var(--surface2)';
+      bannerEl.style.color = 'var(--muted)';
+      spanEl.innerHTML = '🎯 Toplam puan: <strong id="totalPoints">0</strong>';
+    } else {
+      bannerEl.style.background = 'rgba(224,140,0,0.10)';
+      bannerEl.style.color = '#e08c00';
+      spanEl.innerHTML = '🎯 Toplam puan: <strong id="totalPoints">' + total + '</strong> — 100\'e ulaşılmadı';
+    }
+  }
+  // Alt bar info güncelle
+  const bbi = document.getElementById('bottomBarInfo');
+  if (bbi) {
+    if (photos.length === 0) {
+      bbi.innerHTML = '© sebasmobil';
+    } else {
+      bbi.innerHTML = `© sebasmobil &nbsp;·&nbsp; <strong>${photos.length}</strong> soru &nbsp;·&nbsp; ~<strong>${pages}</strong> sayfa &nbsp;·&nbsp; <strong>${total}</strong> puan`;
+    }
+  }
+  // Alt bar stats güncelle
+  const topPhotoCount = document.getElementById('photoCount');
+  const topPageCount = document.getElementById('pageCount');
+  const topPointsEl = document.getElementById('totalPointsTop');
+  if (topPhotoCount) topPhotoCount.textContent = photos.length;
+  if (topPageCount) topPageCount.textContent = '~' + pages;
+  if (topPointsEl) topPointsEl.textContent = total;
+}
+
+async function generatePDF() {
+  // Otomatik sıralama aktifse PDF oluşturmadan önce uygula
+  if (document.getElementById('autoSortEnabled').checked && photos.length > 1) {
+    await applyAutoSort();
+  }
+
+  const title = document.getElementById('docTitle').value.trim();
+  const desc = document.getElementById('docDesc').value.trim();
+  const gap = parseFloat(document.getElementById('gapSlider').value);
+  const margin = parseFloat(document.getElementById('marginSlider').value);
+  const bgColorHex = document.getElementById('bgColor').value;
+
+  const titleColorHex = document.getElementById('titleColor').value;
+  const titleSize = parseInt(document.getElementById('titleSize').value) || 22;
+  const titleBold = isActive('titleBold');
+  const titleItalic = isActive('titleItalic');
+
+  const descColorHex = document.getElementById('descColor').value;
+  const descSize = parseInt(document.getElementById('descSize').value) || 10;
+  const descBold = isActive('descBold');
+  const descItalic = isActive('descItalic');
+
+  const labelEnabled = document.getElementById('labelEnabled').checked;
+  const startQuestion = parseInt(document.getElementById('startQuestion').value) || 1;
+  const labelColorHex = document.getElementById('labelColor').value;
+  const labelFontSize = parseInt(document.getElementById('labelSize').value) || 9;
+  const labelBold = isActive('labelBold');
+  const labelItalic = isActive('labelItalic');
+
+  const labelLineH = labelFontSize * 0.352778 + 2;
+
+  const btn = document.getElementById('generateBtn');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+
+  btn.disabled = true;
+  progressWrap.style.display = 'none';
+  const bottomBarProgress = document.getElementById('bottomBarProgress');
+  if (bottomBarProgress) bottomBarProgress.style.display = 'block';
+  const bbi0 = document.getElementById('bottomBarInfo');
+  if (bbi0) bbi0.style.display = 'none';
+
+  const isLandscape = currentOrientation === 'landscape';
+  const pageW = isLandscape ? 297 : 210;
+  const pageH = isLandscape ? 210 : 297;
+  const numCols = currentCols;
+  const colW = (pageW - margin * 2 - gap * (numCols - 1)) / numCols;
+
+  const bgR = parseInt(bgColorHex.slice(1,3),16);
+  const bgG = parseInt(bgColorHex.slice(3,5),16);
+  const bgB = parseInt(bgColorHex.slice(5,7),16);
+
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: currentOrientation });
+
+  const borderEnabled = document.getElementById('borderEnabled').checked;
+  const borderWidth = parseFloat(document.getElementById('borderWidth').value) || 1;
+  const borderColorHex2 = document.getElementById('borderColor').value;
+  const borderRadius = parseFloat(document.getElementById('borderRadius').value) || 3;
+  const borderPadH = parseFloat(document.getElementById('borderPadH').value) || 2;
+  const borderPadV = parseFloat(document.getElementById('borderPadV').value) || 2;
+  const bR = parseInt(borderColorHex2.slice(1,3),16);
+  const bG = parseInt(borderColorHex2.slice(3,5),16);
+  const bB = parseInt(borderColorHex2.slice(5,7),16);
+
+  function drawRoundedRect(x, y, w, h, r) {
+    r = Math.min(r, w/2, h/2);
+    pdf.setDrawColor(bR, bG, bB);
+    pdf.setLineWidth(borderWidth * 0.352778);
+    pdf.roundedRect(x, y, w, h, r, r, 'S');
+  }
+
+  const DPI = 300;
+  const MM_TO_PX = DPI / 25.4;
+
+  function mmToPx(mm) { return Math.round(mm * MM_TO_PX); }
+
+  function drawTextBlock(text, xMm, yMm, fontSizePt, color, bold, italic, maxWidthMm, align) {
+    if (!text || !text.trim()) return 0;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const fontPx = Math.round(fontSizePt * DPI / 72);
+    const maxPx = mmToPx(maxWidthMm);
+    const fontStr = `${italic?'italic ':''} ${bold?'bold ':''} ${fontPx}px Arial, sans-serif`;
+    ctx.font = fontStr;
+
+    const paragraphs = text.split('\n');
+    const lines = [];
+    for (const para of paragraphs) {
+      if (para.trim() === '') { lines.push(''); continue; }
+      const words = para.split(' ');
+      let current = '';
+      for (const w of words) {
+        const test = current ? current + ' ' + w : w;
+        if (ctx.measureText(test).width > maxPx && current) {
+          lines.push(current);
+          current = w;
+        } else {
+          current = test;
+        }
+      }
+      if (current) lines.push(current);
+    }
+
+    const lineHeightPx = Math.round(fontPx * 1.3);
+    const totalH = lines.length * lineHeightPx;
+    canvas.width = maxPx;
+    canvas.height = totalH + 4;
+    ctx.font = fontStr;
+    ctx.fillStyle = color;
+    ctx.textBaseline = 'top';
+    if (align === 'center') {
+      ctx.textAlign = 'center';
+    } else if (align === 'right') {
+      ctx.textAlign = 'right';
+    } else {
+      ctx.textAlign = 'left';
+    }
+    const textX = align === 'center' ? maxPx / 2 : align === 'right' ? maxPx : 0;
+    lines.forEach((line, i) => {
+      ctx.fillText(line, textX, i * lineHeightPx + 2);
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const hMm = (totalH + 4) / MM_TO_PX;
+    pdf.addImage(imgData, 'PNG', xMm, yMm, maxWidthMm, hMm, '', 'FAST');
+    return hMm;
+  }
+
+  function drawTextLine(text, xMm, yMm, fontSizePt, color, bold, italic) {
+    if (!text || !text.trim()) return 0;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const fontPx = Math.round(fontSizePt * DPI / 72);
+    const fontStr = `${italic?'italic ':''} ${bold?'bold ':''} ${fontPx}px Arial, sans-serif`;
+    ctx.font = fontStr;
+    const textW = ctx.measureText(text).width;
+    const hPx = Math.round(fontPx * 1.4);
+    canvas.width = Math.ceil(textW) + 4;
+    canvas.height = hPx;
+    ctx.font = fontStr;
+    ctx.fillStyle = color;
+    ctx.textBaseline = 'top';
+    ctx.fillText(text, 2, 2);
+    const imgData = canvas.toDataURL('image/png');
+    const wMm = canvas.width / MM_TO_PX;
+    const hMm = hPx / MM_TO_PX;
+    pdf.addImage(imgData, 'PNG', xMm, yMm, wMm, hMm, '', 'FAST');
+    return wMm;
+  }
+
+  function hexToRgbStr(hex) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  let isFirstPage = true;
+  const headerPadding = 4;
+
+  function getStudentLineH() {
+    const fs = parseInt(document.getElementById('studentSize').value) || 10;
+    return fs * 0.352778 * 1.2;
+  }
+
+  function drawBackground() {
+    pdf.setFillColor(bgR, bgG, bgB);
+    pdf.rect(0, 0, pageW, pageH, 'F');
+  }
+
+  // --- Filigran ---
+  const watermarkEnabled = document.getElementById('watermarkEnabled').checked;
+  const wmText = document.getElementById('watermarkText').value.trim() || 'FİLİGRAN';
+  const wmFontSize = parseInt(document.getElementById('watermarkSize').value) || 60;
+  const wmOpacity = (parseInt(document.getElementById('watermarkOpacity').value) || 10) / 100;
+  const wmColorHex = document.getElementById('watermarkColor').value;
+  const wmBold = isActive('watermarkBold');
+  const wmItalic = isActive('watermarkItalic');
+  const wmAngleDeg = parseInt(document.getElementById('watermarkAngle').value) || -45;
+  const wmTileX = parseFloat(document.getElementById('watermarkTileX').value) || 70;
+  const wmTileY = parseFloat(document.getElementById('watermarkTileY').value) || 50;
+
+  function drawWatermark(pageNum, totalPages) {
+    if (!watermarkEnabled) return;
+    if (watermarkPages === 'first' && pageNum !== 1) return;
+    if (watermarkPages === 'last' && pageNum !== totalPages) return;
+
+    const DPI2 = 300;
+    const MM2PX = DPI2 / 25.4;
+    const fontPx = Math.round(wmFontSize * DPI2 / 72);
+    const fontStr = `${wmItalic ? 'italic ' : ''}${wmBold ? 'bold ' : ''}${fontPx}px Arial, sans-serif`;
+
+    // Measure text on canvas
+    const measCanvas = document.createElement('canvas');
+    const measCtx = measCanvas.getContext('2d');
+    measCtx.font = fontStr;
+    const textW = measCtx.measureText(wmText).width;
+    const textH = Math.round(fontPx * 1.2);
+    const diagW = Math.ceil(Math.sqrt(textW * textW + textH * textH)) + 20;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = diagW;
+    canvas.height = diagW;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, diagW, diagW);
+    ctx.globalAlpha = wmOpacity;
+    ctx.font = fontStr;
+    ctx.fillStyle = wmColorHex;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    const cx = diagW / 2, cy = diagW / 2;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(wmAngleDeg * Math.PI / 180);
+    ctx.fillText(wmText, 0, 0);
+    ctx.restore();
+
+    const imgData = canvas.toDataURL('image/png');
+    const diagMm = diagW / MM2PX;
+
+    if (watermarkPos === 'center') {
+      const x = (pageW - diagMm) / 2;
+      const y = (pageH - diagMm) / 2;
+      pdf.addImage(imgData, 'PNG', x, y, diagMm, diagMm, '', 'FAST');
+    } else {
+      // Tile
+      for (let ty = -diagMm; ty < pageH + diagMm; ty += wmTileY) {
+        for (let tx = -diagMm; tx < pageW + diagMm; tx += wmTileX) {
+          pdf.addImage(imgData, 'PNG', tx, ty, diagMm, diagMm, '', 'FAST');
+        }
+      }
+    }
+  }
+
+  function drawHeader() {
+    let y = margin;
+    const usableW = pageW - margin * 2;
+    const titleColor = hexToRgbStr(titleColorHex);
+    const descColor = hexToRgbStr(descColorHex);
+
+    if (title) {
+      const h = drawTextBlock(title, margin, y, titleSize, titleColor, titleBold, titleItalic, usableW, titleAlign);
+      y += h + headerPadding;
+    }
+
+    {
+      const fs = parseInt(document.getElementById('studentSize').value) || 10;
+      const studentColor = hexToRgbStr(document.getElementById('studentColor').value);
+      const sBold = isActive('studentBold');
+      const sItalic = isActive('studentItalic');
+      const adW = usableW * 0.52;
+      const sinifW = usableW * 0.26;
+      const pad = 0;
+      const studentLineH = getStudentLineH();
+
+      pdf.setDrawColor(160,160,160);
+      pdf.setLineWidth(0.25);
+      pdf.line(margin, y, margin + usableW, y);
+
+      y += pad;
+
+      drawTextLine('AD SOYAD:', margin, y, fs, studentColor, sBold, sItalic);
+      drawTextLine('SINIF:', margin + adW, y, fs, studentColor, sBold, sItalic);
+      drawTextLine('NO:', margin + adW + sinifW, y, fs, studentColor, sBold, sItalic);
+
+      y += studentLineH;
+
+      pdf.setDrawColor(160,160,160);
+      pdf.setLineWidth(0.25);
+      pdf.line(margin, y, margin + usableW, y);
+
+      y += pad + 0.5;
+    }
+
+    if (desc) {
+      const descColor2 = hexToRgbStr(descColorHex);
+      const h = drawTextBlock(desc, margin, y, descSize, descColor2, descBold, descItalic, usableW, descAlign);
+      y += h + 1;
+    }
+
+    return y + 1;
+  }
+
+  drawBackground();
+  // Filigran ilk sayfa için sayfa sayısı henüz bilinmiyor, sonradan çizilecek
+  let startY = margin;
+  if (isFirstPage) {
+    startY = drawHeader();
+    isFirstPage = false;
+  }
+
+  let colY = Array(numCols).fill(startY);
+  let col = 0;
+
+  const fitEnabled = document.getElementById('fitPagesEnabled').checked;
+  let scaleFactor = 1.0;
+
+  // perPhotoScale[i] = individual scale factor for each photo
+  let perPhotoScale = [];
+
+  // Helper: simulate layout and build photoInfo for stretch pass
+  // Uses shortest-column-first placement for even distribution
+  async function buildPhotoInfo(scl) {
+    const labelH = labelEnabled ? labelLineH : 0;
+    const padV = borderEnabled ? borderPadV : 0;
+    const padH = borderEnabled ? borderPadH : 0;
+    const maxImgW = colW - padH * 2;
+    const usableH = pageH - margin;
+    let sColY = Array(numCols).fill(startY);
+    let sPage = 0;
+    const info = [];
+
+    for (let i = 0; i < photos.length; i++) {
+      const sc = Math.min(photos[i].spanCols || 1, numCols);
+      const isSp = sc > 1;
+      const effW = isSp ? colW * sc + gap * (sc - 1) - padH * 2 : maxImgW;
+      const imgRatio = imgRatios[i];
+      const imgW = effW * scl;
+      const imgH = imgW * imgRatio;
+      const blockH = imgH + labelH + padV * 2;
+      const clamped = Math.min(blockH, usableH - margin);
+
+      if (isSp) {
+        // For span: find leftmost valid start position, align spanned cols to max Y
+        let startCol = 0;
+        while (startCol + sc > numCols) startCol = 0;
+        const maxY = Math.max(...sColY.slice(startCol, startCol + sc));
+        for (let c = startCol; c < startCol + sc; c++) sColY[c] = maxY;
+        if (sColY[startCol] + clamped > usableH) {
+          sPage++; sColY = Array(numCols).fill(margin); startCol = 0;
+          const maxY2 = Math.max(...sColY.slice(0, sc));
+          for (let c = 0; c < sc; c++) sColY[c] = maxY2;
+        }
+        const yB = sColY[startCol];
+        const newY = yB + clamped + gap;
+        for (let c = startCol; c < startCol + sc; c++) sColY[c] = newY;
+        info.push({ page: sPage, col: startCol, yBefore: yB, isSpan: true, spanCols: sc });
+      } else {
+        // Shortest-column-first: pick the column with the lowest Y that can fit the block
+        // Try columns in order of ascending Y, place in first that fits
+        let bestCol = -1;
+        // Sort columns by current Y
+        const colOrder = Array.from({length: numCols}, (_, c) => c)
+          .sort((a, b) => sColY[a] - sColY[b]);
+
+        for (const c of colOrder) {
+          if (sColY[c] + clamped <= usableH) {
+            bestCol = c;
+            break;
+          }
+        }
+
+        if (bestCol === -1) {
+          // All columns full → new page
+          sPage++; sColY = Array(numCols).fill(margin);
+          bestCol = 0;
+        }
+
+        const yB = sColY[bestCol];
+        sColY[bestCol] += clamped + gap;
+        info.push({ page: sPage, col: bestCol, yBefore: yB, isSpan: false, spanCols: 1 });
+      }
+    }
+    return info;
+  }
+
+  // Collect image ratios (needed for both modes)
+  const imgRatios = [];
+  for (let i = 0; i < photos.length; i++) {
+    const info = await getImageDimensions(photos[i].dataUrl);
+    imgRatios.push(info.height / info.width);
+  }
+
+  if (fitEnabled && photos.length > 0) {
+    // Simulate layout at a given uniform scale, returns page count
+    // Uses shortest-column-first for balanced distribution
+    function simulateLayout(scale) {
+      const labelH = labelEnabled ? labelLineH : 0;
+      const padV = borderEnabled ? borderPadV : 0;
+      const padH = borderEnabled ? borderPadH : 0;
+      const maxImgW = colW - padH * 2;
+      const usableH = pageH - margin;
+      let simColY = Array(numCols).fill(startY);
+      let simPages = 1;
+
+      for (let i = 0; i < photos.length; i++) {
+        const spanCols = Math.min(photos[i].spanCols || 1, numCols);
+        const isSpan = spanCols > 1;
+        const effectiveW = isSpan ? colW * spanCols + gap * (spanCols - 1) - padH * 2 : maxImgW;
+        const imgW = effectiveW * scale;
+        const imgH = imgW * imgRatios[i];
+        const totalBlockH = imgH + labelH + padV * 2;
+        const clampedBlockH = Math.min(totalBlockH, usableH - margin);
+
+        if (isSpan) {
+          let startCol = 0;
+          while (startCol + spanCols > numCols) startCol = 0;
+          const maxY = Math.max(...simColY.slice(startCol, startCol + spanCols));
+          for (let c = startCol; c < startCol + spanCols; c++) simColY[c] = maxY;
+          if (simColY[startCol] + clampedBlockH > usableH) {
+            simPages++;
+            simColY = Array(numCols).fill(margin);
+            startCol = 0;
+          }
+          const newY = simColY[startCol] + clampedBlockH + gap;
+          for (let c = startCol; c < startCol + spanCols; c++) simColY[c] = newY;
+        } else {
+          // Shortest-column-first
+          const colOrder = Array.from({length: numCols}, (_, c) => c)
+            .sort((a, b) => simColY[a] - simColY[b]);
+          let bestCol = -1;
+          for (const c of colOrder) {
+            if (simColY[c] + clampedBlockH <= usableH) { bestCol = c; break; }
+          }
+          if (bestCol === -1) {
+            simPages++;
+            simColY = Array(numCols).fill(margin);
+            bestCol = 0;
+          }
+          simColY[bestCol] += clampedBlockH + gap;
+        }
+      }
+      return simPages;
+    }
+
+    // Find minimum uniform scale that fits within target pages
+    if (simulateLayout(1.0) <= fitPagesTarget) {
+      scaleFactor = 1.0;
+    } else {
+      let lo = 0.05, hi = 1.0;
+      for (let iter = 0; iter < 18; iter++) {
+        const mid = (lo + hi) / 2;
+        if (simulateLayout(mid) <= fitPagesTarget) lo = mid;
+        else hi = mid;
+      }
+      scaleFactor = lo;
+    }
+  }
+
+  // --- Smart space-filling: stretch last photo in each column to fill gap ---
+  // Runs in BOTH fit mode and normal mode
+  let visualOrder = [];
+  let allPhotoInfo = [];
+  if (photos.length > 0) {
+    const padH = borderEnabled ? borderPadH : 0;
+    const padV = borderEnabled ? borderPadV : 0;
+    const labelH = labelEnabled ? labelLineH : 0;
+    const maxImgW = colW - padH * 2;
+    const usableH = pageH - margin;
+
+    perPhotoScale = new Array(photos.length).fill(scaleFactor);
+    allPhotoInfo = await buildPhotoInfo(scaleFactor);
+    const photoInfo = allPhotoInfo;
+
+    // Compute visual order: sort photos by (page, col, yBefore) → reading order
+    visualOrder = new Array(photos.length);
+    const sortedIndices = Array.from({length: photos.length}, (_, i) => i)
+      .sort((a, b) => {
+        const pa = photoInfo[a], pb = photoInfo[b];
+        if (pa.page !== pb.page) return pa.page - pb.page;
+        if (pa.col !== pb.col) return pa.col - pb.col;
+        return pa.yBefore - pb.yBefore;
+      });
+    sortedIndices.forEach((photoIdx, rank) => { visualOrder[photoIdx] = rank; });
+
+    // --- Full space filling: each photo fills all available space in its slot ---
+    // For each photo, the available height is from yBefore to either:
+    //   - the yBefore of the next photo in the same (page, col), or
+    //   - usableH if it's the last in its column
+    // We grow the photo to fill that entire space (capped at scale 1.0)
+    for (let i = 0; i < photos.length; i++) {
+      const info = photoInfo[i];
+      if (info.isSpan) continue;
+
+      // Find next photo in same (page, col)
+      let slotBottom = usableH; // default: bottom of page
+      for (let j = 0; j < photos.length; j++) {
+        if (j === i) continue;
+        const jInfo = photoInfo[j];
+        if (!jInfo.isSpan && jInfo.page === info.page && jInfo.col === info.col && jInfo.yBefore > info.yBefore) {
+          if (jInfo.yBefore < slotBottom) slotBottom = jInfo.yBefore;
+        }
+      }
+
+      // Available height for image = slot - label - padding - gap
+      const availH = slotBottom - info.yBefore - labelH - padV * 2 - gap;
+      if (availH > 4) {
+        const newImgW = availH / imgRatios[i];
+        const newScale = newImgW / maxImgW;
+        perPhotoScale[i] = Math.min(1.0, Math.max(scaleFactor, newScale));
+      }
+    }
+  }
+
+  let currentPageNum = 1;
+
+  function drawDividerLines(pageNum, bottomY) {
+    if (!dividerRules || dividerRules.length === 0) return;
+    const rules = dividerRules.filter(r => r.page === pageNum);
+    if (rules.length === 0) return;
+
+    const padV = borderEnabled ? borderPadV : 0;
+    const labelH = labelEnabled ? labelLineH : 0;
+    const lineBottomY = (bottomY !== undefined) ? bottomY : pageH - margin;
+
+    rules.forEach(r => {
+      const afterCol = Math.min(r.afterCol, numCols - 1);
+      if (afterCol < 1) return;
+
+      const x = margin + afterCol * (colW + gap) - gap / 2;
+      const lw = (r.width || 0.5) * 0.352778;
+      const cr = parseInt(r.color.slice(1,3),16);
+      const cg = parseInt(r.color.slice(3,5),16);
+      const cb = parseInt(r.color.slice(5,7),16);
+      pdf.setDrawColor(cr, cg, cb);
+      pdf.setLineWidth(lw);
+      if (r.style === 'dashed') pdf.setLineDashPattern([2, 2], 0);
+      else if (r.style === 'dotted') pdf.setLineDashPattern([0.5, 1.5], 0);
+      else pdf.setLineDashPattern([], 0);
+
+      const lineTopY = (pageNum === 1) ? startY : margin;
+
+      // Collect blocked Y ranges: span photos on this page that cross the afterCol boundary
+      const blocked = [];
+      allPhotoInfo.forEach((info, idx) => {
+        if (!info.isSpan) return;
+        if (info.page !== pageNum - 1) return;
+        const sc = info.spanCols;
+        const startColOfSpan = info.col;
+        const endColOfSpan = info.col + sc - 1;
+        if (startColOfSpan <= afterCol - 1 && endColOfSpan >= afterCol) {
+          const padH2 = borderEnabled ? borderPadH : 0;
+          const effW = colW * sc + gap * (sc - 1) - padH2 * 2;
+          const imgW = effW * (perPhotoScale[idx] || scaleFactor);
+          const imgH = imgW * imgRatios[idx];
+          const blockH = imgH + labelH + padV * 2;
+          blocked.push({ y1: info.yBefore, y2: info.yBefore + blockH });
+        }
+      });
+
+      blocked.sort((a, b) => a.y1 - b.y1);
+
+      let currentY = lineTopY;
+      for (const b of blocked) {
+        const segEnd = Math.min(b.y1, lineBottomY);
+        if (currentY < segEnd) pdf.line(x, currentY, x, segEnd);
+        currentY = Math.max(currentY, b.y2);
+        if (currentY >= lineBottomY) break;
+      }
+      if (currentY < lineBottomY) pdf.line(x, currentY, x, lineBottomY);
+
+      pdf.setLineDashPattern([], 0);
+    });
+  }
+
+  for (let i = 0; i < photos.length; i++) {
+    progressLabel.textContent = `Soru ${i+1} / ${photos.length} işleniyor...`;
+    progressFill.style.width = ((i / photos.length) * 90) + '%';
+
+    const photo = photos[i];
+    const spanCols = Math.min(photo.spanCols || 1, numCols);
+    const isSpan = spanCols > 1;
+
+    const imgInfo = await getImageDimensions(photo.dataUrl);
+    const ratio = imgRatios[i] || (imgInfo.height / imgInfo.width);
+    const padH = borderEnabled ? borderPadH : 0;
+    const padV = borderEnabled ? borderPadV : 0;
+    const maxImgW = colW - padH * 2;
+    const spanImgW = colW * spanCols + gap * (spanCols - 1) - padH * 2;
+    const effectiveImgW = isSpan ? spanImgW : maxImgW;
+    const blockW = isSpan ? colW * spanCols + gap * (spanCols - 1) : colW;
+    const labelH = labelEnabled ? labelLineH : 0;
+    const usableH = pageH - margin;
+
+    // Use per-photo scale for placement — matches actual rendered size
+    const myScale = (perPhotoScale.length > i) ? perPhotoScale[i] : scaleFactor;
+    const photoScaleBase = isSpan ? scaleFactor : myScale;
+    const imgWcheck = effectiveImgW * photoScaleBase;
+    const imgHcheck = imgWcheck * ratio;
+    const blockHcheck = Math.min(imgHcheck + labelH + padV * 2, usableH - margin);
+
+    function addNewPage() {
+      drawDividerLines(currentPageNum);
+      if (document.getElementById('nextPageEnabled').checked) {
+        const npSize = parseInt(document.getElementById('nextPageSize').value) || 9;
+        const npOffset = parseFloat(document.getElementById('nextPageOffsetSlider').value) || 8;
+        const npColor = 'rgb(80,80,80)';
+        const npLineH = npSize * 0.352778 * 1.4;
+        const npY = pageH - margin - npOffset - npLineH;
+        drawTextBlock('Diğer sayfaya geçiniz…', margin, npY, npSize, npColor, false, true, pageW - margin * 2, nextPageAlign);
+      }
+      pdf.addPage();
+      drawBackground();
+      currentPageNum++;
+      colY = Array(numCols).fill(margin);
+      col = 0;
+    }
+
+    // --- Placement: shortest-column-first for balanced distribution ---
+    if (isSpan) {
+      // For span: find leftmost valid start, align spanned cols to max Y
+      while (col + spanCols > numCols) col = 0;
+      const maxY = Math.max(...colY.slice(col, col + spanCols));
+      for (let c = col; c < col + spanCols; c++) colY[c] = maxY;
+      if (colY[col] + blockHcheck > usableH) {
+        addNewPage();
+        col = 0;
+      }
+    } else {
+      // Pick shortest column that can fit the block
+      const colOrder = Array.from({length: numCols}, (_, c) => c)
+        .sort((a, b) => colY[a] - colY[b]);
+      let bestCol = -1;
+      for (const c of colOrder) {
+        if (colY[c] + blockHcheck <= usableH) { bestCol = c; break; }
+      }
+      if (bestCol === -1) {
+        addNewPage();
+        col = 0;
+      } else {
+        col = bestCol;
+      }
+    }
+
+    // --- Compute actual image size ---
+    // perPhotoScale is always populated (fit or no-fit), use it for smart stretch
+    let imgW, imgH;
+    {
+      const myScale = (perPhotoScale.length > i) ? perPhotoScale[i] : scaleFactor;
+      imgW = effectiveImgW * myScale;
+      imgH = imgW * ratio;
+      // Safety: never overflow usable page height
+      const maxH = usableH - colY[col] - labelH - padV * 2;
+      if (imgH > maxH && maxH > 5) {
+        imgH = maxH;
+        imgW = imgH / ratio;
+      }
+    }
+    const totalBlockH = imgH + labelH + padV * 2;
+
+    const xPosActual = margin + col * (colW + gap);
+    let yPos = colY[col];
+
+    let alignOffsetX = 0;
+    if (!isSpan) {
+      if (photoAlign === 'center') alignOffsetX = (maxImgW - imgW) / 2;
+      else if (photoAlign === 'right') alignOffsetX = maxImgW - imgW;
+    }
+
+    if (borderEnabled) {
+      drawRoundedRect(xPosActual, yPos, blockW, totalBlockH, borderRadius);
+    }
+
+    yPos += padV;
+    const imgX = xPosActual + padH + alignOffsetX;
+
+    if (labelEnabled) {
+      const showNum = document.getElementById('labelShowNumber') ? document.getElementById('labelShowNumber').checked : true;
+      const qNum = startQuestion + (visualOrder.length > i ? visualOrder[i] : i);
+      const pts = photo.points ?? 0;
+      const labelText = showNum ? `SORU ${qNum}   (${pts} Puan)` : `SORU ……   (${pts} Puan)`;
+      const labelColor = hexToRgbStr(labelColorHex);
+      const labelTextAlign = labelAlign === 'center' ? 'center' : labelAlign === 'right' ? 'right' : 'left';
+      drawTextBlock(labelText, xPosActual + padH, yPos, labelFontSize, labelColor, labelBold, labelItalic, blockW - padH * 2, labelTextAlign);
+      yPos += labelLineH;
+    }
+
+    try {
+      const fmt = getImageFormat(photo.dataUrl);
+      pdf.addImage(photo.dataUrl, fmt, imgX, yPos, imgW, imgH, '', 'FAST');
+    } catch(e) {
+      pdf.addImage(photo.dataUrl, 'JPEG', imgX, yPos, imgW, imgH, '', 'FAST');
+    }
+
+    if (isSpan) {
+      const newY = colY[col] + totalBlockH + gap;
+      for (let c = col; c < col + spanCols; c++) colY[c] = newY;
+      // col stays at current position; next non-span will pick shortest column
+    } else {
+      colY[col] += totalBlockH + gap;
+    }
+  } // end for loop
+
+  // Son sayfaya çizgileri çiz (footer varsa onun üstüne kadar)
+  const footerTextVal = document.getElementById('footerText').value.trim();
+  let lastPageLineBottom = pageH - margin;
+  if (footerTextVal) {
+    const footerFontSize2 = parseInt(document.getElementById('footerSize').value) || 10;
+    const footerLineH2 = footerFontSize2 * 0.352778 * 1.4;
+    const footerOffset2 = parseFloat(document.getElementById('footerOffsetSlider').value) || 8;
+    lastPageLineBottom = pageH - margin - footerOffset2 - footerLineH2 - 1;
+  }
+  drawDividerLines(currentPageNum, lastPageLineBottom);
+
+  // Son sayfaya alt metin (footer) ekle
+  const footerText = document.getElementById('footerText').value.trim();
+  if (footerText) {
+    const footerFontSize = parseInt(document.getElementById('footerSize').value) || 10;
+    const footerColorHex = document.getElementById('footerColor').value;
+    const footerBoldOn = isActive('footerBold');
+    const footerItalicOn = isActive('footerItalic');
+    const footerColorStr = hexToRgbStr(footerColorHex);
+    const usableW = pageW - margin * 2;
+    const footerLineH = footerFontSize * 0.352778 * 1.4;
+    const footerOffset = parseFloat(document.getElementById('footerOffsetSlider').value) || 8;
+    const footerY = pageH - margin - footerOffset - footerLineH;
+    drawTextBlock(footerText, margin, footerY, footerFontSize, footerColorStr, footerBoldOn, footerItalicOn, usableW, footerAlign);
+  }
+
+  // Filigranları tüm sayfalara ekle (setPage ile geriye dönerek)
+  if (watermarkEnabled) {
+    const totalPages = currentPageNum;
+    for (let p = 1; p <= totalPages; p++) {
+      pdf.setPage(p);
+      drawWatermark(p, totalPages);
+    }
+  }
+
+  progressFill.style.width = '100%';
+  progressLabel.textContent = '✅ PDF hazır!';
+
+  var safeName = 'sebasmobil-sinav';
+
+  // Blob URL — URL.createObjectURL desteklenmiyorsa null kalır
+  var blobUrl = null;
+  try {
+    if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+      var pdfBlob = pdf.output('blob');
+      blobUrl = URL.createObjectURL(pdfBlob);
+    }
+  } catch(e) { blobUrl = null; }
+
+  window.__pdfBlobUrl = blobUrl;
+
+  // Güvenli kapat — global fonksiyon olarak tanımlanıyor (iOS/Safari/Opera uyumu)
+  window.__closePdfOverlay = function() {
+    var el = document.getElementById('pdfOverlay');
+    if (el) el.remove();
+    try {
+      if (window.__pdfBlobUrl) {
+        URL.revokeObjectURL(window.__pdfBlobUrl);
+        window.__pdfBlobUrl = null;
+      }
+    } catch(e) {}
+  };
+
+  // İndirme bağlantısı: blob URL yoksa jsPDF data URI kullan
+  var downloadHref = blobUrl;
+  if (!downloadHref) {
+    try { downloadHref = pdf.output('datauristring'); } catch(e) { downloadHref = '#'; }
+  }
+
+  // Önizleme alanı: blob URL varsa iframe, yoksa bilgilendirme
+  var previewHtml;
+  if (blobUrl) {
+    previewHtml = '<iframe src="' + blobUrl + '" style="-webkit-flex:1;flex:1;border:none;width:100%;min-height:0;" allowfullscreen></iframe>';
+  } else {
+    previewHtml = '<div style="-webkit-flex:1;flex:1;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;color:#aaa;font-size:0.9rem;text-align:center;padding:20px;">PDF \u00f6nizleme bu taray\u0131c\u0131da desteklenmiyor.<br>\u2B07 \u0130ndir butonunu kullan\u0131n.</div>';
+  }
+
+  var overlay = document.createElement('div');
+  overlay.id = 'pdfOverlay';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.right = '0';
+  overlay.style.bottom = '0';
+  overlay.style.left = '0';
+  overlay.style.background = '#111';
+  overlay.style.zIndex = '9999';
+  overlay.style.display = '-webkit-flex';
+  overlay.style.display = 'flex';
+  overlay.style.webkitFlexDirection = 'column';
+  overlay.style.flexDirection = 'column';
+  overlay.style.fontFamily = 'sans-serif';
+
+  var topBar = document.createElement('div');
+  topBar.style.cssText = 'background:#222;padding:14px 18px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-shrink:0;flex-shrink:0;';
+
+  var closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '&#x2715;';
+  closeBtn.style.cssText = 'background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer;padding:4px;';
+  closeBtn.onclick = function() { window.__closePdfOverlay(); };
+
+  var nameSpan = document.createElement('span');
+  nameSpan.style.cssText = 'color:#fff;font-size:0.9rem;-webkit-flex:1;flex:1;padding:0 10px;';
+  nameSpan.textContent = '\uD83D\uDCC4 ' + safeName + '.pdf';
+
+  var dlBtn = document.createElement('a');
+  dlBtn.href = downloadHref;
+  dlBtn.download = safeName + '.pdf';
+  dlBtn.style.cssText = 'background:#f59e0b;color:#000;padding:10px 18px;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;white-space:nowrap;';
+  dlBtn.textContent = '\u2B07 \u0130ndir';
+
+  topBar.appendChild(closeBtn);
+  topBar.appendChild(nameSpan);
+  topBar.appendChild(dlBtn);
+
+  var infoBar = document.createElement('div');
+  infoBar.style.cssText = 'background:#333;color:#ccc;font-size:0.78rem;padding:10px 18px;text-align:center;line-height:1.6;-webkit-flex-shrink:0;flex-shrink:0;';
+  infoBar.innerHTML = '<b>iPhone:</b> \u2B07 \u0130ndir \u2192 Payla\u015f (\u25A1\u2191) \u2192 <b>Dosyalara Kaydet</b>';
+
+  overlay.appendChild(topBar);
+  overlay.appendChild(infoBar);
+
+  var previewEl = document.createElement('div');
+  previewEl.style.cssText = '-webkit-flex:1;flex:1;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;min-height:0;';
+  previewEl.innerHTML = previewHtml;
+  overlay.appendChild(previewEl);
+
+  document.body.appendChild(overlay);
+
+  setTimeout(function() {
+    progressWrap.style.display = 'none';
+    progressFill.style.width = '0%';
+    btn.disabled = false;
+    const bbp = document.getElementById('bottomBarProgress');
+    if (bbp) bbp.style.display = 'none';
+    const bbi = document.getElementById('bottomBarInfo');
+    if (bbi) bbi.style.display = '';
+    updateStats();
+  }, 1500);
+}
+
+function getImageDimensions(dataUrl) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.src = dataUrl;
+  });
+}
+
+function getImageFormat(dataUrl) {
+  if (dataUrl.includes('data:image/png')) return 'PNG';
+  if (dataUrl.includes('data:image/webp')) return 'WEBP';
+  return 'JPEG';
+}
+
+</script>
+<!-- ===== AKILLI HATA AYIKLAYICI ===== -->
+<style>
+  #debugOverlay {
+    display: none;
+    position: fixed; top:0; right:0; bottom:0; left:0; z-index: 99999;
+    background: rgba(0,0,0,0.75);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    -webkit-align-items: center; align-items: center;
+    -webkit-justify-content: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    animation: debugFadeIn 0.2s ease;
+  }
+  #debugOverlay.visible { display: -webkit-flex; display: flex; }
+  @keyframes debugFadeIn { from { opacity:0; transform:scale(0.97); } to { opacity:1; transform:scale(1); } }
+  #debugPanel {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    width: min(680px, 96vw);
+    max-height: 85vh;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  }
+  #debugHeader {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px 20px;
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    flex-shrink: 0;
+  }
+  #debugHeader .debug-icon { font-size: 1.3rem; }
+  #debugHeader .debug-title {
+    font-size: 0.95rem; font-weight: 700; color: #f87171;
+    flex: 1;
+  }
+  #debugHeader .debug-close {
+    background: none; border: none; color: #64748b;
+    cursor: pointer; font-size: 1.3rem; padding: 2px 6px;
+    border-radius: 6px; line-height: 1;
+    transition: color 0.15s, background 0.15s;
+  }
+  #debugHeader .debug-close:hover { color: #fff; background: #334155; }
+  #debugBody { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+
+  .debug-section { display: flex; flex-direction: column; gap: 6px; }
+  .debug-label {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #64748b;
+  }
+
+  .debug-error-box {
+    background: rgba(248,113,113,0.1);
+    border: 1px solid rgba(248,113,113,0.35);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .debug-error-message {
+    font-size: 0.92rem; font-weight: 600; color: #fca5a5;
+    line-height: 1.5; word-break: break-word;
+  }
+
+  .debug-meta-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .debug-meta-item {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .debug-meta-key { font-size: 0.72rem; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .debug-meta-val { font-size: 0.88rem; color: #e2e8f0; font-weight: 600; word-break: break-all; }
+
+  .debug-source-box {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 10px; overflow: hidden;
+  }
+  .debug-source-header {
+    padding: 8px 14px; font-size: 0.72rem; color: #64748b;
+    border-bottom: 1px solid #1e293b; background: #0f172a;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .debug-source-lines { padding: 8px 0; }
+  .debug-source-line {
+    display: flex; gap: 0; align-items: stretch;
+    font-size: 0.8rem; line-height: 1.7;
+  }
+  .debug-source-line.error-line { background: rgba(248,113,113,0.12); }
+  .debug-line-num {
+    min-width: 48px; text-align: right; padding: 0 12px 0 8px;
+    color: #475569; user-select: none; flex-shrink: 0;
+    font-family: monospace;
+  }
+  .debug-source-line.error-line .debug-line-num { color: #f87171; font-weight: 700; }
+  .debug-line-code { color: #94a3b8; font-family: monospace; padding-right: 12px; white-space: pre-wrap; word-break: break-all; }
+  .debug-source-line.error-line .debug-line-code { color: #fca5a5; }
+
+  .debug-explain-box {
+    background: rgba(56,189,248,0.08);
+    border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 10px; padding: 14px 16px;
+    font-size: 0.88rem; color: #bae6fd;
+    line-height: 1.6;
+  }
+  .debug-explain-box strong { color: #38bdf8; }
+
+  .debug-stack-box {
+    background: #020617; border: 1px solid #1e293b;
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 0.75rem; color: #475569; font-family: monospace;
+    white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto;
+  }
+  .debug-footer {
+    padding: 12px 20px; border-top: 1px solid #1e293b;
+    display: flex; gap: 8px; flex-shrink: 0;
+    background: #0f172a;
+  }
+  .debug-btn {
+    padding: 8px 16px; border-radius: 8px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+    font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+  }
+  .debug-btn:hover { opacity: 0.85; }
+  .debug-btn-copy { background: #334155; color: #e2e8f0; }
+  .debug-btn-close { background: #38bdf8; color: #0f172a; }
+  .debug-copy-ok { font-size: 0.78rem; color: #4ade80; align-self: center; opacity: 0; transition: opacity 0.3s; }
+  .debug-copy-ok.show { opacity: 1; }
+</style>
+
+<div id="debugOverlay" role="dialog" aria-modal="true" aria-label="Hata Ayıklayıcı">
+  <div id="debugPanel">
+    <div id="debugHeader">
+      <span class="debug-icon">🐛</span>
+      <span class="debug-title">Akıllı Hata Ayıklayıcı</span>
+      <button class="debug-close" onclick="closeDebugger()" title="Kapat">✕</button>
+    </div>
+    <div id="debugBody">
+      <!-- dinamik içerik -->
+    </div>
+    <div class="debug-footer">
+      <button class="debug-btn debug-btn-copy" onclick="copyDebugInfo()">📋 Kopyala</button>
+      <span class="debug-copy-ok" id="debugCopyOk">✓ Kopyalandı</span>
+      <button class="debug-btn debug-btn-close" style="margin-left:auto;" onclick="closeDebugger()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ---- Açıklama üretici ----
+  function explainError(msg, type) {
+    const m = (msg || '').toLowerCase();
+    if (m.includes('cannot read prop') || m.includes('cannot read properties') || m.includes('null') || m.includes('undefined')) {
+      return '<strong>Ne anlama geliyor?</strong> Kod, henüz yüklenmemiş veya var olmayan bir elemana/değişkene erişmeye çalışıyor. Sayfanın tam yüklenmeden önce bir script çalışıyor olabilir ya da beklenen bir HTML elementi bulunamıyor.';
+    }
+    if (m.includes('is not a function')) {
+      return '<strong>Ne anlama geliyor?</strong> Bir fonksiyon olması beklenen değer, aslında fonksiyon değil. Yanlış isim, yanlış kapsam veya henüz tanımlanmamış bir fonksiyon çağrılmış olabilir.';
+    }
+    if (m.includes('is not defined')) {
+      return '<strong>Ne anlama geliyor?</strong> Kullanılmaya çalışılan değişken veya fonksiyon hiç tanımlanmamış. Yazım hatası ya da farklı bir dosyada/kapsamda tanımlı olabilir.';
+    }
+    if (m.includes('syntaxerror') || type === 'SyntaxError') {
+      return '<strong>Ne anlama geliyor?</strong> Kodda yazım/sözdizimi hatası var. Eksik parantez, virgül veya tırnak işareti olabilir.';
+    }
+    if (m.includes('typeerror') || type === 'TypeError') {
+      return '<strong>Ne anlama geliyor?</strong> Yanlış türde bir değer kullanılmış. Örneğin sayı beklenirken metin gelmiş ya da nesne yerine null/undefined gelmiş olabilir.';
+    }
+    if (m.includes('rangeerror') || type === 'RangeError') {
+      return '<strong>Ne anlama geliyor?</strong> Bir değer geçerli aralığın dışına çıktı. Sonsuz döngü, çok derin özyineleme veya geçersiz sayısal işlem olabilir.';
+    }
+    if (m.includes('referenceerror') || type === 'ReferenceError') {
+      return '<strong>Ne anlama geliyor?</strong> Var olmayan bir değişkene referans verilmiş. Kapsam (scope) sorunları veya yazım hatası olabilir.';
+    }
+    if (m.includes('network') || m.includes('fetch') || m.includes('load')) {
+      return '<strong>Ne anlama geliyor?</strong> Ağ veya kaynak yükleme hatası. İnternet bağlantısı, CORS politikası veya yanlış URL olabilir.';
+    }
+    return '<strong>Ne anlama geliyor?</strong> Beklenmedik bir JavaScript hatası oluştu. Detaylar için hata mesajı ve yığın izini inceleyiniz.';
+  }
+
+  // ---- Satır göstericisi ----
+  function buildSourceView(url, lineNo, colNo) {
+    // Inline script için — sadece satır numarası göster
+    const html = document.documentElement.outerHTML;
+    const lines = html.split('\n');
+    if (!lineNo || lineNo < 1) return null;
+
+    const ctx = 4; // kaç satır önce/sonra
+    const start = Math.max(0, lineNo - ctx - 1);
+    const end = Math.min(lines.length - 1, lineNo + ctx - 1);
+
+    let out = '';
+    for (let i = start; i <= end; i++) {
+      const isErr = (i === lineNo - 1);
+      const code = lines[i]
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      out += `<div class="debug-source-line${isErr?' error-line':''}">
+        <span class="debug-line-num">${i+1}${isErr?' ◀':''}</span>
+        <span class="debug-line-code">${code || ' '}</span>
+      </div>`;
+    }
+    return out;
+  }
+
+  // ---- Hata yakalama ----
+  window.__debugErrors = [];
+
+  window.onerror = function(message, source, lineno, colno, error) {
+    // Safari'nin paylaşım / cross-origin hatalarını yoksay
+    if (!message || message === 'Script error.' || message === 'Script error') return false;
+    if (!lineno && !colno && !error) return false;
+    const info = {
+      message: message || 'Bilinmeyen hata',
+      type: error ? error.name : 'Error',
+      source: source || 'inline',
+      lineno: lineno || 0,
+      colno: colno || 0,
+      stack: error ? (error.stack || '') : '',
+      time: new Date().toLocaleTimeString('tr-TR')
+    };
+    window.__debugErrors.push(info);
+    showDebugger(info);
+    return false;
+  };
+
+  window.addEventListener('unhandledrejection', function(e) {
+    const err = e.reason;
+    const info = {
+      message: err ? (err.message || String(err)) : 'Promise reddedildi',
+      type: err ? (err.name || 'UnhandledPromiseRejection') : 'UnhandledPromiseRejection',
+      source: 'Promise',
+      lineno: 0, colno: 0,
+      stack: err ? (err.stack || '') : '',
+      time: new Date().toLocaleTimeString('tr-TR')
+    };
+    window.__debugErrors.push(info);
+    showDebugger(info);
+  });
+
+  window.showDebugger = function(info) {
+    const overlay = document.getElementById('debugOverlay');
+    const body = document.getElementById('debugBody');
+    if (!overlay || !body) return;
+
+    const srcLines = buildSourceView(info.source, info.lineno, info.colno);
+    const explain = explainError(info.message, info.type);
+    const srcLabel = info.source === 'inline' ? 'Bu dosya (inline script)' : info.source;
+    const isInline = !info.source || info.source === 'inline' || info.source.includes(location.hostname) || info.source.startsWith('blob:');
+
+    body.innerHTML = `
+      <div class="debug-section">
+        <div class="debug-label">Hata Mesajı</div>
+        <div class="debug-error-box">
+          <div class="debug-error-message">${info.type ? '<span style="color:#fb923c;">['+info.type+']</span> ' : ''}${(info.message||'').replace(/</g,'&lt;')}</div>
+        </div>
+      </div>
+
+      <div class="debug-section">
+        <div class="debug-label">Konum Bilgisi</div>
+        <div class="debug-meta-grid">
+          <div class="debug-meta-item">
+            <div class="debug-meta-key">Satır</div>
+            <div class="debug-meta-val">${info.lineno || '—'}</div>
+          </div>
+          <div class="debug-meta-item">
+            <div class="debug-meta-key">Sütun</div>
+            <div class="debug-meta-val">${info.colno || '—'}</div>
+          </div>
+          <div class="debug-meta-item" style="grid-column:span 2;">
+            <div class="debug-meta-key">Kaynak</div>
+            <div class="debug-meta-val" style="font-size:0.78rem;">${srcLabel}</div>
+          </div>
+        </div>
+      </div>
+
+      ${srcLines && isInline ? `
+      <div class="debug-section">
+        <div class="debug-label">Kaynak Kod (Satır ${info.lineno})</div>
+        <div class="debug-source-box">
+          <div class="debug-source-header">
+            <span>◀ hata satırı işaretli</span>
+            <span>Satır ${info.lineno}, Sütun ${info.colno}</span>
+          </div>
+          <div class="debug-source-lines">${srcLines}</div>
+        </div>
+      </div>` : ''}
+
+      <div class="debug-section">
+        <div class="debug-label">Açıklama</div>
+        <div class="debug-explain-box">${explain}</div>
+      </div>
+
+      ${info.stack ? `
+      <div class="debug-section">
+        <div class="debug-label">Yığın İzi (Stack Trace)</div>
+        <div class="debug-stack-box">${info.stack.replace(/</g,'&lt;')}</div>
+      </div>` : ''}
+    `;
+
+    overlay.classList.add('visible');
+  };
+
+  window.closeDebugger = function() {
+    document.getElementById('debugOverlay').classList.remove('visible');
+  };
+
+  window.copyDebugInfo = function() {
+    const body = document.getElementById('debugBody');
+    const text = body ? body.innerText : '';
+    const showOk = function() {
+      const el = document.getElementById('debugCopyOk');
+      if (el) { el.classList.add('show'); setTimeout(function() { el.classList.remove('show'); }, 2000); }
+    };
+    // Modern clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showOk).catch(function() { fallbackCopy(text, showOk); });
+    } else {
+      fallbackCopy(text, showOk);
+    }
+  };
+
+  function fallbackCopy(text, cb) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (cb) cb();
+    } catch(e) {}
+  }
+
+  // Overlay dışına tıklayınca kapat
+  document.getElementById('debugOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeDebugger();
+  });
+
+  // ESC ile kapat
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDebugger();
+  });
+
+  // Geliştirici erişimi: window.debugTest() ile test
+  window.debugTest = function() {
+    window.showDebugger({
+      message: "Cannot read properties of null (reading 'value')",
+      type: 'TypeError', source: 'inline',
+      lineno: 42, colno: 18,
+      stack: 'TypeError: Cannot read properties of null\n    at generatePDF (s-sinav.html:42:18)\n    at HTMLButtonElement.onclick (s-sinav.html:893:1)',
+      time: new Date().toLocaleTimeString('tr-TR')
+    });
+  };
+})();
+</script>
+
+</body>
+</html>
