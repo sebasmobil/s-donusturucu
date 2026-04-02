@@ -743,9 +743,155 @@
     width: 12px; height: 12px; border-radius: 50%;
     border: 1px solid rgba(0,0,0,0.15); flex-shrink: 0;
   }
+  /* ── Yenilikler Modalı ── */
+  .cl-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.6);
+    display: flex; align-items: flex-end;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .cl-overlay.visible { opacity: 1; pointer-events: all; }
+  .cl-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    width: 100%; max-width: 600px;
+    margin: 0 auto;
+    max-height: 88vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.3);
+    transform: translateY(40px);
+    transition: transform 0.3s;
+  }
+  .cl-overlay.visible .cl-modal { transform: translateY(0); }
+  .cl-handle {
+    width: 36px; height: 4px; border-radius: 2px;
+    background: var(--border); margin: 10px auto 0 auto; flex-shrink: 0;
+  }
+  .cl-header {
+    padding: 14px 20px 10px 20px; flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cl-header-top {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cl-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem; font-weight: 800;
+    color: var(--accent);
+  }
+  .cl-subtitle {
+    font-size: 0.75rem; color: var(--muted); margin-top: 2px;
+  }
+  .cl-body {
+    flex: 1; overflow-y: auto;
+    padding: 4px 20px 12px 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cl-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem; line-height: 1.55; color: var(--text);
+  }
+  .cl-item:last-child { border-bottom: none; }
+  .cl-item-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .cl-item-text { flex: 1; }
+  .cl-badge {
+    display: inline-flex; align-items: center;
+    font-size: 0.58rem; font-weight: 700;
+    padding: 2px 5px; border-radius: 4px;
+    letter-spacing: 0.3px; margin-right: 5px;
+    vertical-align: middle;
+  }
+  .cl-badge-new { background: #dcfce7; color: #16a34a; }
+  .cl-badge-beta { background: #fef3c7; color: #d97706; }
+  .cl-badge-fix { background: #dbeafe; color: #2563eb; }
+  .cl-badge-license { background: #ede9fe; color: #7c3aed; }
+  body.theme-dark .cl-badge-new, body.theme-dark-blue .cl-badge-new { background: rgba(22,163,74,0.2); color: #4ade80; }
+  body.theme-dark .cl-badge-beta, body.theme-dark-blue .cl-badge-beta { background: rgba(217,119,6,0.2); color: #fbbf24; }
+  body.theme-dark .cl-badge-fix, body.theme-dark-blue .cl-badge-fix { background: rgba(37,99,235,0.2); color: #60a5fa; }
+  body.theme-dark .cl-badge-license, body.theme-dark-blue .cl-badge-license { background: rgba(124,58,237,0.2); color: #a78bfa; }
+  .cl-footer {
+    padding: 12px 20px 20px 20px; flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .cl-noshow-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; color: var(--muted);
+    cursor: pointer; user-select: none;
+  }
+  .cl-noshow-row input[type="checkbox"] {
+    accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer;
+  }
+  .cl-ok-btn {
+    width: 100%; padding: 12px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: opacity 0.15s;
+    letter-spacing: 0.2px;
+  }
+  .cl-ok-btn:active { opacity: 0.85; }
 </style>
 </head>
 <body class="">
+
+<!-- ── Yenilikler Modalı ── -->
+<div class="cl-overlay" id="clOverlay">
+  <div class="cl-modal">
+    <div class="cl-handle"></div>
+    <div class="cl-header">
+      <div class="cl-header-top">
+        <div class="cl-title">✨ Sürüm 8.5 Yenilikleri</div>
+      </div>
+      <div class="cl-subtitle">S-Sınav Pro — Sürüm Notları</div>
+    </div>
+    <div class="cl-body">
+      <div class="cl-item">
+        <span class="cl-item-icon">🗂️</span>
+        <div class="cl-item-text"><span class="cl-badge cl-badge-new">YENİ</span>Sekmeli navigasyon — Sorular, Belge, Düzen, Soru Düzeni ve Filigran ayrı bölümlere taşındı</div>
+      </div>
+      <div class="cl-item">
+        <span class="cl-item-icon">📊</span>
+        <div class="cl-item-text"><span class="cl-badge cl-badge-new">YENİ</span>Alt barda anlık soru sayısı, sayfa tahmini ve puan bilgisi göstergesi eklendi</div>
+      </div>
+      <div class="cl-item">
+        <span class="cl-item-icon">⬆️</span>
+        <div class="cl-item-text"><span class="cl-badge cl-badge-new">YENİ</span>PDF Oluştur butonu sabit alt bara taşındı — her sekmeden erişilebilir</div>
+      </div>
+      <div class="cl-item">
+        <span class="cl-item-icon">📱</span>
+        <div class="cl-item-text"><span class="cl-badge cl-badge-fix">DÜZELTİLDİ</span>Safari'de input odaklandığında sayfa zoom yapma sorunu giderildi</div>
+      </div>
+      <div class="cl-item">
+        <span class="cl-item-icon">🔗</span>
+        <div class="cl-item-text"><span class="cl-badge cl-badge-fix">DÜZELTİLDİ</span>Safari Paylaş butonunun tetiklediği hatalı hata penceresi düzeltildi</div>
+      </div>
+      <div class="cl-item">
+        <span class="cl-item-icon">📬</span>
+        <div class="cl-item-text"><span class="cl-badge cl-badge-new">YENİ</span>İletişim ikonları (Instagram + e-posta) alt navigasyon barına taşındı</div>
+      </div>
+      <div class="cl-item">
+        <span class="cl-item-icon">📄</span>
+        <div class="cl-item-text"><span class="cl-badge cl-badge-new">YENİ</span>Belge Bilgileri ayrı bir sekme olarak bağımsız bölüme alındı</div>
+      </div>
+      <div class="cl-item">
+        <span class="cl-item-icon">⚖️</span>
+        <div class="cl-item-text"><span class="cl-badge cl-badge-license">LİSANS</span>GNU AGPL v3.0 — özgür ve açık kaynak</div>
+      </div>
+    </div>
+    <div class="cl-footer">
+      <label class="cl-noshow-row">
+        <input type="checkbox" id="clNoShow"> Bir daha gösterme
+      </label>
+      <button class="cl-ok-btn" onclick="closeChangelog()">Anlaşıldı →</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── Sabit Üst Bar ── -->
 <div class="fixed-top-bar">
@@ -1326,6 +1472,27 @@
 
 <script>
 const { jsPDF } = window.jspdf;
+
+// ── Yenilikler Modalı ──
+const CL_VERSION = 'sinav-pro-8.5';
+(function initChangelog() {
+  const noShowKey = 'cl_noshow_' + CL_VERSION;
+  if (localStorage.getItem(noShowKey) !== '1') {
+    document.getElementById('clOverlay').classList.add('visible');
+  }
+})();
+
+function closeChangelog() {
+  if (document.getElementById('clNoShow').checked) {
+    localStorage.setItem('cl_noshow_' + CL_VERSION, '1');
+  }
+  document.getElementById('clOverlay').classList.remove('visible');
+}
+
+// Overlay dışına tıklayınca kapat
+document.getElementById('clOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeChangelog();
+});
 
 // ── Sekme Geçişi ──
 function switchTab(tabId) {
