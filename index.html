@@ -48,7 +48,7 @@
   <meta name="copyright" content="Copyright (C) 2026 sebasmobil"/>
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234B8BFF'/%3E%3Crect x='22' y='30' width='58' height='120' rx='10' fill='white' opacity='0.95'/%3E%3Crect x='100' y='30' width='58' height='120' rx='10' fill='white' opacity='0.75'/%3E%3Crect x='52' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='114' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='30' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3C/svg%3E"/>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%234B8BFF'/%3E%3Crect x='22' y='30' width='58' height='120' rx='10' fill='white' opacity='0.95'/%3E%3Crect x='100' y='30' width='58' height='120' rx='10' fill='white' opacity='0.75'/%3E%3Crect x='52' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='114' y='22' width='14' height='136' rx='7' fill='%234B8BFF'/%3E%3Crect x='30' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='30' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='65' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='83' width='38' height='8' rx='4' fill='%231E3A80'/%3E%3Crect x='112' y='101' width='25' height='8' rx='4' fill='%231E3A80'/%3E%3C/svg%3E"/>
-  <title>S-Öğretmen Pro 3.16</title>
+  <title>S-Öğretmen Pro 3.17</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
     body{background:#060A12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overscroll-behavior:none;font-size:15px;}
@@ -117,11 +117,15 @@
   <!-- Babel Standalone (JSX dönüştürür) -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel" data-presets="react">
-const APP_VERSION = "Pro 3.16";
+const APP_VERSION = "Pro 3.17";
 const { useState, useMemo, useEffect, useRef, createContext, useContext } = React;
 
 // ── Versiyon Yenilikleri ──
 const VERSION_CHANGELOG = {
+  "Pro 3.17": [
+    "✅ Not İşlemleri aramada Tam Puan butonu eklendi (Sınav Detayı)",
+    "⭐ Arama yapınca çıkan öğrenci kartında Tam Puan + MAX butonu mevcut",
+  ],
   "Pro 3.16": [
     "✅ Yazılı not girişinde (öğrenci arama) Tam Puan butonu eklendi",
     "⚡ Tam Puan butonuna tıklayınca tüm sorular maxScore değeriyle otomatik dolar",
@@ -5024,6 +5028,11 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
               </div>}
               {/* NORMAL MOD */}
               {!isComposite&&!scoreOnlyMode&&!isBEP(st.id)&&!isKopya(st.id)&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
+                {/* Tam Puan butonu */}
+                <button onClick={()=>setFullScore(st.id)}
+                  style={{width:"100%",background:"linear-gradient(135deg,#059669,#10B981)",border:"none",borderRadius:9,padding:"8px 12px",cursor:"pointer",color:"#fff",fontSize:13,fontWeight:800,fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",gap:6,boxShadow:"0 2px 8px rgba(16,185,129,0.3)"}}>
+                  <span style={{fontSize:15}}>⭐</span> Tam Puan ({tmax} puan)
+                </button>
                 {exam.questions.map(q=>{
                   const v=getS(st.id,q.id);
                   return <div key={q.id} style={{display:"flex",alignItems:"center",gap:8,background:T.bg,borderRadius:8,padding:"6px 10px"}}>
@@ -5031,6 +5040,8 @@ function ExamDetail({exam,scores,setScores,students,classes,lessons,onBack,schoo
                     <div style={{display:"flex",alignItems:"center",gap:4}}>
                       <button style={{...btnSm(T.toggleBg,T.textSub),padding:"4px 10px",fontSize:14}} onClick={()=>setS(st.id,q.id,Math.max(0,(v===""?0:Number(v))-1),q.maxScore)}>−</button>
                       <input type="number" inputMode="numeric" pattern="[0-9]*" min={0} max={q.maxScore} value={v} onChange={e=>setS(st.id,q.id,e.target.value,q.maxScore)} style={{...inp,width:52,textAlign:"center",padding:"5px 2px",fontSize:16,fontWeight:800}} placeholder="—" onFocus={e=>e.target.select()}/>
+                      <button onClick={()=>setS(st.id,q.id,Number(q.maxScore),q.maxScore)}
+                        style={{background:"#05966933",border:"1px solid #05966966",borderRadius:6,padding:"4px 7px",cursor:"pointer",color:"#059669",fontSize:10,fontWeight:800,fontFamily:"inherit",lineHeight:1}}>MAX</button>
                       <button style={{...btnSm(T.accentDim,T.accent),padding:"4px 10px",fontSize:14}} onClick={()=>setS(st.id,q.id,Math.min(q.maxScore,(v===""?0:Number(v))+1),q.maxScore)}>+</button>
                     </div>
                   </div>;
