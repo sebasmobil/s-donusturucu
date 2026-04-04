@@ -9,10 +9,480 @@
   <meta name="apple-mobile-web-app-title" content="PlanMate">
   <meta name="description" content="Öğretmenler için haftalık kazanım takip uygulaması">
 
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <link rel="stylesheet" href="css/app.css">
+  <style>
+/* ===========================
+   PlanMate – app.css
+   =========================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --green-dark:   #0F6E56;
+  --green-mid:    #1D9E75;
+  --green-light:  #9FE1CB;
+  --green-pale:   #E1F5EE;
+  --blue-pale:    #E6F1FB;
+  --blue-mid:     #378ADD;
+  --purple-pale:  #EEEDFE;
+  --purple-mid:   #7F77DD;
+  --coral-pale:   #FAECE7;
+  --coral-mid:    #D85A30;
+  --amber-pale:   #FAEEDA;
+  --amber-mid:    #BA7517;
+
+  --text-primary:   #1a1a1a;
+  --text-secondary: #666;
+  --text-tertiary:  #999;
+  --bg-page:        #F4F4F0;
+  --bg-card:        #FFFFFF;
+  --border:         rgba(0,0,0,0.08);
+  --border-strong:  rgba(0,0,0,0.14);
+  --radius-sm:  8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --topbar-height: 96px;
+  --nav-height: 64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary:   #F0F0EC;
+    --text-secondary: #A0A09A;
+    --text-tertiary:  #6A6A66;
+    --bg-page:        #1A1A18;
+    --bg-card:        #242422;
+    --border:         rgba(255,255,255,0.08);
+    --border-strong:  rgba(255,255,255,0.14);
+    --green-pale:   #0A3529;
+    --blue-pale:    #0A2040;
+    --purple-pale:  #1E1B40;
+    --coral-pale:   #3A1A10;
+    --amber-pale:   #2A1A04;
+  }
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== SPLASH ===== */
+#splash {
+  position: fixed; inset: 0;
+  background: var(--green-dark);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px;
+  z-index: 9999;
+  transition: opacity 0.4s ease;
+}
+#splash.fade-out { opacity: 0; pointer-events: none; }
+.splash-logo { animation: splashPulse 1.2s ease infinite alternate; }
+@keyframes splashPulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+.splash-title { color: white; font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
+.splash-sub { color: rgba(255,255,255,0.6); font-size: 14px; }
+
+/* ===== ONBOARDING ===== */
+#onboarding {
+  position: fixed; inset: 0;
+  background: var(--bg-page);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 40px 24px;
+  padding-bottom: calc(40px + var(--safe-bottom));
+}
+.onboard-inner { max-width: 420px; margin: 0 auto; }
+.onboard-icon { font-size: 56px; margin-bottom: 16px; }
+#onboarding h1 { font-size: 26px; font-weight: 600; line-height: 1.25; margin-bottom: 12px; }
+#onboarding p { font-size: 15px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 32px; }
+.onboard-form label {
+  display: block; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); margin-bottom: 6px; margin-top: 16px;
+}
+.onboard-form input[type="text"],
+.onboard-form input[type="url"] {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.onboard-form input:focus { border-color: var(--green-mid); }
+.drive-hint {
+  font-size: 12px; color: var(--text-tertiary);
+  background: var(--green-pale); border-radius: var(--radius-sm);
+  padding: 10px 12px; margin-top: 8px; line-height: 1.5;
+}
+.btn-primary {
+  display: block; width: 100%;
+  background: var(--green-dark); color: white;
+  border: none; border-radius: var(--radius-md);
+  padding: 16px; margin-top: 32px;
+  font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-primary:active { background: var(--green-mid); }
+
+/* ===== MAIN APP LAYOUT ===== */
+#app {
+  display: flex; flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* TOPBAR */
+#topbar {
+  background: var(--bg-card);
+  border-bottom: 0.5px solid var(--border);
+  flex-shrink: 0;
+  z-index: 50;
+  position: relative;
+}
+.topbar-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px 8px;
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.app-name { font-size: 19px; font-weight: 600; letter-spacing: -0.3px; }
+.week-badge {
+  background: var(--green-pale); color: var(--green-dark);
+  font-size: 12px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px;
+}
+.sync-btn {
+  background: none; border: none;
+  color: var(--text-secondary); cursor: pointer;
+  padding: 6px; border-radius: 8px;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.sync-btn:active { background: var(--bg-page); }
+.sync-btn.spinning svg { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* PLAN TABS */
+.plan-tabs {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 10px;
+  gap: 0;
+  scrollbar-width: none;
+}
+.plan-tabs::-webkit-scrollbar { display: none; }
+.plan-tab {
+  flex-shrink: 0;
+  padding: 9px 14px;
+  font-size: 13px; font-weight: 400;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.15s;
+  background: none; border-left: none; border-right: none; border-top: none;
+}
+.plan-tab.active { color: var(--green-dark); border-bottom-color: var(--green-dark); font-weight: 500; }
+
+/* MAIN CONTENT */
+#main-content {
+  flex: 1; overflow: hidden; position: relative;
+}
+.screen {
+  position: absolute; inset: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px calc(var(--nav-height) + var(--safe-bottom) + 16px);
+}
+.screen.hidden { display: none; }
+.screen.active { display: block; }
+
+/* WEEK NAV */
+.week-nav-bar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.wk-btn {
+  width: 40px; height: 40px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 22px; color: var(--text-primary);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.1s;
+}
+.wk-btn:active { background: var(--bg-page); }
+.wk-center { flex: 1; text-align: center; }
+.wk-title { display: block; font-size: 15px; font-weight: 500; }
+.wk-dates { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+
+/* KAZANIM AREA */
+.kazanim-area { min-height: 120px; }
+
+/* PLAN CARD */
+.plan-card {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+  animation: slideInCard 0.2s ease;
+}
+@keyframes slideInCard {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.card-icon-wrap {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.card-info-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+.card-info-sub { font-size: 12px; color: var(--text-secondary); }
+
+.kazanim-section-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--text-tertiary); text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.kazanim-item {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 10px 12px;
+  background: var(--bg-page);
+  border-radius: var(--radius-sm);
+  margin-bottom: 7px;
+  font-size: 13.5px; line-height: 1.5;
+}
+.kazanim-bullet {
+  width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--text-tertiary);
+}
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; line-height: 1.6; }
+.empty-state .empty-action {
+  display: inline-block; margin-top: 16px;
+  background: var(--green-dark); color: white;
+  font-size: 14px; font-weight: 500;
+  padding: 10px 22px; border-radius: 99px;
+  cursor: pointer; border: none;
+  transition: background 0.15s;
+}
+.empty-state .empty-action:active { background: var(--green-mid); }
+
+/* SWIPE HINT */
+.swipe-hint-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 10px 0 4px;
+  font-size: 11px; color: var(--text-tertiary);
+}
+.tab-dots { display: flex; gap: 5px; align-items: center; }
+.tab-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--border-strong); transition: all 0.2s;
+}
+.tab-dot.active { width: 16px; border-radius: 3px; background: var(--green-mid); }
+
+/* ===== PLANS SCREEN ===== */
+.search-bar {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 10px 13px; margin-bottom: 16px;
+}
+.search-icon { color: var(--text-tertiary); flex-shrink: 0; }
+.search-bar input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 14px; color: var(--text-primary);
+  font-family: inherit;
+}
+.search-bar input::placeholder { color: var(--text-tertiary); }
+
+.section-label {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+  color: var(--text-tertiary); text-transform: uppercase;
+  margin-bottom: 8px; padding-left: 2px;
+}
+
+.plan-list { display: flex; flex-direction: column; gap: 8px; }
+.plan-row {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 13px 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.plan-row-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.plan-row-body { flex: 1; min-width: 0; }
+.plan-row-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.plan-row-sub { font-size: 12px; color: var(--text-secondary); }
+.dl-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; color: var(--green-dark);
+  background: var(--green-pale); padding: 2px 8px; border-radius: 99px;
+  margin-top: 4px;
+}
+.btn-download {
+  background: var(--green-pale); color: var(--green-dark);
+  border: none; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600;
+  padding: 8px 14px; cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s;
+}
+.btn-download:active { background: var(--green-light); }
+.btn-delete {
+  background: var(--bg-page); color: var(--text-tertiary);
+  border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm);
+  font-size: 13px; padding: 8px 12px; cursor: pointer; flex-shrink: 0;
+}
+
+/* ===== SETTINGS SCREEN ===== */
+.settings-group { margin-bottom: 20px; }
+.settings-group-title {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+  color: var(--text-tertiary); text-transform: uppercase;
+  margin-bottom: 8px; padding-left: 2px;
+}
+.settings-card {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.settings-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 0.5px solid var(--border);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.settings-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+.settings-row-title { font-size: 14px; font-weight: 400; }
+.settings-row-sub { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+.link-btn {
+  background: none; border: none;
+  color: var(--green-dark); font-size: 13px; font-weight: 500;
+  cursor: pointer; flex-shrink: 0; padding: 4px;
+}
+.link-btn.danger { color: #C0392B; }
+.status-dot {
+  width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
+}
+.status-dot.online  { background: #1D9E75; }
+.status-dot.offline { background: #999; }
+.app-version {
+  text-align: center; font-size: 12px; color: var(--text-tertiary);
+  padding: 20px 0 8px;
+}
+
+/* ===== BOTTOM NAV ===== */
+#bottom-nav {
+  display: flex;
+  background: var(--bg-card);
+  border-top: 0.5px solid var(--border);
+  padding-bottom: var(--safe-bottom);
+  flex-shrink: 0;
+  position: relative; z-index: 50;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 10px 0 6px; gap: 3px;
+  background: none; border: none;
+  color: var(--text-tertiary); font-size: 10px;
+  cursor: pointer; transition: color 0.15s;
+}
+.nav-item.active { color: var(--green-dark); }
+.nav-item svg { flex-shrink: 0; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; bottom: calc(var(--nav-height) + var(--safe-bottom) + 12px);
+  left: 50%; transform: translateX(-50%) translateY(8px);
+  background: #1a1a1a; color: white;
+  font-size: 13px; font-weight: 500;
+  padding: 11px 20px; border-radius: 99px;
+  white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: all 0.25s;
+  z-index: 9000;
+  max-width: calc(100vw - 32px);
+}
+@media (prefers-color-scheme: dark) {
+  .toast { background: #F0F0EC; color: #1a1a1a; }
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 8000;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: var(--safe-bottom);
+  animation: overlayIn 0.2s ease;
+}
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+.modal-overlay.hidden { display: none; }
+.modal-box {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 24px 20px;
+  width: 100%; max-width: 480px;
+  animation: sheetUp 0.25s ease;
+}
+@keyframes sheetUp { from { transform: translateY(40px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+.modal-input {
+  width: 100%;
+  background: var(--bg-page);
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px; font-size: 15px;
+  color: var(--text-primary); outline: none;
+  font-family: inherit; margin-bottom: 12px;
+}
+.modal-input:focus { border-color: var(--green-mid); }
+.modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+.modal-btn {
+  flex: 1; padding: 13px;
+  border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 500;
+  cursor: pointer; border: none;
+}
+.modal-btn.primary { background: var(--green-dark); color: white; }
+.modal-btn.secondary { background: var(--bg-page); color: var(--text-secondary); border: 0.5px solid var(--border-strong); }
+
+/* UTILITY */
+.hidden { display: none !important; }
+
+</style>
 
   <title>PlanMate</title>
 </head>
@@ -246,6 +716,569 @@
     </div>
   </div>
 
-  <script src="js/app.js"></script>
+  <script>
+/* ===========================
+   PlanMate – app.js
+   =========================== */
+
+'use strict';
+
+/* ── STORAGE HELPERS ──────────────────────────────────── */
+const Store = {
+  get: (k, fallback = null) => {
+    try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : fallback; }
+    catch { return fallback; }
+  },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del: (k)   => { try { localStorage.removeItem(k); } catch {} },
+};
+
+/* ── APP STATE ────────────────────────────────────────── */
+const State = {
+  profile:    Store.get('profile', null),
+  plans:      Store.get('plans', []),      // indirilen planlar [{ id, ders, sinif, emoji, color, dot, weeks: [{week, kazanimlar[]}] }]
+  driveUrl:   Store.get('driveUrl', ''),
+  lastSync:   Store.get('lastSync', null),
+  yearStart:  Store.get('yearStart', '2024-09-09'),
+  currentWeek: 1,
+  activeTab:  0,
+  activeScreen: 'home',
+};
+
+/* ── RENK PALETİ ──────────────────────────────────────── */
+const PALETTE = [
+  { bg: '#E1F5EE', dot: '#1D9E75' },
+  { bg: '#E6F1FB', dot: '#378ADD' },
+  { bg: '#EEEDFE', dot: '#7F77DD' },
+  { bg: '#FAECE7', dot: '#D85A30' },
+  { bg: '#FAEEDA', dot: '#BA7517' },
+];
+const EMOJIS = ['📖','🔢','🌍','🎨','🎵','🔬','📐','💻','🌱','🏃'];
+
+/* ── DERS KATALOĞU (Google Drive'dan çekilir, yoksa örnek) ── */
+const CATALOG_FALLBACK = [
+  { id: 'tr-1', ders: 'Türkçe',       sinif: '1. Sınıf', emoji: '📖' },
+  { id: 'mat-1',ders: 'Matematik',    sinif: '1. Sınıf', emoji: '🔢' },
+  { id: 'tr-2', ders: 'Türkçe',       sinif: '2. Sınıf', emoji: '📖' },
+  { id: 'mat-2',ders: 'Matematik',    sinif: '2. Sınıf', emoji: '🔢' },
+  { id: 'hb-2', ders: 'Hayat Bilgisi',sinif: '2. Sınıf', emoji: '🌍' },
+  { id: 'tr-3', ders: 'Türkçe',       sinif: '3. Sınıf', emoji: '📖' },
+  { id: 'mat-3',ders: 'Matematik',    sinif: '3. Sınıf', emoji: '🔢' },
+  { id: 'hb-3', ders: 'Hayat Bilgisi',sinif: '3. Sınıf', emoji: '🌍' },
+  { id: 'tr-4', ders: 'Türkçe',       sinif: '4. Sınıf', emoji: '📖' },
+  { id: 'mat-4',ders: 'Matematik',    sinif: '4. Sınıf', emoji: '🔢' },
+  { id: 'fen-4',ders: 'Fen Bilimleri',sinif: '4. Sınıf', emoji: '🔬' },
+  { id: 'sos-4',ders: 'Sosyal Bilgiler',sinif:'4. Sınıf',emoji: '🌍' },
+];
+let catalog = Store.get('catalog', CATALOG_FALLBACK);
+
+/* ── HAFTA HESAPLAMA ──────────────────────────────────── */
+function getYearStart() {
+  return new Date(State.yearStart + 'T00:00:00');
+}
+function calcCurrentWeek() {
+  const start = getYearStart();
+  const now   = new Date();
+  const diff  = now - start;
+  if (diff < 0) return 1;
+  return Math.max(1, Math.min(36, Math.ceil(diff / (7 * 86400000))));
+}
+function getWeekDateRange(w) {
+  const start = getYearStart();
+  const monMs = start.getTime() + (w - 1) * 7 * 86400000;
+  const mon = new Date(monMs);
+  const fri = new Date(monMs + 4 * 86400000);
+  const fmt = { day: 'numeric', month: 'long' };
+  return mon.toLocaleDateString('tr-TR', fmt) + ' – ' + fri.toLocaleDateString('tr-TR', fmt);
+}
+
+/* ── RENDER: TOPBAR ───────────────────────────────────── */
+function renderTopbar() {
+  document.getElementById('week-badge').textContent = 'Hafta ' + State.currentWeek;
+  renderTabs();
+}
+
+/* ── RENDER: TABS ─────────────────────────────────────── */
+function renderTabs() {
+  const container = document.getElementById('plan-tabs');
+  if (!State.plans.length) { container.innerHTML = ''; return; }
+  container.innerHTML = State.plans.map((p, i) =>
+    `<button class="plan-tab ${i === State.activeTab ? 'active' : ''}"
+       onclick="switchTab(${i})">${p.sinif} ${p.ders}</button>`
+  ).join('');
+}
+
+/* ── RENDER: KAZANIM KARTLARI ─────────────────────────── */
+function renderKazanimCards() {
+  const area = document.getElementById('kazanim-area');
+  const wl   = document.getElementById('week-label');
+  const wd   = document.getElementById('week-dates');
+  const wb   = document.getElementById('week-badge');
+
+  wl.textContent = State.currentWeek + '. Hafta';
+  wd.textContent = getWeekDateRange(State.currentWeek);
+  wb.textContent = 'Hafta ' + State.currentWeek;
+
+  if (!State.plans.length) {
+    area.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📂</div>
+        <p>Henüz plan indirmediniz.<br>Planlar sekmesinden bir plan indirin.</p>
+        <button class="empty-action" onclick="switchScreen('plans')">Planlar →</button>
+      </div>`;
+    renderDots();
+    return;
+  }
+
+  const plan     = State.plans[State.activeTab] || State.plans[0];
+  const weekData = plan.weeks && plan.weeks.find(w => w.week === State.currentWeek);
+  const pal      = PALETTE[State.activeTab % PALETTE.length];
+
+  area.innerHTML = `
+    <div class="plan-card">
+      <div class="card-top">
+        <div class="card-icon-wrap" style="background:${plan.color || pal.bg}">${plan.emoji || '📋'}</div>
+        <div>
+          <div class="card-info-title">${plan.ders}</div>
+          <div class="card-info-sub">${plan.sinif} · ${State.currentWeek}. Hafta</div>
+        </div>
+      </div>
+      <div class="kazanim-section-label">Bu haftanın kazanımları</div>
+      ${weekData && weekData.kazanimlar && weekData.kazanimlar.length
+        ? weekData.kazanimlar.map(k => `
+            <div class="kazanim-item">
+              <span class="kazanim-bullet" style="background:${plan.dot || pal.dot}"></span>
+              <span>${k}</span>
+            </div>`).join('')
+        : '<div style="color:var(--text-tertiary);font-size:13px;padding:8px 0;">Bu hafta için kazanım tanımlı değil.</div>'
+      }
+    </div>`;
+
+  renderDots();
+}
+
+function renderDots() {
+  const dots = document.getElementById('tab-dots');
+  if (!State.plans.length) { dots.innerHTML = ''; return; }
+  dots.innerHTML = State.plans.map((_, i) =>
+    `<div class="tab-dot ${i === State.activeTab ? 'active' : ''}"></div>`).join('');
+}
+
+/* ── RENDER: PLAN LİSTESİ ─────────────────────────────── */
+function renderPlanList(filter) {
+  const f    = (filter || '').toLowerCase();
+  const dlIds = new Set(State.plans.map(p => p.id));
+
+  const available = catalog.filter(p =>
+    !dlIds.has(p.id) &&
+    (!f || p.ders.toLowerCase().includes(f) || p.sinif.toLowerCase().includes(f))
+  );
+  const downloaded = State.plans.filter(p =>
+    !f || p.ders.toLowerCase().includes(f) || p.sinif.toLowerCase().includes(f)
+  );
+
+  document.getElementById('plan-list').innerHTML = available.length
+    ? available.map((p, i) => planRow(p, i, false)).join('')
+    : '<div style="color:var(--text-tertiary);font-size:13px;padding:8px 0;">Tüm planlar indirildi.</div>';
+
+  document.getElementById('downloaded-list').innerHTML = downloaded.length
+    ? downloaded.map((p, i) => planRow(p, i, true)).join('')
+    : '<div style="color:var(--text-tertiary);font-size:13px;padding:8px 0;">Henüz plan indirilmedi.</div>';
+}
+
+function planRow(p, i, isDl) {
+  const pal = PALETTE[i % PALETTE.length];
+  return `
+    <div class="plan-row">
+      <div class="plan-row-icon" style="background:${p.color || pal.bg}">${p.emoji || '📋'}</div>
+      <div class="plan-row-body">
+        <div class="plan-row-title">${p.sinif} – ${p.ders}</div>
+        <div class="plan-row-sub">Yıllık Plan · 36 Hafta</div>
+        ${isDl ? '<span class="dl-chip">✓ İndirildi</span>' : ''}
+      </div>
+      ${isDl
+        ? `<button class="btn-delete" onclick="deletePlan('${p.id}')">Sil</button>`
+        : `<button class="btn-download" onclick="downloadPlan('${p.id}')">İndir</button>`
+      }
+    </div>`;
+}
+
+/* ── RENDER: AYARLAR ──────────────────────────────────── */
+function renderSettings() {
+  const p = State.profile || {};
+  document.getElementById('s-name').textContent    = p.name   || '–';
+  document.getElementById('s-school').textContent  = p.school || '–';
+  document.getElementById('s-drive-url').textContent = State.driveUrl || 'Ayarlanmadı';
+  document.getElementById('s-last-sync').textContent = State.lastSync
+    ? new Date(State.lastSync).toLocaleString('tr-TR', { day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' })
+    : 'Hiç senkronize edilmedi';
+
+  const online = !!State.driveUrl;
+  document.getElementById('s-drive-status').textContent = online ? 'Bağlı' : 'Bağlı değil';
+  document.getElementById('s-drive-dot').className = 'status-dot ' + (online ? 'online' : 'offline');
+
+  const ysInput = document.getElementById('year-start-input');
+  ysInput.value = State.yearStart;
+}
+
+/* ── SCREEN SWITCHING ─────────────────────────────────── */
+function switchScreen(name) {
+  State.activeScreen = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById('screen-' + name).classList.remove('hidden');
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-' + name).classList.add('active');
+
+  if (name === 'plans')    { renderPlanList(); }
+  if (name === 'settings') { renderSettings(); }
+}
+
+/* ── TAB & WEEK ───────────────────────────────────────── */
+function switchTab(i) {
+  State.activeTab = i;
+  renderTabs();
+  renderKazanimCards();
+}
+function changeWeek(dir) {
+  const next = State.currentWeek + dir;
+  if (next < 1 || next > 36) return;
+  State.currentWeek = next;
+  renderKazanimCards();
+}
+
+/* ── SWIPE GESTURE ────────────────────────────────────── */
+let touchStartX = 0;
+function initSwipe() {
+  const area = document.getElementById('screen-home');
+  area.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  area.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) < 40) return;
+    if (dx < 0) switchTab(Math.min(State.plans.length - 1, State.activeTab + 1));
+    else         switchTab(Math.max(0, State.activeTab - 1));
+  }, { passive: true });
+}
+
+/* ── DOWNLOAD / DELETE ────────────────────────────────── */
+async function downloadPlan(id) {
+  const entry = catalog.find(p => p.id === id);
+  if (!entry) return;
+
+  showToast('İndiriliyor…');
+  const syncBtn = document.getElementById('sync-btn');
+  syncBtn.classList.add('spinning');
+
+  let planData = null;
+
+  // Google Drive'dan indirmeyi dene
+  if (State.driveUrl) {
+    planData = await fetchPlanFromDrive(id, entry);
+  }
+
+  // Drive yoksa/başarısızsa örnek veri oluştur
+  if (!planData) {
+    planData = generateSamplePlan(entry);
+  }
+
+  const i = State.plans.length;
+  const pal = PALETTE[i % PALETTE.length];
+  planData.color = pal.bg;
+  planData.dot   = pal.dot;
+
+  State.plans.push(planData);
+  Store.set('plans', State.plans);
+
+  syncBtn.classList.remove('spinning');
+  renderTabs();
+  renderKazanimCards();
+  renderPlanList();
+  showToast('✓ ' + entry.sinif + ' ' + entry.ders + ' planı indirildi');
+}
+
+function deletePlan(id) {
+  State.plans = State.plans.filter(p => p.id !== id);
+  if (State.activeTab >= State.plans.length) State.activeTab = Math.max(0, State.plans.length - 1);
+  Store.set('plans', State.plans);
+  renderTabs();
+  renderKazanimCards();
+  renderPlanList();
+  showToast('Plan silindi');
+}
+
+/* ── GOOGLE DRIVE FETCH ───────────────────────────────── */
+async function fetchPlanFromDrive(id, entry) {
+  /*
+   * NASIL ÇALIŞIR:
+   * Google Drive'ınıza {id}.json formatında dosya koyun.
+   * Örnek: tr-3.json, mat-3.json
+   * Dosyayı "herkesle paylaş (görüntüleyici)" yapın.
+   * Paylaşım linkinden file ID'yi alıp direkt indirme URL'i üretilir.
+   *
+   * Örnek dosya içeriği:
+   * {
+   *   "id": "tr-3",
+   *   "ders": "Türkçe",
+   *   "sinif": "3. Sınıf",
+   *   "emoji": "📖",
+   *   "weeks": [
+   *     { "week": 1, "kazanimlar": ["T.3.1.1 - Kazanım açıklaması", "T.3.1.2 - Kazanım açıklaması"] },
+   *     { "week": 2, "kazanimlar": ["T.3.2.1 - ...", "T.3.2.2 - ..."] }
+   *   ]
+   * }
+   */
+  try {
+    // Drive klasör URL'inden dosya ID çıkar
+    const fileId = extractDriveFileId(State.driveUrl, id);
+    if (!fileId) return null;
+
+    const url = `https://drive.google.com/uc?export=download&id=${fileId}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.warn('Drive fetch failed:', e);
+    return null;
+  }
+}
+
+function extractDriveFileId(folderUrl, planId) {
+  // Kullanıcı doğrudan dosya paylaşım linki verdiyse
+  // https://drive.google.com/file/d/FILE_ID/view
+  const m = folderUrl.match(/\/d\/([a-zA-Z0-9_-]{20,})/);
+  if (m) return m[1];
+  // Klasör linki verilmişse ID'yi catalog'dan al (kullanıcı önceden eşleştirmeli)
+  return null;
+}
+
+/* ── ÖRNEK VERİ ÜRETICI ───────────────────────────────── */
+function generateSamplePlan(entry) {
+  const weeks = [];
+  for (let w = 1; w <= 36; w++) {
+    weeks.push({
+      week: w,
+      kazanimlar: [
+        `${entry.ders.substring(0,2).toUpperCase()}.${entry.sinif.charAt(0)}.${w}.1 – ${w}. hafta birinci kazanımı (örnek)`,
+        `${entry.ders.substring(0,2).toUpperCase()}.${entry.sinif.charAt(0)}.${w}.2 – ${w}. hafta ikinci kazanımı (örnek)`,
+      ]
+    });
+  }
+  return { ...entry, weeks };
+}
+
+/* ── SYNC ─────────────────────────────────────────────── */
+async function syncDrive() {
+  if (!State.driveUrl) {
+    showToast('Önce Drive linki ekleyin (Ayarlar)');
+    return;
+  }
+  const btn = document.getElementById('sync-btn');
+  btn.classList.add('spinning');
+  showToast('Senkronize ediliyor…');
+
+  // Katalog güncelleme denemesi
+  try {
+    const catalogUrl = buildCatalogUrl();
+    if (catalogUrl) {
+      const res = await fetch(catalogUrl);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          catalog = data;
+          Store.set('catalog', catalog);
+        }
+      }
+    }
+  } catch {}
+
+  // Mevcut planları güncelle
+  for (let i = 0; i < State.plans.length; i++) {
+    const p = State.plans[i];
+    const entry = catalog.find(c => c.id === p.id) || p;
+    const fresh = await fetchPlanFromDrive(p.id, entry);
+    if (fresh) {
+      State.plans[i] = { ...State.plans[i], ...fresh };
+    }
+  }
+  Store.set('plans', State.plans);
+  State.lastSync = new Date().toISOString();
+  Store.set('lastSync', State.lastSync);
+
+  btn.classList.remove('spinning');
+  renderKazanimCards();
+  if (State.activeScreen === 'settings') renderSettings();
+  showToast('✓ Senkronizasyon tamamlandı');
+}
+
+function buildCatalogUrl() {
+  // Kullanıcı catalog.json'un Drive ID'sini verirse buradan çeker
+  const m = State.driveUrl.match(/\/d\/([a-zA-Z0-9_-]{20,})/);
+  if (m) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
+  return null;
+}
+
+/* ── ONBOARDİNG ───────────────────────────────────────── */
+function finishOnboarding() {
+  const name   = document.getElementById('ob-name').value.trim();
+  const school = document.getElementById('ob-school').value.trim();
+  const drive  = document.getElementById('ob-drive').value.trim();
+
+  if (!name || !school) {
+    showToast('Ad soyad ve okul adı gerekli');
+    return;
+  }
+
+  State.profile  = { name, school };
+  State.driveUrl = drive;
+  Store.set('profile',  State.profile);
+  Store.set('driveUrl', State.driveUrl);
+  Store.set('onboarded', true);
+
+  document.getElementById('onboarding').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  initApp();
+}
+
+/* ── AYARLAR MODAL'LARI ───────────────────────────────── */
+function editProfile() {
+  const p = State.profile || {};
+  showModal(`
+    <div class="modal-title">Profil Düzenle</div>
+    <input class="modal-input" id="m-name"   value="${p.name   || ''}" placeholder="Ad Soyad">
+    <input class="modal-input" id="m-school" value="${p.school || ''}" placeholder="Okul Adı">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal()">İptal</button>
+      <button class="modal-btn primary"   onclick="saveProfile()">Kaydet</button>
+    </div>`);
+}
+function saveProfile() {
+  State.profile = {
+    name:   document.getElementById('m-name').value.trim(),
+    school: document.getElementById('m-school').value.trim(),
+  };
+  Store.set('profile', State.profile);
+  closeModal();
+  renderSettings();
+  showToast('Profil güncellendi');
+}
+
+function editDriveUrl() {
+  showModal(`
+    <div class="modal-title">Drive Linki</div>
+    <input class="modal-input" id="m-drive" type="url"
+      value="${State.driveUrl || ''}"
+      placeholder="https://drive.google.com/…">
+    <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:12px;line-height:1.5;">
+      Google Drive'da catalog.json dosyasını "herkesle paylaş" yapın ve paylaşım linkini buraya yapıştırın.
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal()">İptal</button>
+      <button class="modal-btn primary"   onclick="saveDriveUrl()">Kaydet</button>
+    </div>`);
+}
+function saveDriveUrl() {
+  State.driveUrl = document.getElementById('m-drive').value.trim();
+  Store.set('driveUrl', State.driveUrl);
+  closeModal();
+  renderSettings();
+  showToast('Drive linki güncellendi');
+}
+
+function saveYearStart() {
+  State.yearStart = document.getElementById('year-start-input').value;
+  Store.set('yearStart', State.yearStart);
+  State.currentWeek = calcCurrentWeek();
+  renderKazanimCards();
+  showToast('Yıl başlangıcı güncellendi');
+}
+
+function resetAll() {
+  if (!confirm('Tüm veriler silinecek. Emin misiniz?')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+/* ── MODAL UTILS ──────────────────────────────────────── */
+function showModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+}
+
+/* ── TOAST ────────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ── FİLTRE ───────────────────────────────────────────── */
+function filterPlans() {
+  renderPlanList(document.getElementById('plan-search').value);
+}
+
+/* ── SPLASH ───────────────────────────────────────────── */
+function hideSplash() {
+  const splash = document.getElementById('splash');
+  splash.classList.add('fade-out');
+  setTimeout(() => splash.remove(), 450);
+}
+
+/* ── INIT ─────────────────────────────────────────────── */
+function initApp() {
+  State.currentWeek = calcCurrentWeek();
+  renderTopbar();
+  renderKazanimCards();
+  initSwipe();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    hideSplash();
+    const onboarded = Store.get('onboarded', false);
+    if (!onboarded) {
+      document.getElementById('onboarding').classList.remove('hidden');
+    } else {
+      State.profile  = Store.get('profile', {});
+      State.plans    = Store.get('plans', []);
+      State.driveUrl = Store.get('driveUrl', '');
+      State.lastSync = Store.get('lastSync', null);
+      State.yearStart= Store.get('yearStart', '2024-09-09');
+      document.getElementById('app').classList.remove('hidden');
+      initApp();
+    }
+  }, 1200);
+});
+
+/* ── SERVICE WORKER KAYIT ─────────────────────────────── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+// global erişim (inline onclick'ler için)
+window.switchScreen    = switchScreen;
+window.switchTab       = switchTab;
+window.changeWeek      = changeWeek;
+window.filterPlans     = filterPlans;
+window.downloadPlan    = downloadPlan;
+window.deletePlan      = deletePlan;
+window.syncDrive       = syncDrive;
+window.finishOnboarding= finishOnboarding;
+window.editProfile     = editProfile;
+window.saveProfile     = saveProfile;
+window.editDriveUrl    = editDriveUrl;
+window.saveDriveUrl    = saveDriveUrl;
+window.saveYearStart   = saveYearStart;
+window.resetAll        = resetAll;
+window.closeModal      = closeModal;
+
+</script>
 </body>
 </html>
