@@ -1,1284 +1,1555 @@
+<!--
+  S-Kazanım - Öğretmenler için Akıllı Ders Planlama Uygulaması
+  Versiyon: Beta 1.1
+  Telif Hakkı (C) 2025 S-Kazanım / sebasmobil
+
+  Bu program özgür yazılımdır: GNU Affero Genel Kamu Lisansı'nın
+  (GNU AGPL v3.0) koşulları altında yeniden dağıtabilir ve/veya değiştirebilirsiniz.
+  Lisansın tam metni için: https://www.gnu.org/licenses/agpl-3.0.html
+
+  S-Kazanım - Smart Course Planning App for Teachers
+  Copyright (C) 2025 S-Kazanım / sebasmobil
+  Licensed under GNU Affero General Public License v3.0
+-->
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0F6E56">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="PlanMate">
-  <meta name="description" content="Öğretmenler için haftalık kazanım takip uygulaması">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="S-Kazanım">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0e1a" id="themeColorMeta">
+<title>S-Kazanım Beta 1.1</title>
+<link rel="manifest" id="pwaManifest">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <style>
-/* ===========================
-   PlanMate – app.css
-   =========================== */
-
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
+/* ══ TEMA SİSTEMİ ══ */
 :root {
-  --green-dark:   #0F6E56;
-  --green-mid:    #1D9E75;
-  --green-light:  #9FE1CB;
-  --green-pale:   #E1F5EE;
-  --blue-pale:    #E6F1FB;
-  --blue-mid:     #378ADD;
-  --purple-pale:  #EEEDFE;
-  --purple-mid:   #7F77DD;
-  --coral-pale:   #FAECE7;
-  --coral-mid:    #D85A30;
-  --amber-pale:   #FAEEDA;
-  --amber-mid:    #BA7517;
-
-  --text-primary:   #1a1a1a;
-  --text-secondary: #666;
-  --text-tertiary:  #999;
-  --bg-page:        #F4F4F0;
-  --bg-card:        #FFFFFF;
-  --border:         rgba(0,0,0,0.08);
-  --border-strong:  rgba(0,0,0,0.14);
-  --radius-sm:  8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-
-  --topbar-height: 96px;
-  --nav-height: 64px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* KOYU TEMA (varsayılan) */
+  --bg: #0a0e1a; --bg2: #0f1628; --card: #141b2d; --card2: #1a2238;
+  --border: #1e2d4a; --text: #e2e8f0; --text2: #94a3b8; --text3: #64748b;
+  --topbar-bg: rgba(10,14,26,0.93); --modal-bg: #0f1628;
+  --input-bg: #0a0e1a;
+  --shadow: 0 4px 24px rgba(0,0,0,0.45);
+}
+[data-theme="light"] {
+  --bg: #f0f4ff; --bg2: #ffffff; --card: #ffffff; --card2: #f8faff;
+  --border: #d1daf0; --text: #0f172a; --text2: #475569; --text3: #94a3b8;
+  --topbar-bg: rgba(240,244,255,0.93); --modal-bg: #ffffff;
+  --input-bg: #f8faff;
+  --shadow: 0 4px 24px rgba(79,142,247,0.10);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary:   #F0F0EC;
-    --text-secondary: #A0A09A;
-    --text-tertiary:  #6A6A66;
-    --bg-page:        #1A1A18;
-    --bg-card:        #242422;
-    --border:         rgba(255,255,255,0.08);
-    --border-strong:  rgba(255,255,255,0.14);
-    --green-pale:   #0A3529;
-    --blue-pale:    #0A2040;
-    --purple-pale:  #1E1B40;
-    --coral-pale:   #3A1A10;
-    --amber-pale:   #2A1A04;
-  }
+/* RENK TEMALARI */
+[data-color="blue"]  { --accent: #4f8ef7; --accent2: #7c3aed; --gold: #f59e0b; --green: #10b981; --red: #ef4444; }
+[data-color="green"] { --accent: #10b981; --accent2: #059669; --gold: #f59e0b; --green: #10b981; --red: #ef4444; }
+[data-color="purple"]{ --accent: #8b5cf6; --accent2: #6d28d9; --gold: #f59e0b; --green: #10b981; --red: #ef4444; }
+[data-color="orange"]{ --accent: #f97316; --accent2: #ea580c; --gold: #f59e0b; --green: #10b981; --red: #ef4444; }
+[data-color="rose"]  { --accent: #f43f5e; --accent2: #be123c; --gold: #f59e0b; --green: #10b981; --red: #ef4444; }
+
+--radius: 14px;
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
 }
 
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg-page);
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-/* ===== SPLASH ===== */
-#splash {
-  position: fixed; inset: 0;
-  background: var(--green-dark);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 16px;
-  z-index: 9999;
-  transition: opacity 0.4s ease;
-}
-#splash.fade-out { opacity: 0; pointer-events: none; }
-.splash-logo { animation: splashPulse 1.2s ease infinite alternate; }
-@keyframes splashPulse { from { transform: scale(1); } to { transform: scale(1.05); } }
-.splash-title { color: white; font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
-.splash-sub { color: rgba(255,255,255,0.6); font-size: 14px; }
-
-/* ===== ONBOARDING ===== */
-#onboarding {
-  position: fixed; inset: 0;
-  background: var(--bg-page);
-  overflow-y: auto;
-  z-index: 100;
-  padding: 40px 24px;
-  padding-bottom: calc(40px + var(--safe-bottom));
-}
-.onboard-inner { max-width: 420px; margin: 0 auto; }
-.onboard-icon { font-size: 56px; margin-bottom: 16px; }
-#onboarding h1 { font-size: 26px; font-weight: 600; line-height: 1.25; margin-bottom: 12px; }
-#onboarding p { font-size: 15px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 32px; }
-.onboard-form label {
-  display: block; font-size: 13px; font-weight: 500;
-  color: var(--text-secondary); margin-bottom: 6px; margin-top: 16px;
-}
-.onboard-form input[type="text"],
-.onboard-form input[type="url"] {
-  width: 100%;
-  background: var(--bg-card);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  font-size: 15px;
-  color: var(--text-primary);
-  outline: none;
-  transition: border-color 0.15s;
-}
-.onboard-form input:focus { border-color: var(--green-mid); }
-.drive-hint {
-  font-size: 12px; color: var(--text-tertiary);
-  background: var(--green-pale); border-radius: var(--radius-sm);
-  padding: 10px 12px; margin-top: 8px; line-height: 1.5;
-}
-.btn-primary {
-  display: block; width: 100%;
-  background: var(--green-dark); color: white;
-  border: none; border-radius: var(--radius-md);
-  padding: 16px; margin-top: 32px;
-  font-size: 16px; font-weight: 600;
-  cursor: pointer; transition: background 0.15s;
-}
-.btn-primary:active { background: var(--green-mid); }
-
-/* ===== MAIN APP LAYOUT ===== */
-#app {
-  display: flex; flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-}
-
-/* TOPBAR */
-#topbar {
-  background: var(--bg-card);
-  border-bottom: 0.5px solid var(--border);
-  flex-shrink: 0;
-  z-index: 50;
-  position: relative;
-}
-.topbar-inner {
+/* ── TOPBAR ── */
+.topbar {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  background: var(--topbar-bg); backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  padding: 11px 16px;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 18px 8px;
 }
-.topbar-left { display: flex; align-items: center; gap: 10px; }
-.app-name { font-size: 19px; font-weight: 600; letter-spacing: -0.3px; }
-.week-badge {
-  background: var(--green-pale); color: var(--green-dark);
-  font-size: 12px; font-weight: 600;
-  padding: 3px 10px; border-radius: 99px;
+.topbar-logo { display:flex; align-items:center; gap:8px; }
+.topbar-logo .appname { color:var(--accent); font-weight:700; font-size:16px; letter-spacing:-0.3px; }
+.topbar-logo .ver {
+  color:var(--text3); font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+  background:rgba(79,142,247,0.1); border:1px solid rgba(79,142,247,0.2);
+  padding:2px 6px; border-radius:5px;
 }
-.sync-btn {
-  background: none; border: none;
-  color: var(--text-secondary); cursor: pointer;
-  padding: 6px; border-radius: 8px;
-  transition: all 0.15s;
-  display: flex; align-items: center; justify-content: center;
+.topbar-right { display:flex; align-items:center; gap:8px; }
+.greeting { font-size:12px; color:var(--text2); }
+.icon-btn {
+  width:34px; height:34px; border-radius:10px;
+  background:var(--card2); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:15px; transition:all 0.2s;
+  color:var(--text2);
 }
-.sync-btn:active { background: var(--bg-page); }
-.sync-btn.spinning svg { animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.icon-btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
 
-/* PLAN TABS */
-.plan-tabs {
-  display: flex;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 10px;
-  gap: 0;
-  scrollbar-width: none;
-}
-.plan-tabs::-webkit-scrollbar { display: none; }
-.plan-tab {
-  flex-shrink: 0;
-  padding: 9px 14px;
-  font-size: 13px; font-weight: 400;
-  color: var(--text-secondary);
-  border-bottom: 2px solid transparent;
-  cursor: pointer; white-space: nowrap;
-  transition: all 0.15s;
-  background: none; border-left: none; border-right: none; border-top: none;
-}
-.plan-tab.active { color: var(--green-dark); border-bottom-color: var(--green-dark); font-weight: 500; }
+/* ── SCROLL PROGRESS ── */
+.scroll-progress { position:fixed; top:56px; left:0; right:0; z-index:99; height:2px; background:var(--border); }
+.scroll-bar { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); width:0; transition:width 0.1s; }
 
-/* MAIN CONTENT */
-#main-content {
-  flex: 1; overflow: hidden; position: relative;
-}
-.screen {
-  position: absolute; inset: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 16px 16px calc(var(--nav-height) + var(--safe-bottom) + 16px);
-}
-.screen.hidden { display: none; }
-.screen.active { display: block; }
+/* ── MAIN ── */
+.main { padding-top:60px; padding-bottom:72px; min-height:100vh; overflow-y:auto; }
 
-/* WEEK NAV */
-.week-nav-bar {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 14px;
-}
-.wk-btn {
-  width: 40px; height: 40px;
-  background: var(--bg-card);
-  border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  font-size: 22px; color: var(--text-primary);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background 0.1s;
-}
-.wk-btn:active { background: var(--bg-page); }
-.wk-center { flex: 1; text-align: center; }
-.wk-title { display: block; font-size: 15px; font-weight: 500; }
-.wk-dates { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+/* ── PAGES ── */
+.page { display:none; animation: fadeIn 0.2s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
-/* KAZANIM AREA */
-.kazanim-area { min-height: 120px; }
+/* ── SECTION HDR ── */
+.section-hdr { padding:18px 16px 10px; display:flex; align-items:center; gap:8px; }
+.section-hdr-bar { width:3px; height:18px; border-radius:3px; background:var(--accent); flex-shrink:0; }
+.section-hdr-title { font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--text3); text-transform:uppercase; }
+.section-hdr-right { margin-left:auto; }
 
-/* PLAN CARD */
-.plan-card {
-  background: var(--bg-card);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  margin-bottom: 12px;
-  animation: slideInCard 0.2s ease;
-}
-@keyframes slideInCard {
-  from { opacity: 0; transform: translateX(10px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-.card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
-.card-icon-wrap {
-  width: 42px; height: 42px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
-}
-.card-info-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
-.card-info-sub { font-size: 12px; color: var(--text-secondary); }
+/* ── HOME ── */
+.home-header { padding:18px 16px 14px; border-bottom:1px solid var(--border); }
+.home-header h1 { font-size:20px; font-weight:700; }
+.home-header p { font-size:12px; color:var(--text2); margin-top:3px; }
 
-.kazanim-section-label {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
-  color: var(--text-tertiary); text-transform: uppercase;
-  margin-bottom: 8px;
+.week-nav { display:flex; align-items:center; gap:8px; padding:14px 16px 10px; }
+.wnav-btn {
+  width:38px; height:38px; border-radius:11px;
+  background:var(--card2); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:14px; transition:all 0.2s; flex-shrink:0;
+  color:var(--text2);
 }
-.kazanim-item {
-  display: flex; align-items: flex-start; gap: 9px;
-  padding: 10px 12px;
-  background: var(--bg-page);
-  border-radius: var(--radius-sm);
-  margin-bottom: 7px;
-  font-size: 13.5px; line-height: 1.5;
-}
-.kazanim-bullet {
-  width: 7px; height: 7px; border-radius: 50%;
-  flex-shrink: 0; margin-top: 5px;
-}
+.wnav-btn:hover:not(:disabled) { background:var(--accent); color:#fff; border-color:var(--accent); }
+.wnav-btn:disabled { opacity:0.3; cursor:not-allowed; }
+.week-info { flex:1; text-align:center; }
+.week-num { font-size:15px; font-weight:700; color:var(--accent); }
+.week-dates { font-size:10px; color:var(--text3); margin-top:2px; font-family:'JetBrains Mono',monospace; }
+.week-type-badge { font-size:10px; margin-top:4px; display:inline-block; padding:2px 8px; border-radius:20px; }
+.badge-holiday { background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); }
+.badge-term1   { background:rgba(79,142,247,0.12); color:var(--accent); border:1px solid rgba(79,142,247,0.25); }
+.badge-term2   { background:rgba(139,92,246,0.12); color:#a78bfa; border:1px solid rgba(139,92,246,0.25); }
 
-.empty-state {
-  text-align: center; padding: 48px 20px;
-  color: var(--text-tertiary);
+.week-slide-wrap { padding:0 16px 16px; touch-action:pan-y; }
+.week-card {
+  background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden;
+  transition:border-color 0.2s;
 }
-.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-state p { font-size: 14px; line-height: 1.6; }
-.empty-state .empty-action {
-  display: inline-block; margin-top: 16px;
-  background: var(--green-dark); color: white;
-  font-size: 14px; font-weight: 500;
-  padding: 10px 22px; border-radius: 99px;
-  cursor: pointer; border: none;
-  transition: background 0.15s;
+.week-card.holiday { border-color:rgba(245,158,11,0.4); background:rgba(245,158,11,0.04); }
+.week-card-top {
+  padding:14px 16px 12px;
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
 }
-.empty-state .empty-action:active { background: var(--green-mid); }
+.wcard-title { font-size:13px; font-weight:600; }
+.btn-add-kazanim {
+  padding:5px 12px; border-radius:8px;
+  background:var(--accent); color:#fff;
+  border:none; font-size:11px; font-weight:600;
+  cursor:pointer; font-family:'Space Grotesk',sans-serif;
+  transition:all 0.15s;
+}
+.btn-add-kazanim:hover { opacity:0.85; }
 
-/* SWIPE HINT */
-.swipe-hint-row {
-  display: flex; align-items: center; justify-content: center;
-  gap: 10px; padding: 10px 0 4px;
-  font-size: 11px; color: var(--text-tertiary);
-}
-.tab-dots { display: flex; gap: 5px; align-items: center; }
-.tab-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--border-strong); transition: all 0.2s;
-}
-.tab-dot.active { width: 16px; border-radius: 3px; background: var(--green-mid); }
+.week-card-body { padding:12px 14px 14px; }
+.holiday-msg { text-align:center; padding:28px 20px; }
+.holiday-icon { font-size:36px; margin-bottom:10px; }
+.holiday-name { font-size:16px; font-weight:700; color:#f59e0b; margin-bottom:4px; }
+.holiday-dates { font-size:12px; color:var(--text3); }
 
-/* ===== PLANS SCREEN ===== */
-.search-bar {
-  display: flex; align-items: center; gap: 9px;
-  background: var(--bg-card);
-  border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  padding: 10px 13px; margin-bottom: 16px;
+.kazanim-list { display:flex; flex-direction:column; gap:8px; }
+.kaz-item {
+  background:var(--bg2); border:1px solid var(--border); border-radius:10px;
+  padding:10px 12px; display:flex; align-items:flex-start; gap:10px;
+  transition:border-color 0.15s;
 }
-.search-icon { color: var(--text-tertiary); flex-shrink: 0; }
-.search-bar input {
-  flex: 1; background: none; border: none; outline: none;
-  font-size: 14px; color: var(--text-primary);
-  font-family: inherit;
+.kaz-item:active { border-color:var(--accent); }
+.kaz-num {
+  width:22px; height:22px; border-radius:6px; flex-shrink:0;
+  background:rgba(79,142,247,0.15); color:var(--accent);
+  font-size:10px; font-weight:700; font-family:'JetBrains Mono',monospace;
+  display:flex; align-items:center; justify-content:center;
 }
-.search-bar input::placeholder { color: var(--text-tertiary); }
+.kaz-body { flex:1; }
+.kaz-subject { font-size:10px; font-weight:700; color:var(--accent); margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px; }
+.kaz-text { font-size:12px; color:var(--text2); line-height:1.45; }
+.kaz-actions { display:flex; gap:4px; margin-top:6px; }
+.kaz-act-btn {
+  padding:2px 8px; border-radius:5px; font-size:10px; font-weight:600;
+  border:1px solid var(--border); background:var(--card2); color:var(--text3);
+  cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all 0.15s;
+}
+.kaz-act-btn.del:hover { background:rgba(239,68,68,0.15); color:var(--red); border-color:var(--red); }
+.kaz-act-btn.edit:hover { background:rgba(79,142,247,0.15); color:var(--accent); border-color:var(--accent); }
+.kaz-done { display:flex; align-items:center; gap:4px; }
+.kaz-check {
+  width:16px; height:16px; border-radius:4px; border:1.5px solid var(--border);
+  background:var(--bg); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:9px; flex-shrink:0; transition:all 0.15s;
+}
+.kaz-check.checked { background:var(--green); border-color:var(--green); color:#fff; }
 
-.section-label {
-  font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
-  color: var(--text-tertiary); text-transform: uppercase;
-  margin-bottom: 8px; padding-left: 2px;
+.empty-week { text-align:center; padding:28px 16px; }
+.empty-icon { font-size:36px; margin-bottom:10px; }
+.empty-week p { font-size:13px; color:var(--text2); }
+.empty-week small { font-size:11px; color:var(--text3); margin-top:4px; display:block; }
+
+/* ── PLANLAR ── */
+.class-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 16px 20px; }
+.class-card {
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  padding:16px 12px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
+}
+.class-card::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2)); opacity:0; transition:opacity 0.2s;
+}
+.class-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:var(--shadow); }
+.class-card:hover::after { opacity:1; }
+.class-card:active { transform:translateY(0); }
+.class-emoji { font-size:26px; margin-bottom:7px; }
+.class-name { font-size:13px; font-weight:700; }
+.class-hours { font-size:10px; color:var(--text3); margin-top:2px; }
+.class-badge {
+  display:inline-block; margin-top:7px; font-size:9px; font-weight:700;
+  padding:2px 7px; border-radius:20px;
+  background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.25);
+}
+.class-plan-count {
+  position:absolute; top:10px; right:10px;
+  background:var(--accent); color:#fff; font-size:9px; font-weight:700;
+  width:18px; height:18px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace;
 }
 
-.plan-list { display: flex; flex-direction: column; gap: 8px; }
-.plan-row {
-  background: var(--bg-card);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 13px 14px;
-  display: flex; align-items: center; gap: 12px;
+/* ── DEFTER ── */
+.defter-class-select { padding:0 16px 10px; }
+.defter-select {
+  width:100%; padding:10px 14px; border-radius:10px;
+  background:var(--card); border:1px solid var(--border);
+  color:var(--text); font-size:13px; font-family:'Space Grotesk',sans-serif;
+  appearance:none; cursor:pointer; outline:none;
 }
-.plan-row-icon {
-  width: 44px; height: 44px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
-}
-.plan-row-body { flex: 1; min-width: 0; }
-.plan-row-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
-.plan-row-sub { font-size: 12px; color: var(--text-secondary); }
-.dl-chip {
-  display: inline-flex; align-items: center; gap: 3px;
-  font-size: 11px; color: var(--green-dark);
-  background: var(--green-pale); padding: 2px 8px; border-radius: 99px;
-  margin-top: 4px;
-}
-.btn-download {
-  background: var(--green-pale); color: var(--green-dark);
-  border: none; border-radius: var(--radius-sm);
-  font-size: 13px; font-weight: 600;
-  padding: 8px 14px; cursor: pointer; flex-shrink: 0;
-  transition: background 0.15s;
-}
-.btn-download:active { background: var(--green-light); }
-.btn-delete {
-  background: var(--bg-page); color: var(--text-tertiary);
-  border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm);
-  font-size: 13px; padding: 8px 12px; cursor: pointer; flex-shrink: 0;
-}
+.defter-select:focus { border-color:var(--accent); }
 
-/* ===== SETTINGS SCREEN ===== */
-.settings-group { margin-bottom: 20px; }
+.defter-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:0 16px 12px; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:12px 10px; text-align:center;
+}
+.stat-num { font-size:22px; font-weight:700; color:var(--accent); font-family:'JetBrains Mono',monospace; }
+.stat-label { font-size:9px; color:var(--text3); margin-top:2px; text-transform:uppercase; letter-spacing:0.5px; }
+
+.defter-log { padding:0 16px 20px; display:flex; flex-direction:column; gap:8px; }
+.log-item {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:12px 14px; display:flex; gap:10px; align-items:flex-start;
+}
+.log-dot {
+  width:10px; height:10px; border-radius:50%; margin-top:3px; flex-shrink:0;
+}
+.log-dot.done { background:var(--green); }
+.log-dot.pending { background:var(--gold); }
+.log-meta { flex:1; }
+.log-week { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; margin-bottom:3px; }
+.log-ders { font-size:11px; font-weight:700; color:var(--accent); margin-bottom:2px; }
+.log-kaz { font-size:12px; color:var(--text2); line-height:1.4; }
+.log-status {
+  font-size:9px; font-weight:700; padding:2px 7px; border-radius:20px; flex-shrink:0;
+}
+.log-status.done { background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.25); }
+.log-status.pending { background:rgba(245,158,11,0.12); color:#f59e0b; border:1px solid rgba(245,158,11,0.25); }
+
+/* ── AYARLAR ── */
+.settings-section { padding:0 16px; }
+.settings-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:14px; }
 .settings-group-title {
-  font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
-  color: var(--text-tertiary); text-transform: uppercase;
-  margin-bottom: 8px; padding-left: 2px;
+  padding:10px 14px 6px; font-size:10px; font-weight:700;
+  color:var(--accent); letter-spacing:1px; text-transform:uppercase;
+  background:rgba(79,142,247,0.05); border-bottom:1px solid var(--border);
 }
-.settings-card {
-  background: var(--bg-card);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+.settings-item {
+  padding:12px 14px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
 }
-.settings-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 16px;
-  border-bottom: 0.5px solid var(--border);
+.settings-item:last-child { border-bottom:none; }
+.settings-label { font-size:12px; font-weight:600; }
+.settings-sublabel { font-size:10px; color:var(--text3); margin-top:1px; }
+.settings-input {
+  background:var(--input-bg); border:1px solid var(--border); border-radius:8px;
+  padding:6px 10px; color:var(--text); font-size:11px;
+  font-family:'Space Grotesk',sans-serif; outline:none; transition:border 0.15s;
 }
-.settings-row:last-child { border-bottom: none; }
-.settings-row-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-.settings-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
-.settings-row-title { font-size: 14px; font-weight: 400; }
-.settings-row-sub { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
-.link-btn {
-  background: none; border: none;
-  color: var(--green-dark); font-size: 13px; font-weight: 500;
-  cursor: pointer; flex-shrink: 0; padding: 4px;
+.settings-input:focus { border-color:var(--accent); }
+input[type="date"].settings-input { width:145px; }
+input[type="text"].settings-input { width:145px; }
+.btn-save {
+  width:100%; padding:13px; background:var(--accent); color:#fff;
+  border:none; border-radius:12px; font-size:14px; font-weight:700;
+  cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all 0.2s; margin-top:4px;
 }
-.link-btn.danger { color: #C0392B; }
-.status-dot {
-  width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
-}
-.status-dot.online  { background: #1D9E75; }
-.status-dot.offline { background: #999; }
-.app-version {
-  text-align: center; font-size: 12px; color: var(--text-tertiary);
-  padding: 20px 0 8px;
-}
+.btn-save:hover { opacity:0.88; }
+.btn-save:active { transform:scale(0.98); }
 
-/* ===== BOTTOM NAV ===== */
-#bottom-nav {
-  display: flex;
-  background: var(--bg-card);
-  border-top: 0.5px solid var(--border);
-  padding-bottom: var(--safe-bottom);
-  flex-shrink: 0;
-  position: relative; z-index: 50;
+/* Tema seçici */
+.theme-toggles { display:flex; gap:10px; }
+.theme-toggle {
+  flex:1; padding:9px 6px; border-radius:10px;
+  background:var(--card2); border:1.5px solid var(--border);
+  cursor:pointer; font-size:18px; text-align:center; transition:all 0.2s;
+}
+.theme-toggle.active { border-color:var(--accent); background:rgba(79,142,247,0.12); }
+
+.color-swatches { display:flex; gap:8px; flex-wrap:wrap; }
+.color-swatch {
+  width:32px; height:32px; border-radius:50%; cursor:pointer;
+  border:3px solid transparent; transition:all 0.2s;
+}
+.color-swatch.active { border-color:var(--text); transform:scale(1.15); }
+
+/* Bildirim toggle */
+.toggle-switch {
+  width:44px; height:24px; border-radius:12px; background:var(--border);
+  position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0;
+}
+.toggle-switch.on { background:var(--green); }
+.toggle-switch::after {
+  content:''; position:absolute; width:18px; height:18px;
+  background:#fff; border-radius:50%; top:3px; left:3px;
+  transition:transform 0.2s;
+}
+.toggle-switch.on::after { transform:translateX(20px); }
+
+/* ── HAKKINDA ── */
+.about-content { padding:0 16px 20px; }
+.about-hero { text-align:center; padding:26px 0 18px; }
+.about-logo-txt { font-size:42px; font-weight:700; color:var(--accent); letter-spacing:-2px; }
+.about-ver-txt { font-size:11px; color:var(--text3); margin-top:4px; font-family:'JetBrains Mono',monospace; }
+.about-desc-txt { font-size:13px; color:var(--text2); text-align:center; line-height:1.6; margin-top:10px; }
+.about-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px; }
+.about-card h3 { font-size:12px; font-weight:700; margin-bottom:7px; }
+.about-card p { font-size:11px; color:var(--text3); line-height:1.6; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:100;
+  background:var(--topbar-bg); backdrop-filter:blur(18px);
+  border-top:1px solid var(--border);
+  display:flex; align-items:stretch; height:64px;
+  padding-bottom:env(safe-area-inset-bottom);
 }
 .nav-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  padding: 10px 0 6px; gap: 3px;
-  background: none; border: none;
-  color: var(--text-tertiary); font-size: 10px;
-  cursor: pointer; transition: color 0.15s;
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:3px; cursor:pointer; border:none;
+  background:none; color:var(--text3); font-family:'Space Grotesk',sans-serif;
+  padding:6px 4px; transition:color 0.2s;
 }
-.nav-item.active { color: var(--green-dark); }
-.nav-item svg { flex-shrink: 0; }
+.nav-item.active { color:var(--accent); }
+.nav-icon { font-size:19px; transition:transform 0.2s; }
+.nav-item.active .nav-icon { transform:translateY(-2px); }
+.nav-label { font-size:8px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; }
+.nav-contact {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:6px 12px; gap:3px; border-left:1px solid var(--border); flex-shrink:0; min-width:72px;
+}
+.contact-icons { display:flex; gap:6px; }
+.contact-btn {
+  width:28px; height:28px; border-radius:8px; background:var(--card2);
+  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+  font-size:13px; cursor:pointer; text-decoration:none; transition:all 0.2s;
+}
+.contact-btn:hover { background:var(--accent); border-color:var(--accent); }
+.contact-label { font-size:8px; font-weight:700; color:var(--text3); letter-spacing:0.5px; text-transform:uppercase; }
 
-/* ===== TOAST ===== */
+/* ── MODALLER ── */
+.overlay {
+  display:none; position:fixed; inset:0; z-index:300;
+  background:rgba(0,0,0,0.65); backdrop-filter:blur(6px);
+}
+.overlay.open { display:flex; }
+
+/* Bottom sheet */
+.sheet-wrap { display:flex; align-items:flex-end; justify-content:center; width:100%; }
+.sheet {
+  background:var(--modal-bg); border:1px solid var(--border);
+  border-radius:20px 20px 0 0; width:100%; max-width:600px;
+  max-height:88vh; overflow-y:auto;
+  animation:slideUp 0.28s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.sheet-handle { width:36px; height:4px; border-radius:2px; background:var(--border); margin:10px auto 14px; }
+.sheet-header { padding:0 18px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.sheet-title { font-size:15px; font-weight:700; }
+.sheet-close { width:30px; height:30px; border-radius:8px; background:var(--card2); border:none; color:var(--text2); cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; }
+.sheet-body { padding:16px 18px 24px; }
+
+/* Center modal */
+.center-wrap { display:flex; align-items:center; justify-content:center; width:100%; padding:20px; }
+.center-modal {
+  background:var(--modal-bg); border:1px solid var(--border); border-radius:20px;
+  width:100%; max-width:420px; max-height:85vh; overflow:hidden;
+  display:flex; flex-direction:column; animation:fadeScale 0.28s ease;
+}
+@keyframes fadeScale { from{transform:scale(0.92);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* Kazanım form */
+.form-group { margin-bottom:14px; }
+.form-label { font-size:11px; font-weight:700; color:var(--text3); margin-bottom:6px; display:block; text-transform:uppercase; letter-spacing:0.5px; }
+.form-select, .form-input, .form-textarea {
+  width:100%; padding:10px 12px; border-radius:10px;
+  background:var(--input-bg); border:1px solid var(--border);
+  color:var(--text); font-size:13px; font-family:'Space Grotesk',sans-serif;
+  outline:none; transition:border 0.15s;
+}
+.form-select:focus, .form-input:focus, .form-textarea:focus { border-color:var(--accent); }
+.form-textarea { resize:none; height:90px; line-height:1.5; }
+.form-actions { display:flex; gap:8px; margin-top:16px; }
+.btn-primary {
+  flex:1; padding:12px; background:var(--accent); color:#fff;
+  border:none; border-radius:10px; font-size:13px; font-weight:700;
+  cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all 0.15s;
+}
+.btn-primary:hover { opacity:0.88; }
+.btn-secondary {
+  flex:1; padding:12px; background:var(--card2); color:var(--text2);
+  border:1px solid var(--border); border-radius:10px; font-size:13px; font-weight:600;
+  cursor:pointer; font-family:'Space Grotesk',sans-serif;
+}
+
+/* Drive import */
+.drive-card {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:14px; display:flex; align-items:center; gap:12px; margin-bottom:12px;
+}
+.drive-icon { font-size:22px; flex-shrink:0; }
+.drive-text h4 { font-size:13px; font-weight:600; }
+.drive-text p { font-size:11px; color:var(--text3); margin-top:2px; }
+.btn-drive {
+  padding:8px 14px; border-radius:9px; background:var(--accent); color:#fff;
+  border:none; font-size:11px; font-weight:700; cursor:pointer;
+  font-family:'Space Grotesk',sans-serif; white-space:nowrap; transition:all 0.15s; flex-shrink:0;
+}
+.btn-drive:hover { opacity:0.88; }
+.json-import-area { display:flex; flex-direction:column; gap:8px; }
+.json-textarea { width:100%; height:120px; padding:10px 12px; border-radius:10px; background:var(--input-bg); border:1px solid var(--border); color:var(--text); font-size:11px; font-family:'JetBrains Mono',monospace; resize:none; outline:none; }
+.json-textarea:focus { border-color:var(--accent); }
+
+/* Ders tablosu */
+.ders-table { width:100%; border-collapse:collapse; margin-bottom:2px; }
+.ders-table th { font-size:10px; font-weight:700; color:var(--text3); text-align:left; padding:5px 0; border-bottom:1px solid var(--border); }
+.ders-table td { font-size:12px; color:var(--text2); padding:7px 0; border-bottom:1px solid rgba(30,45,74,0.4); }
+.ders-table td:last-child { text-align:right; font-family:'JetBrains Mono',monospace; color:var(--accent); font-weight:700; }
+.ders-table tr.total td { font-weight:700; color:var(--text); border-top:1px solid var(--border); border-bottom:none; }
+.ders-cat { font-size:10px; font-weight:700; color:var(--accent2); padding:8px 0 4px; display:block; }
+
+/* Changelog */
+.cl-header { padding:18px 18px 14px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.cl-ver-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(79,142,247,0.12); border:1px solid rgba(79,142,247,0.25);
+  border-radius:7px; padding:3px 9px; font-size:10px; font-weight:700;
+  color:var(--accent); font-family:'JetBrains Mono',monospace; margin-bottom:8px;
+}
+.cl-title { font-size:18px; font-weight:700; }
+.cl-sub { font-size:11px; color:var(--text3); margin-top:3px; }
+.cl-body { flex:1; overflow-y:auto; padding:14px 18px; }
+.cl-items { display:flex; flex-direction:column; gap:8px; }
+.cl-item { display:flex; align-items:flex-start; gap:10px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:10px 12px; }
+.cl-icon { font-size:17px; flex-shrink:0; margin-top:1px; }
+.cl-item h4 { font-size:12px; font-weight:700; }
+.cl-item p { font-size:11px; color:var(--text3); margin-top:2px; line-height:1.4; }
+.cl-footer { padding:12px 18px 18px; border-top:1px solid var(--border); flex-shrink:0; }
+.cl-check-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; cursor:pointer; }
+.cl-check { width:18px; height:18px; border-radius:5px; border:1.5px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:10px; transition:all 0.15s; }
+.cl-check.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+.cl-check-label { font-size:11px; color:var(--text2); }
+.btn-cl-ok { width:100%; padding:13px; background:var(--accent); color:#fff; border:none; border-radius:12px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all 0.15s; }
+.btn-cl-ok:hover { opacity:0.88; }
+
+/* Error modal */
+.err-header { background:rgba(239,68,68,0.08); padding:14px 18px; border-bottom:1px solid rgba(239,68,68,0.2); display:flex; align-items:center; gap:8px; }
+.err-title { font-size:14px; font-weight:700; color:var(--red); }
+.err-body { padding:14px 18px 20px; }
+.err-msg { font-size:12px; color:var(--text2); line-height:1.5; margin-bottom:10px; }
+.err-detail { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--red); line-height:1.5; max-height:130px; overflow-y:auto; word-break:break-all; }
+.err-actions { display:flex; gap:8px; margin-top:12px; }
+.btn-err { flex:1; padding:10px; border-radius:9px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Space Grotesk',sans-serif; border:none; transition:all 0.15s; }
+.btn-err-copy { background:var(--card2); color:var(--text2); border:1px solid var(--border); }
+.btn-err-close { background:var(--red); color:#fff; }
+
+/* Bildirim banner */
+.notif-banner {
+  margin:0 16px 10px; padding:12px 14px;
+  background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2);
+  border-radius:12px; display:flex; align-items:center; gap:10px;
+  animation:slideDown 0.3s ease;
+}
+@keyframes slideDown { from{transform:translateY(-10px);opacity:0} to{transform:translateY(0);opacity:1} }
+.notif-icon { font-size:20px; flex-shrink:0; }
+.notif-text { flex:1; }
+.notif-text h4 { font-size:12px; font-weight:700; }
+.notif-text p { font-size:11px; color:var(--text2); margin-top:2px; }
+.notif-close { font-size:14px; color:var(--text3); cursor:pointer; padding:4px; flex-shrink:0; }
+
+/* TOAST */
 .toast {
-  position: fixed; bottom: calc(var(--nav-height) + var(--safe-bottom) + 12px);
-  left: 50%; transform: translateX(-50%) translateY(8px);
-  background: #1a1a1a; color: white;
-  font-size: 13px; font-weight: 500;
-  padding: 11px 20px; border-radius: 99px;
-  white-space: nowrap; pointer-events: none;
-  opacity: 0; transition: all 0.25s;
-  z-index: 9000;
-  max-width: calc(100vw - 32px);
+  position:fixed; bottom:82px; left:50%; transform:translateX(-50%) translateY(16px);
+  background:var(--card2); border:1px solid var(--border); border-radius:10px;
+  padding:9px 18px; font-size:12px; font-weight:600; color:var(--text);
+  opacity:0; transition:all 0.25s; pointer-events:none; z-index:1000; white-space:nowrap;
+  box-shadow:var(--shadow);
 }
-@media (prefers-color-scheme: dark) {
-  .toast { background: #F0F0EC; color: #1a1a1a; }
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* ===== MODAL ===== */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 8000;
-  display: flex; align-items: flex-end; justify-content: center;
-  padding-bottom: var(--safe-bottom);
-  animation: overlayIn 0.2s ease;
+/* PWA install btn */
+.pwa-install-bar {
+  display:none; align-items:center; gap:10px;
+  margin:0 16px 10px; padding:11px 14px;
+  background:linear-gradient(135deg,rgba(79,142,247,0.15),rgba(124,58,237,0.1));
+  border:1px solid rgba(79,142,247,0.3); border-radius:12px; cursor:pointer;
 }
-@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-.modal-overlay.hidden { display: none; }
-.modal-box {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 24px 20px;
-  width: 100%; max-width: 480px;
-  animation: sheetUp 0.25s ease;
-}
-@keyframes sheetUp { from { transform: translateY(40px); opacity:0; } to { transform: translateY(0); opacity:1; } }
-.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
-.modal-input {
-  width: 100%;
-  background: var(--bg-page);
-  border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px; font-size: 15px;
-  color: var(--text-primary); outline: none;
-  font-family: inherit; margin-bottom: 12px;
-}
-.modal-input:focus { border-color: var(--green-mid); }
-.modal-actions { display: flex; gap: 10px; margin-top: 8px; }
-.modal-btn {
-  flex: 1; padding: 13px;
-  border-radius: var(--radius-sm);
-  font-size: 15px; font-weight: 500;
-  cursor: pointer; border: none;
-}
-.modal-btn.primary { background: var(--green-dark); color: white; }
-.modal-btn.secondary { background: var(--bg-page); color: var(--text-secondary); border: 0.5px solid var(--border-strong); }
-
-/* UTILITY */
-.hidden { display: none !important; }
-
+.pwa-install-bar.show { display:flex; }
+.pwa-install-bar span { flex:1; font-size:12px; font-weight:600; }
+.btn-pwa { padding:6px 14px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Space Grotesk',sans-serif; flex-shrink:0; }
 </style>
-
-  <title>PlanMate</title>
 </head>
 <body>
 
-  <!-- SPLASH SCREEN -->
-  <div id="splash">
-    <div class="splash-logo">
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-        <rect width="64" height="64" rx="16" fill="#0F6E56"/>
-        <rect x="16" y="14" width="24" height="3" rx="1.5" fill="white" opacity="0.9"/>
-        <rect x="16" y="21" width="32" height="3" rx="1.5" fill="white" opacity="0.7"/>
-        <rect x="16" y="28" width="28" height="3" rx="1.5" fill="white" opacity="0.5"/>
-        <rect x="16" y="38" width="20" height="14" rx="4" fill="white" opacity="0.2"/>
-        <rect x="38" y="38" width="10" height="14" rx="3" fill="#9FE1CB"/>
-      </svg>
-    </div>
-    <div class="splash-title">PlanMate</div>
-    <div class="splash-sub">Yükleniyor...</div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="appname">S-Kazanım</span>
+    <span class="ver">Beta 1.1</span>
   </div>
-
-  <!-- ONBOARDING (ilk açılış) -->
-  <div id="onboarding" class="hidden">
-    <div class="onboard-inner">
-      <div class="onboard-icon">📋</div>
-      <h1>PlanMate'e Hoş Geldiniz</h1>
-      <p>Yıllık planlarınızı Google Drive'dan indirin, bu haftanın kazanımlarını tek dokunuşla görün.</p>
-      <div class="onboard-form">
-        <label>Adınız Soyadınız</label>
-        <input type="text" id="ob-name" placeholder="Örn: Ayşe Kaya">
-        <label>Okul Adı</label>
-        <input type="text" id="ob-school" placeholder="Örn: Atatürk İlkokulu">
-        <label>Yıllık Plan Klasörü (Google Drive paylaşım linki)</label>
-        <input type="url" id="ob-drive" placeholder="https://drive.google.com/...">
-        <div class="drive-hint">
-          💡 Drive klasörünüzü "herkesle paylaş (görüntüleyici)" olarak ayarlayın
-        </div>
-      </div>
-      <button class="btn-primary" onclick="finishOnboarding()">Başlayalım →</button>
-    </div>
+  <div class="topbar-right">
+    <span class="greeting" id="greeting"></span>
+    <div class="icon-btn" id="themeBtn" title="Tema değiştir">🌙</div>
+    <div class="icon-btn" id="notifBtn" title="Bildirimler">🔔</div>
   </div>
+</div>
 
-  <!-- ANA UYGULAMA -->
-  <div id="app" class="hidden">
+<div class="scroll-progress"><div class="scroll-bar" id="scrollBar"></div></div>
 
-    <!-- TOP BAR -->
-    <header id="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-left">
-          <span class="app-name">PlanMate</span>
-          <span id="week-badge" class="week-badge">Hafta –</span>
-        </div>
-        <button class="sync-btn" id="sync-btn" onclick="syncDrive()" title="Drive'ı Senkronize Et">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M23 4v6h-6M1 20v-6h6"/>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-          </svg>
-        </button>
+<!-- MAIN -->
+<div class="main" id="mainContent">
+
+  <!-- ANA SAYFA -->
+  <div class="page active" id="page-home">
+    <div class="home-header">
+      <h1>📅 Haftalık Plan</h1>
+      <p id="schoolYearLabel">2024-2025 Öğretim Yılı</p>
+    </div>
+
+    <!-- PWA install bar -->
+    <div class="pwa-install-bar" id="pwaBar">
+      <span>📱 Ana ekrana ekle</span>
+      <button class="btn-pwa" id="pwaInstallBtn">Ekle</button>
+      <span style="font-size:16px;color:var(--text3);cursor:pointer;" onclick="hidePWA()">✕</span>
+    </div>
+
+    <!-- Bildirim bannerı -->
+    <div id="notifBanners"></div>
+
+    <!-- Hafta navigasyonu -->
+    <div class="week-nav">
+      <button class="wnav-btn" id="prevWeekBtn" onclick="changeWeek(-1)">◀</button>
+      <div class="week-info">
+        <div class="week-num" id="weekNumLabel">—</div>
+        <div class="week-dates" id="weekDatesLabel">—</div>
+        <div id="weekTypeBadge"></div>
       </div>
-      <!-- PLAN TABS -->
-      <div id="plan-tabs" class="plan-tabs"></div>
-    </header>
+      <button class="wnav-btn" id="nextWeekBtn" onclick="changeWeek(1)">▶</button>
+    </div>
 
-    <!-- SCREENS -->
-    <main id="main-content">
-
-      <!-- SCREEN: ANA SAYFA -->
-      <div class="screen active" id="screen-home">
-        <div class="week-nav-bar">
-          <button class="wk-btn" onclick="changeWeek(-1)">&#8249;</button>
-          <div class="wk-center">
-            <span id="week-label" class="wk-title">– Hafta</span>
-            <span id="week-dates" class="wk-dates">–</span>
-          </div>
-          <button class="wk-btn" onclick="changeWeek(1)">›</button>
-        </div>
-
-        <div id="kazanim-area" class="kazanim-area">
-          <!-- kazanım kartları buraya -->
-        </div>
-
-        <div class="swipe-hint-row">
-          <span class="swipe-hint-text">← Ders değiştir →</span>
-          <div id="tab-dots" class="tab-dots"></div>
-        </div>
+    <div class="week-slide-wrap" id="weekSlideWrap">
+      <div class="week-card" id="weekCard">
+        <div class="week-card-body"><div class="empty-week"><div class="empty-icon">⚙️</div><p>Yükleniyor...</p></div></div>
       </div>
-
-      <!-- SCREEN: PLANLAR -->
-      <div class="screen hidden" id="screen-plans">
-        <div class="search-bar">
-          <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="search" id="plan-search" placeholder="Sınıf veya ders ara…" oninput="filterPlans()">
-        </div>
-
-        <div class="section-label">Drive'daki Planlar</div>
-        <div id="plan-list" class="plan-list">
-          <!-- plan satırları -->
-        </div>
-
-        <div class="section-label" style="margin-top:20px;">İndirilen Planlar</div>
-        <div id="downloaded-list" class="plan-list">
-          <!-- indirilmiş planlar -->
-        </div>
-      </div>
-
-      <!-- SCREEN: AYARLAR -->
-      <div class="screen hidden" id="screen-settings">
-        <div class="settings-group">
-          <div class="settings-group-title">Öğretmen Bilgileri</div>
-          <div class="settings-card">
-            <div class="settings-row">
-              <div class="settings-row-left">
-                <span class="settings-icon">👤</span>
-                <div>
-                  <div class="settings-row-title">Ad Soyad</div>
-                  <div class="settings-row-sub" id="s-name">–</div>
-                </div>
-              </div>
-              <button class="link-btn" onclick="editProfile()">Düzenle</button>
-            </div>
-            <div class="settings-row">
-              <div class="settings-row-left">
-                <span class="settings-icon">🏫</span>
-                <div>
-                  <div class="settings-row-title">Okul</div>
-                  <div class="settings-row-sub" id="s-school">–</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-title">Google Drive</div>
-          <div class="settings-card">
-            <div class="settings-row">
-              <div class="settings-row-left">
-                <span class="settings-icon">☁️</span>
-                <div>
-                  <div class="settings-row-title">Bağlantı Durumu</div>
-                  <div class="settings-row-sub" id="s-drive-status">Bağlı değil</div>
-                </div>
-              </div>
-              <span id="s-drive-dot" class="status-dot offline"></span>
-            </div>
-            <div class="settings-row">
-              <div class="settings-row-left">
-                <span class="settings-icon">🔗</span>
-                <div>
-                  <div class="settings-row-title">Klasör Linki</div>
-                  <div class="settings-row-sub" id="s-drive-url" style="word-break:break-all;max-width:200px;">–</div>
-                </div>
-              </div>
-              <button class="link-btn" onclick="editDriveUrl()">Değiştir</button>
-            </div>
-            <div class="settings-row">
-              <div class="settings-row-left">
-                <span class="settings-icon">🔄</span>
-                <div>
-                  <div class="settings-row-title">Son Senkronizasyon</div>
-                  <div class="settings-row-sub" id="s-last-sync">–</div>
-                </div>
-              </div>
-              <button class="link-btn" onclick="syncDrive()">Şimdi Senkronize Et</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-title">Yıl Ayarları</div>
-          <div class="settings-card">
-            <div class="settings-row">
-              <div class="settings-row-left">
-                <span class="settings-icon">📅</span>
-                <div>
-                  <div class="settings-row-title">Yıl Başlangıcı</div>
-                  <div class="settings-row-sub">Otomatik hesaplama için gerekli</div>
-                </div>
-              </div>
-              <input type="date" id="year-start-input" onchange="saveYearStart()" style="font-size:12px;border:0.5px solid #ccc;border-radius:6px;padding:4px 6px;">
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-title">Uygulama</div>
-          <div class="settings-card">
-            <div class="settings-row">
-              <div class="settings-row-left">
-                <span class="settings-icon">🗑️</span>
-                <div>
-                  <div class="settings-row-title">Tüm Verileri Sıfırla</div>
-                  <div class="settings-row-sub">İndirilen tüm planlar silinir</div>
-                </div>
-              </div>
-              <button class="link-btn danger" onclick="resetAll()">Sıfırla</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="app-version">PlanMate v1.0 · Öğretmenler için</div>
-      </div>
-
-    </main>
-
-    <!-- BOTTOM NAV -->
-    <nav id="bottom-nav">
-      <button class="nav-item active" id="nav-home" onclick="switchScreen('home')">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span>Ana Sayfa</span>
-      </button>
-      <button class="nav-item" id="nav-plans" onclick="switchScreen('plans')">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        <span>Planlar</span>
-      </button>
-      <button class="nav-item" id="nav-settings" onclick="switchScreen('settings')">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Ayarlar</span>
-      </button>
-    </nav>
-
-  </div><!-- /#app -->
-
-  <!-- TOAST -->
-  <div id="toast" class="toast"></div>
-
-  <!-- MODAL -->
-  <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal()">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div id="modal-content"></div>
     </div>
   </div>
 
-  <script>
-/* ===========================
-   PlanMate – app.js
-   =========================== */
+  <!-- PLANLAR -->
+  <div class="page" id="page-planlar">
+    <div class="section-hdr">
+      <div class="section-hdr-bar"></div>
+      <span class="section-hdr-title">📚 Sınıf Planları</span>
+    </div>
+    <div class="class-grid" id="classGrid"></div>
+  </div>
 
-'use strict';
+  <!-- DEFTER -->
+  <div class="page" id="page-defter">
+    <div class="section-hdr">
+      <div class="section-hdr-bar"></div>
+      <span class="section-hdr-title">📓 Sınıf Defteri</span>
+    </div>
+    <div class="defter-class-select">
+      <select class="defter-select" id="defterClass" onchange="renderDefter()">
+        <option value="">-- Sınıf Seçin --</option>
+        <option>1. Sınıf</option><option>2. Sınıf</option><option>3. Sınıf</option>
+        <option>4. Sınıf</option><option>5. Sınıf</option><option>6. Sınıf</option>
+        <option>7. Sınıf</option><option>8. Sınıf</option>
+      </select>
+    </div>
+    <div class="defter-stats" id="defterStats">
+      <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Toplam</div></div>
+      <div class="stat-card"><div class="stat-num" id="statDone">—</div><div class="stat-label">İşlendi</div></div>
+      <div class="stat-card"><div class="stat-num" id="statPct">—</div><div class="stat-label">Oran</div></div>
+    </div>
+    <div class="defter-log" id="defterLog">
+      <div class="empty-week" style="text-align:center;padding:30px 0;">
+        <div class="empty-icon">📓</div>
+        <p>Sınıf seçin</p>
+        <small>İşlenen dersleri takip edin</small>
+      </div>
+    </div>
+  </div>
 
-/* ── STORAGE HELPERS ──────────────────────────────────── */
-const Store = {
-  get: (k, fallback = null) => {
-    try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : fallback; }
-    catch { return fallback; }
-  },
-  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
-  del: (k)   => { try { localStorage.removeItem(k); } catch {} },
+  <!-- AYARLAR -->
+  <div class="page" id="page-ayarlar">
+    <div class="section-hdr">
+      <div class="section-hdr-bar"></div>
+      <span class="section-hdr-title">⚙️ Ayarlar</span>
+    </div>
+    <div class="settings-section">
+
+      <!-- Görünüm -->
+      <div class="settings-card">
+        <div class="settings-group-title">🎨 Görünüm</div>
+        <div class="settings-item" style="flex-direction:column;align-items:stretch;gap:10px;">
+          <div class="settings-label">Tema</div>
+          <div class="theme-toggles">
+            <div class="theme-toggle active" id="toggleDark" onclick="setTheme('dark')">🌙<br><span style="font-size:9px;color:var(--text3);">Koyu</span></div>
+            <div class="theme-toggle" id="toggleLight" onclick="setTheme('light')">☀️<br><span style="font-size:9px;color:var(--text3);">Açık</span></div>
+          </div>
+        </div>
+        <div class="settings-item" style="flex-direction:column;align-items:stretch;gap:10px;">
+          <div class="settings-label">Renk Teması</div>
+          <div class="color-swatches">
+            <div class="color-swatch active" data-color="blue" style="background:#4f8ef7;" onclick="setColor('blue',this)"></div>
+            <div class="color-swatch" data-color="green" style="background:#10b981;" onclick="setColor('green',this)"></div>
+            <div class="color-swatch" data-color="purple" style="background:#8b5cf6;" onclick="setColor('purple',this)"></div>
+            <div class="color-swatch" data-color="orange" style="background:#f97316;" onclick="setColor('orange',this)"></div>
+            <div class="color-swatch" data-color="rose" style="background:#f43f5e;" onclick="setColor('rose',this)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bildirimler -->
+      <div class="settings-card">
+        <div class="settings-group-title">🔔 Bildirimler</div>
+        <div class="settings-item">
+          <div><div class="settings-label">Haftalık Hatırlatıcı</div><div class="settings-sublabel">Her Pazartesi plan hatırlatır</div></div>
+          <div class="toggle-switch" id="notifToggle" onclick="toggleNotif()"></div>
+        </div>
+        <div class="settings-item">
+          <div><div class="settings-label">Hatırlatma Saati</div><div class="settings-sublabel">Bildirimin gönderileceği saat</div></div>
+          <input type="time" class="settings-input" id="set-notifTime" value="08:00" style="width:100px;">
+        </div>
+      </div>
+
+      <!-- Takvim -->
+      <div class="settings-card">
+        <div class="settings-group-title">📅 Okul Takvimi</div>
+        <div class="settings-item">
+          <div><div class="settings-label">Açılış Tarihi</div><div class="settings-sublabel">İlk ders günü</div></div>
+          <input type="date" class="settings-input" id="set-openDate">
+        </div>
+        <div class="settings-item">
+          <div><div class="settings-label">Kapanış Tarihi</div><div class="settings-sublabel">Son ders günü</div></div>
+          <input type="date" class="settings-input" id="set-closeDate">
+        </div>
+        <div class="settings-item">
+          <div><div class="settings-label">Yarıyıl Tatili Başlangıcı</div></div>
+          <input type="date" class="settings-input" id="set-semBreakStart">
+        </div>
+        <div class="settings-item">
+          <div><div class="settings-label">Yarıyıl Tatili Bitişi</div></div>
+          <input type="date" class="settings-input" id="set-semBreakEnd">
+        </div>
+        <div class="settings-item">
+          <div><div class="settings-label">1. Ara Tatil Başlangıcı</div></div>
+          <input type="date" class="settings-input" id="set-break1Start">
+        </div>
+        <div class="settings-item">
+          <div><div class="settings-label">1. Ara Tatil Bitişi</div></div>
+          <input type="date" class="settings-input" id="set-break1End">
+        </div>
+        <div class="settings-item">
+          <div><div class="settings-label">2. Ara Tatil Başlangıcı</div></div>
+          <input type="date" class="settings-input" id="set-break2Start">
+        </div>
+        <div class="settings-item">
+          <div><div class="settings-label">2. Ara Tatil Bitişi</div></div>
+          <input type="date" class="settings-input" id="set-break2End">
+        </div>
+      </div>
+
+      <!-- Drive -->
+      <div class="settings-card">
+        <div class="settings-group-title">☁️ Google Drive</div>
+        <div class="settings-item">
+          <div><div class="settings-label">Drive Klasör Linki</div><div class="settings-sublabel">Yıllık plan JSON dosyaları</div></div>
+          <input type="text" class="settings-input" id="set-driveUrl" placeholder="drive.google.com/...">
+        </div>
+      </div>
+
+      <button class="btn-save" onclick="saveSettings()">💾 Ayarları Kaydet</button>
+      <div style="height:14px;"></div>
+    </div>
+  </div>
+
+  <!-- HAKKINDA -->
+  <div class="page" id="page-hakkinda">
+    <div class="about-content">
+      <div class="about-hero">
+        <div class="about-logo-txt">S-<span style="color:var(--accent2)">Kazanım</span></div>
+        <div class="about-ver-txt">Beta 1.1 · Nisan 2025</div>
+        <p class="about-desc-txt">Öğretmenler için geliştirilmiş<br>akıllı ders planlama uygulaması.</p>
+      </div>
+      <div class="about-card">
+        <h3>🎯 Beta 1.1 Özellikleri</h3>
+        <p>• Haftalık kazanım girişi & düzenleme<br>• Sınıf defteri & ders takibi<br>• Google Drive JSON içe aktarma<br>• Açık/Koyu tema + Renk teması<br>• PWA — Ana ekrana ekle<br>• Bildirim & hatırlatıcı sistemi<br>• Gelişmiş hata yakalayıcı</p>
+      </div>
+      <div class="about-card">
+        <h3>📧 İletişim</h3>
+        <p>Instagram: <strong>@sebasmobil</strong><br>E-posta ile de bize ulaşabilirsiniz.</p>
+      </div>
+      <div class="about-card">
+        <h3>⚖️ Lisans — GNU AGPL v3.0</h3>
+        <p>© 2025 S-Kazanım. Bu uygulama GNU Affero Genel Kamu Lisansı v3.0 kapsamında lisanslanmıştır.<br><span style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:10px;">gnu.org/licenses/agpl-3.0.html</span></p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="gotoPage('home')">
+    <span class="nav-icon">🏠</span><span class="nav-label">Ana Sayfa</span>
+  </button>
+  <button class="nav-item" id="nav-planlar" onclick="gotoPage('planlar')">
+    <span class="nav-icon">📚</span><span class="nav-label">Planlar</span>
+  </button>
+  <button class="nav-item" id="nav-defter" onclick="gotoPage('defter')">
+    <span class="nav-icon">📓</span><span class="nav-label">Defter</span>
+  </button>
+  <button class="nav-item" id="nav-ayarlar" onclick="gotoPage('ayarlar')">
+    <span class="nav-icon">⚙️</span><span class="nav-label">Ayarlar</span>
+  </button>
+  <button class="nav-item" id="nav-hakkinda" onclick="gotoPage('hakkinda')">
+    <span class="nav-icon">ℹ️</span><span class="nav-label">Hakkında</span>
+  </button>
+  <div class="nav-contact">
+    <div class="contact-icons">
+      <a href="https://instagram.com/sebasmobil" target="_blank" class="contact-btn" title="Instagram">📸</a>
+      <a href="#" class="contact-btn" id="mailBtn" title="E-posta">✉️</a>
+    </div>
+    <div class="contact-label">İletişim</div>
+  </div>
+</div>
+
+<!-- CLASS MODAL -->
+<div class="overlay sheet-wrap" id="classOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="classModalTitle">Sınıf</div>
+      <button class="sheet-close" onclick="closeOverlay('classOverlay')">✕</button>
+    </div>
+    <div class="sheet-body" id="classModalBody"></div>
+  </div>
+</div>
+
+<!-- KAZANIM FORM MODAL -->
+<div class="overlay sheet-wrap" id="kazanimOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="kazanimFormTitle">Kazanım Ekle</div>
+      <button class="sheet-close" onclick="closeOverlay('kazanimOverlay')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="form-group">
+        <label class="form-label">Ders</label>
+        <select class="form-select" id="kaz-ders">
+          <option value="">-- Ders seçin --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kazanım</label>
+        <textarea class="form-textarea" id="kaz-text" placeholder="Kazanımı yazın..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Not (isteğe bağlı)</label>
+        <input type="text" class="form-input" id="kaz-note" placeholder="Ek not...">
+      </div>
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="closeOverlay('kazanimOverlay')">İptal</button>
+        <button class="btn-primary" onclick="saveKazanim()">💾 Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRIVE IMPORT MODAL -->
+<div class="overlay sheet-wrap" id="driveOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="driveModalTitle">Plan İndir</div>
+      <button class="sheet-close" onclick="closeOverlay('driveOverlay')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="drive-card">
+        <span class="drive-icon">☁️</span>
+        <div class="drive-text">
+          <h4>Google Drive</h4>
+          <p>Yıllık plan klasörünü açın</p>
+        </div>
+        <button class="btn-drive" id="openDriveBtn">Aç</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">JSON Planı Yapıştırın</label>
+        <textarea class="json-textarea" id="jsonPaste" placeholder='[{"hafta":1,"items":[{"ders":"Türkçe","kazanim":"..."}]}]'></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sınıf</label>
+        <select class="form-select" id="jsonClass">
+          <option value="">-- Sınıf seçin --</option>
+          <option>1. Sınıf</option><option>2. Sınıf</option><option>3. Sınıf</option>
+          <option>4. Sınıf</option><option>5. Sınıf</option><option>6. Sınıf</option>
+          <option>7. Sınıf</option><option>8. Sınıf</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="closeOverlay('driveOverlay')">İptal</button>
+        <button class="btn-primary" onclick="importJSON()">📥 İçe Aktar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGELOG MODAL -->
+<div class="overlay center-wrap" id="changelogOverlay">
+  <div class="center-modal">
+    <div class="cl-header">
+      <div class="cl-ver-badge">🚀 Beta 1.1</div>
+      <div class="cl-title">Yenilikler</div>
+      <div class="cl-sub">S-Kazanım Beta 1.1 ile gelen özellikler</div>
+    </div>
+    <div class="cl-body"><div class="cl-items" id="changelogItems"></div></div>
+    <div class="cl-footer">
+      <div class="cl-check-row" onclick="toggleDontShow()">
+        <div class="cl-check" id="dontShowChk"></div>
+        <span class="cl-check-label">Bu sürüm için bir daha gösterme</span>
+      </div>
+      <button class="btn-cl-ok" onclick="closeChangelog()">✓ Anlaşıldı, Devam Et</button>
+    </div>
+  </div>
+</div>
+
+<!-- ERROR MODAL -->
+<div class="overlay center-wrap" id="errorOverlay">
+  <div class="center-modal" style="max-width:420px;">
+    <div class="err-header">
+      <span>⚠️</span><span class="err-title">Uygulama Hatası</span>
+    </div>
+    <div class="err-body">
+      <div class="err-msg" id="errorMessage">Beklenmeyen bir hata oluştu.</div>
+      <div class="err-detail" id="errorDetail">—</div>
+      <div class="err-actions">
+        <button class="btn-err btn-err-copy" onclick="copyError()">📋 Kopyala</button>
+        <button class="btn-err btn-err-close" onclick="closeOverlay('errorOverlay')">✕ Kapat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// HATA YAKALAYICI
+// ══════════════════════════════════════════════════════════
+window.onerror = function(msg, src, line, col, err) {
+  showError(msg, err, src, line, col); return true;
 };
-
-/* ── APP STATE ────────────────────────────────────────── */
-const State = {
-  profile:    Store.get('profile', null),
-  plans:      Store.get('plans', []),      // indirilen planlar [{ id, ders, sinif, emoji, color, dot, weeks: [{week, kazanimlar[]}] }]
-  driveUrl:   Store.get('driveUrl', ''),
-  lastSync:   Store.get('lastSync', null),
-  yearStart:  Store.get('yearStart', '2024-09-09'),
-  currentWeek: 1,
-  activeTab:  0,
-  activeScreen: 'home',
-};
-
-/* ── RENK PALETİ ──────────────────────────────────────── */
-const PALETTE = [
-  { bg: '#E1F5EE', dot: '#1D9E75' },
-  { bg: '#E6F1FB', dot: '#378ADD' },
-  { bg: '#EEEDFE', dot: '#7F77DD' },
-  { bg: '#FAECE7', dot: '#D85A30' },
-  { bg: '#FAEEDA', dot: '#BA7517' },
-];
-const EMOJIS = ['📖','🔢','🌍','🎨','🎵','🔬','📐','💻','🌱','🏃'];
-
-/* ── DERS KATALOĞU (Google Drive'dan çekilir, yoksa örnek) ── */
-const CATALOG_FALLBACK = [
-  { id: 'tr-1', ders: 'Türkçe',       sinif: '1. Sınıf', emoji: '📖' },
-  { id: 'mat-1',ders: 'Matematik',    sinif: '1. Sınıf', emoji: '🔢' },
-  { id: 'tr-2', ders: 'Türkçe',       sinif: '2. Sınıf', emoji: '📖' },
-  { id: 'mat-2',ders: 'Matematik',    sinif: '2. Sınıf', emoji: '🔢' },
-  { id: 'hb-2', ders: 'Hayat Bilgisi',sinif: '2. Sınıf', emoji: '🌍' },
-  { id: 'tr-3', ders: 'Türkçe',       sinif: '3. Sınıf', emoji: '📖' },
-  { id: 'mat-3',ders: 'Matematik',    sinif: '3. Sınıf', emoji: '🔢' },
-  { id: 'hb-3', ders: 'Hayat Bilgisi',sinif: '3. Sınıf', emoji: '🌍' },
-  { id: 'tr-4', ders: 'Türkçe',       sinif: '4. Sınıf', emoji: '📖' },
-  { id: 'mat-4',ders: 'Matematik',    sinif: '4. Sınıf', emoji: '🔢' },
-  { id: 'fen-4',ders: 'Fen Bilimleri',sinif: '4. Sınıf', emoji: '🔬' },
-  { id: 'sos-4',ders: 'Sosyal Bilgiler',sinif:'4. Sınıf',emoji: '🌍' },
-];
-let catalog = Store.get('catalog', CATALOG_FALLBACK);
-
-/* ── HAFTA HESAPLAMA ──────────────────────────────────── */
-function getYearStart() {
-  return new Date(State.yearStart + 'T00:00:00');
-}
-function calcCurrentWeek() {
-  const start = getYearStart();
-  const now   = new Date();
-  const diff  = now - start;
-  if (diff < 0) return 1;
-  return Math.max(1, Math.min(36, Math.ceil(diff / (7 * 86400000))));
-}
-function getWeekDateRange(w) {
-  const start = getYearStart();
-  const monMs = start.getTime() + (w - 1) * 7 * 86400000;
-  const mon = new Date(monMs);
-  const fri = new Date(monMs + 4 * 86400000);
-  const fmt = { day: 'numeric', month: 'long' };
-  return mon.toLocaleDateString('tr-TR', fmt) + ' – ' + fri.toLocaleDateString('tr-TR', fmt);
-}
-
-/* ── RENDER: TOPBAR ───────────────────────────────────── */
-function renderTopbar() {
-  document.getElementById('week-badge').textContent = 'Hafta ' + State.currentWeek;
-  renderTabs();
-}
-
-/* ── RENDER: TABS ─────────────────────────────────────── */
-function renderTabs() {
-  const container = document.getElementById('plan-tabs');
-  if (!State.plans.length) { container.innerHTML = ''; return; }
-  container.innerHTML = State.plans.map((p, i) =>
-    `<button class="plan-tab ${i === State.activeTab ? 'active' : ''}"
-       onclick="switchTab(${i})">${p.sinif} ${p.ders}</button>`
-  ).join('');
-}
-
-/* ── RENDER: KAZANIM KARTLARI ─────────────────────────── */
-function renderKazanimCards() {
-  const area = document.getElementById('kazanim-area');
-  const wl   = document.getElementById('week-label');
-  const wd   = document.getElementById('week-dates');
-  const wb   = document.getElementById('week-badge');
-
-  wl.textContent = State.currentWeek + '. Hafta';
-  wd.textContent = getWeekDateRange(State.currentWeek);
-  wb.textContent = 'Hafta ' + State.currentWeek;
-
-  if (!State.plans.length) {
-    area.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">📂</div>
-        <p>Henüz plan indirmediniz.<br>Planlar sekmesinden bir plan indirin.</p>
-        <button class="empty-action" onclick="switchScreen('plans')">Planlar →</button>
-      </div>`;
-    renderDots();
-    return;
-  }
-
-  const plan     = State.plans[State.activeTab] || State.plans[0];
-  const weekData = plan.weeks && plan.weeks.find(w => w.week === State.currentWeek);
-  const pal      = PALETTE[State.activeTab % PALETTE.length];
-
-  area.innerHTML = `
-    <div class="plan-card">
-      <div class="card-top">
-        <div class="card-icon-wrap" style="background:${plan.color || pal.bg}">${plan.emoji || '📋'}</div>
-        <div>
-          <div class="card-info-title">${plan.ders}</div>
-          <div class="card-info-sub">${plan.sinif} · ${State.currentWeek}. Hafta</div>
-        </div>
-      </div>
-      <div class="kazanim-section-label">Bu haftanın kazanımları</div>
-      ${weekData && weekData.kazanimlar && weekData.kazanimlar.length
-        ? weekData.kazanimlar.map(k => `
-            <div class="kazanim-item">
-              <span class="kazanim-bullet" style="background:${plan.dot || pal.dot}"></span>
-              <span>${k}</span>
-            </div>`).join('')
-        : '<div style="color:var(--text-tertiary);font-size:13px;padding:8px 0;">Bu hafta için kazanım tanımlı değil.</div>'
-      }
-    </div>`;
-
-  renderDots();
-}
-
-function renderDots() {
-  const dots = document.getElementById('tab-dots');
-  if (!State.plans.length) { dots.innerHTML = ''; return; }
-  dots.innerHTML = State.plans.map((_, i) =>
-    `<div class="tab-dot ${i === State.activeTab ? 'active' : ''}"></div>`).join('');
-}
-
-/* ── RENDER: PLAN LİSTESİ ─────────────────────────────── */
-function renderPlanList(filter) {
-  const f    = (filter || '').toLowerCase();
-  const dlIds = new Set(State.plans.map(p => p.id));
-
-  const available = catalog.filter(p =>
-    !dlIds.has(p.id) &&
-    (!f || p.ders.toLowerCase().includes(f) || p.sinif.toLowerCase().includes(f))
-  );
-  const downloaded = State.plans.filter(p =>
-    !f || p.ders.toLowerCase().includes(f) || p.sinif.toLowerCase().includes(f)
-  );
-
-  document.getElementById('plan-list').innerHTML = available.length
-    ? available.map((p, i) => planRow(p, i, false)).join('')
-    : '<div style="color:var(--text-tertiary);font-size:13px;padding:8px 0;">Tüm planlar indirildi.</div>';
-
-  document.getElementById('downloaded-list').innerHTML = downloaded.length
-    ? downloaded.map((p, i) => planRow(p, i, true)).join('')
-    : '<div style="color:var(--text-tertiary);font-size:13px;padding:8px 0;">Henüz plan indirilmedi.</div>';
-}
-
-function planRow(p, i, isDl) {
-  const pal = PALETTE[i % PALETTE.length];
-  return `
-    <div class="plan-row">
-      <div class="plan-row-icon" style="background:${p.color || pal.bg}">${p.emoji || '📋'}</div>
-      <div class="plan-row-body">
-        <div class="plan-row-title">${p.sinif} – ${p.ders}</div>
-        <div class="plan-row-sub">Yıllık Plan · 36 Hafta</div>
-        ${isDl ? '<span class="dl-chip">✓ İndirildi</span>' : ''}
-      </div>
-      ${isDl
-        ? `<button class="btn-delete" onclick="deletePlan('${p.id}')">Sil</button>`
-        : `<button class="btn-download" onclick="downloadPlan('${p.id}')">İndir</button>`
-      }
-    </div>`;
-}
-
-/* ── RENDER: AYARLAR ──────────────────────────────────── */
-function renderSettings() {
-  const p = State.profile || {};
-  document.getElementById('s-name').textContent    = p.name   || '–';
-  document.getElementById('s-school').textContent  = p.school || '–';
-  document.getElementById('s-drive-url').textContent = State.driveUrl || 'Ayarlanmadı';
-  document.getElementById('s-last-sync').textContent = State.lastSync
-    ? new Date(State.lastSync).toLocaleString('tr-TR', { day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' })
-    : 'Hiç senkronize edilmedi';
-
-  const online = !!State.driveUrl;
-  document.getElementById('s-drive-status').textContent = online ? 'Bağlı' : 'Bağlı değil';
-  document.getElementById('s-drive-dot').className = 'status-dot ' + (online ? 'online' : 'offline');
-
-  const ysInput = document.getElementById('year-start-input');
-  ysInput.value = State.yearStart;
-}
-
-/* ── SCREEN SWITCHING ─────────────────────────────────── */
-function switchScreen(name) {
-  State.activeScreen = name;
-  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-  document.getElementById('screen-' + name).classList.remove('hidden');
-
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('nav-' + name).classList.add('active');
-
-  if (name === 'plans')    { renderPlanList(); }
-  if (name === 'settings') { renderSettings(); }
-}
-
-/* ── TAB & WEEK ───────────────────────────────────────── */
-function switchTab(i) {
-  State.activeTab = i;
-  renderTabs();
-  renderKazanimCards();
-}
-function changeWeek(dir) {
-  const next = State.currentWeek + dir;
-  if (next < 1 || next > 36) return;
-  State.currentWeek = next;
-  renderKazanimCards();
-}
-
-/* ── SWIPE GESTURE ────────────────────────────────────── */
-let touchStartX = 0;
-function initSwipe() {
-  const area = document.getElementById('screen-home');
-  area.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  area.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) < 40) return;
-    if (dx < 0) switchTab(Math.min(State.plans.length - 1, State.activeTab + 1));
-    else         switchTab(Math.max(0, State.activeTab - 1));
-  }, { passive: true });
-}
-
-/* ── DOWNLOAD / DELETE ────────────────────────────────── */
-async function downloadPlan(id) {
-  const entry = catalog.find(p => p.id === id);
-  if (!entry) return;
-
-  showToast('İndiriliyor…');
-  const syncBtn = document.getElementById('sync-btn');
-  syncBtn.classList.add('spinning');
-
-  let planData = null;
-
-  // Google Drive'dan indirmeyi dene
-  if (State.driveUrl) {
-    planData = await fetchPlanFromDrive(id, entry);
-  }
-
-  // Drive yoksa/başarısızsa örnek veri oluştur
-  if (!planData) {
-    planData = generateSamplePlan(entry);
-  }
-
-  const i = State.plans.length;
-  const pal = PALETTE[i % PALETTE.length];
-  planData.color = pal.bg;
-  planData.dot   = pal.dot;
-
-  State.plans.push(planData);
-  Store.set('plans', State.plans);
-
-  syncBtn.classList.remove('spinning');
-  renderTabs();
-  renderKazanimCards();
-  renderPlanList();
-  showToast('✓ ' + entry.sinif + ' ' + entry.ders + ' planı indirildi');
-}
-
-function deletePlan(id) {
-  State.plans = State.plans.filter(p => p.id !== id);
-  if (State.activeTab >= State.plans.length) State.activeTab = Math.max(0, State.plans.length - 1);
-  Store.set('plans', State.plans);
-  renderTabs();
-  renderKazanimCards();
-  renderPlanList();
-  showToast('Plan silindi');
-}
-
-/* ── GOOGLE DRIVE FETCH ───────────────────────────────── */
-async function fetchPlanFromDrive(id, entry) {
-  /*
-   * NASIL ÇALIŞIR:
-   * Google Drive'ınıza {id}.json formatında dosya koyun.
-   * Örnek: tr-3.json, mat-3.json
-   * Dosyayı "herkesle paylaş (görüntüleyici)" yapın.
-   * Paylaşım linkinden file ID'yi alıp direkt indirme URL'i üretilir.
-   *
-   * Örnek dosya içeriği:
-   * {
-   *   "id": "tr-3",
-   *   "ders": "Türkçe",
-   *   "sinif": "3. Sınıf",
-   *   "emoji": "📖",
-   *   "weeks": [
-   *     { "week": 1, "kazanimlar": ["T.3.1.1 - Kazanım açıklaması", "T.3.1.2 - Kazanım açıklaması"] },
-   *     { "week": 2, "kazanimlar": ["T.3.2.1 - ...", "T.3.2.2 - ..."] }
-   *   ]
-   * }
-   */
-  try {
-    // Drive klasör URL'inden dosya ID çıkar
-    const fileId = extractDriveFileId(State.driveUrl, id);
-    if (!fileId) return null;
-
-    const url = `https://drive.google.com/uc?export=download&id=${fileId}`;
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (e) {
-    console.warn('Drive fetch failed:', e);
-    return null;
-  }
-}
-
-function extractDriveFileId(folderUrl, planId) {
-  // Kullanıcı doğrudan dosya paylaşım linki verdiyse
-  // https://drive.google.com/file/d/FILE_ID/view
-  const m = folderUrl.match(/\/d\/([a-zA-Z0-9_-]{20,})/);
-  if (m) return m[1];
-  // Klasör linki verilmişse ID'yi catalog'dan al (kullanıcı önceden eşleştirmeli)
-  return null;
-}
-
-/* ── ÖRNEK VERİ ÜRETICI ───────────────────────────────── */
-function generateSamplePlan(entry) {
-  const weeks = [];
-  for (let w = 1; w <= 36; w++) {
-    weeks.push({
-      week: w,
-      kazanimlar: [
-        `${entry.ders.substring(0,2).toUpperCase()}.${entry.sinif.charAt(0)}.${w}.1 – ${w}. hafta birinci kazanımı (örnek)`,
-        `${entry.ders.substring(0,2).toUpperCase()}.${entry.sinif.charAt(0)}.${w}.2 – ${w}. hafta ikinci kazanımı (örnek)`,
-      ]
-    });
-  }
-  return { ...entry, weeks };
-}
-
-/* ── SYNC ─────────────────────────────────────────────── */
-async function syncDrive() {
-  if (!State.driveUrl) {
-    showToast('Önce Drive linki ekleyin (Ayarlar)');
-    return;
-  }
-  const btn = document.getElementById('sync-btn');
-  btn.classList.add('spinning');
-  showToast('Senkronize ediliyor…');
-
-  // Katalog güncelleme denemesi
-  try {
-    const catalogUrl = buildCatalogUrl();
-    if (catalogUrl) {
-      const res = await fetch(catalogUrl);
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          catalog = data;
-          Store.set('catalog', catalog);
-        }
-      }
-    }
-  } catch {}
-
-  // Mevcut planları güncelle
-  for (let i = 0; i < State.plans.length; i++) {
-    const p = State.plans[i];
-    const entry = catalog.find(c => c.id === p.id) || p;
-    const fresh = await fetchPlanFromDrive(p.id, entry);
-    if (fresh) {
-      State.plans[i] = { ...State.plans[i], ...fresh };
-    }
-  }
-  Store.set('plans', State.plans);
-  State.lastSync = new Date().toISOString();
-  Store.set('lastSync', State.lastSync);
-
-  btn.classList.remove('spinning');
-  renderKazanimCards();
-  if (State.activeScreen === 'settings') renderSettings();
-  showToast('✓ Senkronizasyon tamamlandı');
-}
-
-function buildCatalogUrl() {
-  // Kullanıcı catalog.json'un Drive ID'sini verirse buradan çeker
-  const m = State.driveUrl.match(/\/d\/([a-zA-Z0-9_-]{20,})/);
-  if (m) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
-  return null;
-}
-
-/* ── ONBOARDİNG ───────────────────────────────────────── */
-function finishOnboarding() {
-  const name   = document.getElementById('ob-name').value.trim();
-  const school = document.getElementById('ob-school').value.trim();
-  const drive  = document.getElementById('ob-drive').value.trim();
-
-  if (!name || !school) {
-    showToast('Ad soyad ve okul adı gerekli');
-    return;
-  }
-
-  State.profile  = { name, school };
-  State.driveUrl = drive;
-  Store.set('profile',  State.profile);
-  Store.set('driveUrl', State.driveUrl);
-  Store.set('onboarded', true);
-
-  document.getElementById('onboarding').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-  initApp();
-}
-
-/* ── AYARLAR MODAL'LARI ───────────────────────────────── */
-function editProfile() {
-  const p = State.profile || {};
-  showModal(`
-    <div class="modal-title">Profil Düzenle</div>
-    <input class="modal-input" id="m-name"   value="${p.name   || ''}" placeholder="Ad Soyad">
-    <input class="modal-input" id="m-school" value="${p.school || ''}" placeholder="Okul Adı">
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeModal()">İptal</button>
-      <button class="modal-btn primary"   onclick="saveProfile()">Kaydet</button>
-    </div>`);
-}
-function saveProfile() {
-  State.profile = {
-    name:   document.getElementById('m-name').value.trim(),
-    school: document.getElementById('m-school').value.trim(),
-  };
-  Store.set('profile', State.profile);
-  closeModal();
-  renderSettings();
-  showToast('Profil güncellendi');
-}
-
-function editDriveUrl() {
-  showModal(`
-    <div class="modal-title">Drive Linki</div>
-    <input class="modal-input" id="m-drive" type="url"
-      value="${State.driveUrl || ''}"
-      placeholder="https://drive.google.com/…">
-    <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:12px;line-height:1.5;">
-      Google Drive'da catalog.json dosyasını "herkesle paylaş" yapın ve paylaşım linkini buraya yapıştırın.
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeModal()">İptal</button>
-      <button class="modal-btn primary"   onclick="saveDriveUrl()">Kaydet</button>
-    </div>`);
-}
-function saveDriveUrl() {
-  State.driveUrl = document.getElementById('m-drive').value.trim();
-  Store.set('driveUrl', State.driveUrl);
-  closeModal();
-  renderSettings();
-  showToast('Drive linki güncellendi');
-}
-
-function saveYearStart() {
-  State.yearStart = document.getElementById('year-start-input').value;
-  Store.set('yearStart', State.yearStart);
-  State.currentWeek = calcCurrentWeek();
-  renderKazanimCards();
-  showToast('Yıl başlangıcı güncellendi');
-}
-
-function resetAll() {
-  if (!confirm('Tüm veriler silinecek. Emin misiniz?')) return;
-  localStorage.clear();
-  location.reload();
-}
-
-/* ── MODAL UTILS ──────────────────────────────────────── */
-function showModal(html) {
-  document.getElementById('modal-content').innerHTML = html;
-  document.getElementById('modal-overlay').classList.remove('hidden');
-}
-function closeModal() {
-  document.getElementById('modal-overlay').classList.add('hidden');
-}
-
-/* ── TOAST ────────────────────────────────────────────── */
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-/* ── FİLTRE ───────────────────────────────────────────── */
-function filterPlans() {
-  renderPlanList(document.getElementById('plan-search').value);
-}
-
-/* ── SPLASH ───────────────────────────────────────────── */
-function hideSplash() {
-  const splash = document.getElementById('splash');
-  splash.classList.add('fade-out');
-  setTimeout(() => splash.remove(), 450);
-}
-
-/* ── INIT ─────────────────────────────────────────────── */
-function initApp() {
-  State.currentWeek = calcCurrentWeek();
-  renderTopbar();
-  renderKazanimCards();
-  initSwipe();
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    hideSplash();
-    const onboarded = Store.get('onboarded', false);
-    if (!onboarded) {
-      document.getElementById('onboarding').classList.remove('hidden');
-    } else {
-      State.profile  = Store.get('profile', {});
-      State.plans    = Store.get('plans', []);
-      State.driveUrl = Store.get('driveUrl', '');
-      State.lastSync = Store.get('lastSync', null);
-      State.yearStart= Store.get('yearStart', '2024-09-09');
-      document.getElementById('app').classList.remove('hidden');
-      initApp();
-    }
-  }, 1200);
+window.addEventListener('unhandledrejection', e => {
+  showError('İşlenmeyen Promise: ' + e.reason, e.reason);
 });
 
-/* ── SERVICE WORKER KAYIT ─────────────────────────────── */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+let currentErrorText = '';
+function showError(msg, err, src, line, col) {
+  const d = ['Mesaj: '+msg, src?'Kaynak: '+src:'', line?'Satır: '+line+(col?', Sütun: '+col:''):'',
+    err&&err.stack?'\nYığın İzi:\n'+err.stack:''].filter(Boolean).join('\n');
+  currentErrorText = d;
+  document.getElementById('errorMessage').textContent = msg||'Beklenmeyen hata.';
+  document.getElementById('errorDetail').textContent = d;
+  openOverlay('errorOverlay');
+}
+function copyError() {
+  navigator.clipboard.writeText(currentErrorText)
+    .then(()=>showToast('Hata kopyalandı ✓'))
+    .catch(()=>{const t=document.createElement('textarea');t.value=currentErrorText;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast('Hata kopyalandı ✓');});
+}
+
+// ══════════════════════════════════════════════════════════
+// SABITLER
+// ══════════════════════════════════════════════════════════
+const APP_VERSION = 'beta-1.1';
+const DRIVE_URL = 'https://drive.google.com/drive/folders/1CmFIyuuuQ9hz3CFlv8Kz9Tm_ttw5rm0L';
+
+const CHANGELOG = [
+  {icon:'✏️', title:'Kazanım Girişi & Düzenleme', desc:'Her haftaya ders bazlı kazanım ekleyebilir, düzenleyebilir ve silebilirsiniz.'},
+  {icon:'📓', title:'Sınıf Defteri', desc:'İşlenen kazanımları takip edin. Sınıf bazlı istatistikler ve oran görünür.'},
+  {icon:'📥', title:'Google Drive JSON Aktarımı', desc:'Drive klasörünüzden JSON planları kopyalayıp yapıştırarak içe aktarın.'},
+  {icon:'🌙', title:'Açık / Koyu Tema', desc:'Ayarlardan kolayca tema geçişi yapabilirsiniz.'},
+  {icon:'🎨', title:'Renk Teması Seçimi', desc:'5 farklı renk teması: Mavi, Yeşil, Mor, Turuncu, Gül.'},
+  {icon:'📱', title:'PWA — Ana Ekrana Ekle', desc:'Uygulamayı Ana Ekrana ekleyerek native uygulama gibi kullanın.'},
+  {icon:'🔔', title:'Bildirim & Hatırlatıcı', desc:'Her Pazartesi belirlediğiniz saatte plan hatırlatması alın.'},
+];
+
+const CLASS_DATA = {
+  '1. Sınıf': { emoji:'🌱', dersler:['Türkçe','Matematik','Hayat Bilgisi','Müzik','Beden Eğitimi ve Oyun'], zorunlu:[{ders:'Türkçe',saat:10},{ders:'Matematik',saat:5},{ders:'Hayat Bilgisi',saat:4},{ders:'Müzik',saat:1},{ders:'Beden Eğitimi ve Oyun',saat:5}], serbest:4, toplam:30 },
+  '2. Sınıf': { emoji:'🌿', dersler:['Türkçe','Matematik','Hayat Bilgisi','Müzik','Beden Eğitimi ve Oyun'], zorunlu:[{ders:'Türkçe',saat:10},{ders:'Matematik',saat:5},{ders:'Hayat Bilgisi',saat:4},{ders:'Müzik',saat:1},{ders:'Beden Eğitimi ve Oyun',saat:5}], serbest:2, toplam:30 },
+  '3. Sınıf': { emoji:'🌳', dersler:['Türkçe','Matematik','Hayat Bilgisi','Fen Bilimleri','Yabancı Dil','Din Kültürü ve Ahlak Bilgisi','Görsel Sanatlar','Müzik','Beden Eğitimi ve Oyun'], zorunlu:[{ders:'Türkçe',saat:8},{ders:'Matematik',saat:5},{ders:'Hayat Bilgisi',saat:3},{ders:'Fen Bilimleri',saat:3},{ders:'Yabancı Dil',saat:2},{ders:'Din Kültürü ve Ahlak Bilgisi',saat:2},{ders:'Görsel Sanatlar',saat:1},{ders:'Müzik',saat:1},{ders:'Beden Eğitimi ve Oyun',saat:5}], serbest:2, toplam:30 },
+  '4. Sınıf': { emoji:'📖', dersler:['Türkçe','Matematik','Fen Bilimleri','Sosyal Bilgiler','Yabancı Dil','Din Kültürü ve Ahlak Bilgisi','Görsel Sanatlar','Müzik','Beden Eğitimi ve Spor','Trafik Güvenliği'], zorunlu:[{ders:'Türkçe',saat:8},{ders:'Matematik',saat:5},{ders:'Fen Bilimleri',saat:3},{ders:'Sosyal Bilgiler',saat:3},{ders:'Yabancı Dil',saat:2},{ders:'Din Kültürü ve Ahlak Bilgisi',saat:2},{ders:'Görsel Sanatlar',saat:1},{ders:'Müzik',saat:1},{ders:'Beden Eğitimi ve Spor',saat:2},{ders:'Trafik Güvenliği',saat:1}], toplam:30 },
+  '5. Sınıf': { emoji:'🔬', dersler:['Türkçe','Matematik','Fen Bilimleri','Sosyal Bilgiler','Yabancı Dil','Din Kültürü ve Ahlak Bilgisi','Görsel Sanatlar','Müzik','Beden Eğitimi ve Spor','Rehberlik ve Yönlendirme'], zorunlu:[{ders:'Türkçe',saat:6},{ders:'Matematik',saat:5},{ders:'Fen Bilimleri',saat:4},{ders:'Sosyal Bilgiler',saat:3},{ders:'Yabancı Dil',saat:3},{ders:'Din Kültürü ve Ahlak Bilgisi',saat:2},{ders:'Görsel Sanatlar',saat:1},{ders:'Müzik',saat:1},{ders:'Beden Eğitimi ve Spor',saat:2},{ders:'Rehberlik ve Yönlendirme',saat:1}], secmeli:5, toplam:35 },
+  '6. Sınıf': { emoji:'🧪', dersler:['Türkçe','Matematik','Fen Bilimleri','Sosyal Bilgiler','Yabancı Dil','Din Kültürü ve Ahlak Bilgisi','Görsel Sanatlar','Müzik','Beden Eğitimi ve Spor','Teknoloji ve Tasarım','Rehberlik ve Yönlendirme'], zorunlu:[{ders:'Türkçe',saat:6},{ders:'Matematik',saat:5},{ders:'Fen Bilimleri',saat:4},{ders:'Sosyal Bilgiler',saat:3},{ders:'Yabancı Dil',saat:3},{ders:'Din Kültürü ve Ahlak Bilgisi',saat:2},{ders:'Görsel Sanatlar',saat:1},{ders:'Müzik',saat:1},{ders:'Beden Eğitimi ve Spor',saat:2},{ders:'Teknoloji ve Tasarım',saat:2},{ders:'Rehberlik ve Yönlendirme',saat:1}], secmeli:5, toplam:35 },
+  '7. Sınıf': { emoji:'🧲', dersler:['Türkçe','Matematik','Fen Bilimleri','Sosyal Bilgiler','Yabancı Dil','Din Kültürü ve Ahlak Bilgisi','Görsel Sanatlar','Müzik','Beden Eğitimi ve Spor','Teknoloji ve Tasarım','Rehberlik ve Yönlendirme'], zorunlu:[{ders:'Türkçe',saat:5},{ders:'Matematik',saat:5},{ders:'Fen Bilimleri',saat:4},{ders:'Sosyal Bilgiler',saat:3},{ders:'Yabancı Dil',saat:4},{ders:'Din Kültürü ve Ahlak Bilgisi',saat:2},{ders:'Görsel Sanatlar',saat:1},{ders:'Müzik',saat:1},{ders:'Beden Eğitimi ve Spor',saat:2},{ders:'Teknoloji ve Tasarım',saat:2},{ders:'Rehberlik ve Yönlendirme',saat:1}], secmeli:5, toplam:35 },
+  '8. Sınıf': { emoji:'🎓', dersler:['Türkçe','Matematik','Fen Bilimleri','T.C. İnkılap Tarihi ve Atatürkçülük','Yabancı Dil','Din Kültürü ve Ahlak Bilgisi','Görsel Sanatlar','Müzik','Beden Eğitimi ve Spor','Rehberlik ve Yönlendirme'], zorunlu:[{ders:'Türkçe',saat:5},{ders:'Matematik',saat:5},{ders:'Fen Bilimleri',saat:4},{ders:'T.C. İnkılap Tarihi ve Atatürkçülük',saat:2},{ders:'Yabancı Dil',saat:4},{ders:'Din Kültürü ve Ahlak Bilgisi',saat:2},{ders:'Görsel Sanatlar',saat:1},{ders:'Müzik',saat:1},{ders:'Beden Eğitimi ve Spor',saat:2},{ders:'Rehberlik ve Yönlendirme',saat:1}], secmeli:6, toplam:35 },
+};
+
+// ══════════════════════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════════════════════
+const ls = (k,d) => { try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch{return d;} };
+const lsSet = (k,v) => { try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
+
+// ══════════════════════════════════════════════════════════
+// AYARLAR
+// ══════════════════════════════════════════════════════════
+let settings = ls('sk_settings', {
+  openDate:'2024-09-09', closeDate:'2025-06-13',
+  semBreakStart:'2025-01-20', semBreakEnd:'2025-02-02',
+  break1Start:'2024-11-04', break1End:'2024-11-08',
+  break2Start:'2025-04-14', break2End:'2025-04-18',
+  driveUrl: DRIVE_URL,
+  theme: 'dark', color: 'blue',
+  notifEnabled: false, notifTime: '08:00',
+});
+
+function loadSettingsUI() {
+  ['openDate','closeDate','semBreakStart','semBreakEnd','break1Start','break1End','break2Start','break2End','driveUrl','notifTime'].forEach(k=>{
+    const el = document.getElementById('set-'+k);
+    if(el) el.value = settings[k]||'';
+  });
+  // Tema
+  document.getElementById('toggleDark').classList.toggle('active', settings.theme!=='light');
+  document.getElementById('toggleLight').classList.toggle('active', settings.theme==='light');
+  // Renk
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.toggle('active', s.dataset.color===settings.color));
+  // Notif toggle
+  document.getElementById('notifToggle').classList.toggle('on', settings.notifEnabled);
+}
+
+function saveSettings() {
+  ['openDate','closeDate','semBreakStart','semBreakEnd','break1Start','break1End','break2Start','break2End','driveUrl','notifTime'].forEach(k=>{
+    const el = document.getElementById('set-'+k);
+    if(el) settings[k] = el.value;
+  });
+  lsSet('sk_settings', settings);
+  buildCalendar();
+  renderWeek(currentWeekIndex);
+  scheduleNotifications();
+  showToast('✓ Ayarlar kaydedildi');
+}
+
+// ══════════════════════════════════════════════════════════
+// TEMA SİSTEMİ
+// ══════════════════════════════════════════════════════════
+function applyTheme(theme, color) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.setAttribute('data-color', color||'blue');
+  document.getElementById('themeColorMeta').setAttribute('content', theme==='light'?'#f0f4ff':'#0a0e1a');
+  document.getElementById('themeBtn').textContent = theme==='light'?'🌙':'☀️';
+}
+
+function setTheme(t) {
+  settings.theme = t;
+  applyTheme(t, settings.color);
+  document.getElementById('toggleDark').classList.toggle('active', t!=='light');
+  document.getElementById('toggleLight').classList.toggle('active', t==='light');
+  lsSet('sk_settings', settings);
+  showToast(t==='light'?'☀️ Açık tema':'🌙 Koyu tema');
+}
+
+function setColor(c, el) {
+  settings.color = c;
+  applyTheme(settings.theme, c);
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.toggle('active', s.dataset.color===c));
+  lsSet('sk_settings', settings);
+}
+
+// Topbar tema butonu
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  setTheme(settings.theme==='light'?'dark':'light');
+});
+
+// ══════════════════════════════════════════════════════════
+// BİLDİRİMLER
+// ══════════════════════════════════════════════════════════
+function toggleNotif() {
+  if (!settings.notifEnabled) {
+    if (!('Notification' in window)) { showToast('Tarayıcınız bildirimleri desteklemiyor'); return; }
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){
+        settings.notifEnabled = true;
+        document.getElementById('notifToggle').classList.add('on');
+        lsSet('sk_settings', settings);
+        showToast('🔔 Bildirimler açıldı');
+        scheduleNotifications();
+      } else {
+        showToast('Bildirim izni reddedildi');
+      }
+    });
+  } else {
+    settings.notifEnabled = false;
+    document.getElementById('notifToggle').classList.remove('on');
+    lsSet('sk_settings', settings);
+    showToast('🔕 Bildirimler kapatıldı');
+  }
+}
+
+function scheduleNotifications() {
+  if (!settings.notifEnabled || !('Notification' in window) || Notification.permission!=='granted') return;
+  // Bir sonraki Pazartesi hesapla
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const daysUntilMon = dayOfWeek===1?7:(8-dayOfWeek)%7||7;
+  const nextMon = new Date(now);
+  nextMon.setDate(now.getDate()+daysUntilMon);
+  const [hh,mm] = (settings.notifTime||'08:00').split(':');
+  nextMon.setHours(parseInt(hh),parseInt(mm),0,0);
+  const msUntil = nextMon - now;
+  if(msUntil>0 && msUntil < 7*24*60*60*1000) {
+    setTimeout(()=>{
+      new Notification('S-Kazanım', {body:'📅 Bu haftanın planını hazırlamayı unutmayın!', icon:'/favicon.ico'});
+    }, msUntil);
+  }
+}
+
+// Bildirim butonu topbar'da
+document.getElementById('notifBtn').addEventListener('click', ()=>{
+  gotoPage('ayarlar');
+  showToast('Bildirim ayarları aşağıda');
+});
+
+// Haftalık bildirim banner kontrolü
+function checkWeeklyBanner() {
+  if (!weeks.length) return;
+  const w = weeks[currentWeekIndex];
+  if (w && !w.isHoliday) {
+    const planKey = weekPlanKey(w);
+    const plan = ls(planKey, {items:[]});
+    if (!plan.items.length) {
+      const bannerKey = 'sk_banner_' + planKey;
+      if (!ls(bannerKey, false)) {
+        showBanner('📋 Plan Hatırlatıcı', 'Bu haftaya henüz kazanım girilmedi.', bannerKey);
+      }
+    }
+  }
+}
+
+function showBanner(title, text, dismissKey) {
+  const container = document.getElementById('notifBanners');
+  const div = document.createElement('div');
+  div.className = 'notif-banner';
+  div.innerHTML = `<span class="notif-icon">🔔</span><div class="notif-text"><h4>${title}</h4><p>${text}</p></div><span class="notif-close" onclick="dismissBanner(this,'${dismissKey}')">✕</span>`;
+  container.appendChild(div);
+}
+
+function dismissBanner(el, key) {
+  lsSet(key, true);
+  el.closest('.notif-banner').remove();
+}
+
+// ══════════════════════════════════════════════════════════
+// TAKVİM
+// ══════════════════════════════════════════════════════════
+let weeks = [], currentWeekIndex = 0;
+
+function getMon(d){ const day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1),m=new Date(d);m.setDate(diff);m.setHours(0,0,0,0);return m; }
+function addDays(d,n){ const r=new Date(d);r.setDate(r.getDate()+n);return r; }
+function weekOverlaps(wS,wE,rS,rE){ const a=d=>new Date(d).setHours(0,0,0,0); return a(wS)<=a(rE)&&a(wE)>=a(rS); }
+
+function buildCalendar() {
+  weeks=[];
+  const s=settings;
+  if(!s.openDate||!s.closeDate)return;
+  let mon=getMon(new Date(s.openDate));
+  const end=getMon(new Date(s.closeDate));
+  let schoolN=0,totalN=0,term=1;
+  while(mon<=end){
+    const fri=addDays(mon,4); totalN++;
+    let isHol=false,holName='';
+    if(s.semBreakStart&&s.semBreakEnd&&weekOverlaps(mon,fri,s.semBreakStart,s.semBreakEnd)){ isHol=true;holName='Yarıyıl Tatili';term=2; }
+    else if(s.break1Start&&s.break1End&&weekOverlaps(mon,fri,s.break1Start,s.break1End)){ isHol=true;holName='1. Dönem Ara Tatili'; }
+    else if(s.break2Start&&s.break2End&&weekOverlaps(mon,fri,s.break2Start,s.break2End)){ isHol=true;holName='2. Dönem Ara Tatili'; }
+    if(!isHol)schoolN++;
+    weeks.push({totalNum:totalN,schoolNum:isHol?null:schoolN,monday:new Date(mon),friday:new Date(fri),isHoliday:isHol,holidayName:holName,term});
+    mon=addDays(mon,7);
+  }
+  const today=new Date();today.setHours(0,0,0,0);
+  let found=-1;
+  for(let i=0;i<weeks.length;i++){
+    const m=new Date(weeks[i].monday);m.setHours(0,0,0,0);
+    const f=new Date(weeks[i].friday);f.setHours(0,0,0,0);
+    if(today>=m&&today<=f){found=i;break;}
+    if(today<m&&found===-1){found=i;break;}
+  }
+  currentWeekIndex=found>=0?found:0;
+}
+
+const MONTHS=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const fmt=d=>d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+const weekPlanKey=w=>'sk_plan_'+fmt(w.monday).replace(/ /g,'_');
+
+// ══════════════════════════════════════════════════════════
+// HAFTA RENDER
+// ══════════════════════════════════════════════════════════
+function renderWeek(idx) {
+  if(!weeks.length){
+    document.getElementById('weekNumLabel').textContent='—';
+    document.getElementById('weekDatesLabel').textContent='Ayarlardan tarihleri girin';
+    document.getElementById('weekTypeBadge').innerHTML='';
+    document.getElementById('weekCard').innerHTML='<div class="week-card-body"><div class="empty-week"><div class="empty-icon">⚙️</div><p>Takvim ayarlanmadı</p><small>Ayarlar sayfasına gidin</small></div></div>';
+    return;
+  }
+  const w=weeks[idx];
+  document.getElementById('weekNumLabel').textContent=(w.schoolNum?w.schoolNum+'. Okul Haftası':'Tatil Haftası')+' ('+w.totalNum+'.)';
+  document.getElementById('weekDatesLabel').textContent=fmt(w.monday)+' – '+fmt(w.friday);
+  const badge=document.getElementById('weekTypeBadge');
+  if(w.isHoliday){ badge.innerHTML=`<span class="week-type-badge badge-holiday">🏖 ${w.holidayName}</span>`; }
+  else { badge.innerHTML=`<span class="week-type-badge ${w.term===1?'badge-term1':'badge-term2'}">${w.term===1?'📘 1. Dönem':'📗 2. Dönem'}</span>`; }
+
+  const card=document.getElementById('weekCard');
+  card.className='week-card'+(w.isHoliday?' holiday':'');
+
+  if(w.isHoliday){
+    card.innerHTML=`<div class="week-card-body"><div class="holiday-msg"><div class="holiday-icon">🏖️</div><div class="holiday-name">${w.holidayName}</div><div class="holiday-dates">${fmt(w.monday)} – ${fmt(w.friday)}</div></div></div>`;
+    return;
+  }
+
+  const plan=ls(weekPlanKey(w),{items:[]});
+  const items=plan.items||[];
+
+  let topHtml=`<div class="week-card-top"><span class="wcard-title">Bu Haftanın Kazanımları</span><button class="btn-add-kazanim" onclick="openKazanimForm(${idx})">+ Ekle</button></div>`;
+  let bodyHtml='<div class="week-card-body">';
+
+  if(items.length){
+    bodyHtml+='<div class="kazanim-list">';
+    items.forEach((item,i)=>{
+      const checked=item.done?'checked':'';
+      bodyHtml+=`<div class="kaz-item">
+        <div class="kaz-check ${checked}" onclick="toggleKazanim(${idx},${i})">${item.done?'✓':''}</div>
+        <div class="kaz-body">
+          <div class="kaz-subject">${item.ders}</div>
+          <div class="kaz-text">${item.kazanim}</div>
+          ${item.note?`<div class="kaz-text" style="color:var(--text3);font-size:11px;margin-top:3px;">📝 ${item.note}</div>`:''}
+          <div class="kaz-actions">
+            <button class="kaz-act-btn edit" onclick="editKazanim(${idx},${i})">Düzenle</button>
+            <button class="kaz-act-btn del" onclick="deleteKazanim(${idx},${i})">Sil</button>
+          </div>
+        </div>
+      </div>`;
+    });
+    bodyHtml+='</div>';
+  } else {
+    bodyHtml+='<div class="empty-week"><div class="empty-icon">📝</div><p>Henüz kazanım girilmedi</p><small>+ Ekle butonuna tıklayın</small></div>';
+  }
+  bodyHtml+='</div>';
+  card.innerHTML=topHtml+bodyHtml;
+
+  document.getElementById('prevWeekBtn').disabled=idx===0;
+  document.getElementById('nextWeekBtn').disabled=idx===weeks.length-1;
+}
+
+let slideAnim=null;
+function changeWeek(dir){
+  const ni=currentWeekIndex+dir;
+  if(ni<0||ni>=weeks.length)return;
+  currentWeekIndex=ni;
+  const wrap=document.getElementById('weekSlideWrap');
+  wrap.style.opacity='0';wrap.style.transform=`translateX(${dir>0?'18px':'-18px'})`;
+  setTimeout(()=>{renderWeek(currentWeekIndex);wrap.style.transition='all 0.2s ease';wrap.style.opacity='1';wrap.style.transform='translateX(0)';},80);
+  setTimeout(()=>{ wrap.style.transition=''; },280);
+}
+
+// Touch swipe
+let tx=0;
+document.getElementById('weekSlideWrap').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.getElementById('weekSlideWrap').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50)changeWeek(dx<0?1:-1);
+});
+
+// ══════════════════════════════════════════════════════════
+// KAZANIM CRUD
+// ══════════════════════════════════════════════════════════
+let editingWeekIdx=-1, editingItemIdx=-1;
+let activeClassForKazanim = null;
+
+function openKazanimForm(weekIdx, itemIdx=-1) {
+  editingWeekIdx=weekIdx; editingItemIdx=itemIdx;
+  const w=weeks[weekIdx];
+  // Sınıf seçimi — eğer sınıf yoksa ilk sınıfı öner
+  const selClass = activeClassForKazanim || Object.keys(CLASS_DATA)[0];
+  const dersler = CLASS_DATA[selClass]?.dersler || Object.values(CLASS_DATA)[0].dersler;
+  const dersSelect = document.getElementById('kaz-ders');
+  dersSelect.innerHTML = '<option value="">-- Ders seçin --</option>' + dersler.map(d=>`<option>${d}</option>`).join('');
+
+  if(itemIdx>=0){
+    document.getElementById('kazanimFormTitle').textContent='Kazanımı Düzenle';
+    const plan=ls(weekPlanKey(w),{items:[]});
+    const item=plan.items[itemIdx];
+    dersSelect.value=item.ders;
+    document.getElementById('kaz-text').value=item.kazanim;
+    document.getElementById('kaz-note').value=item.note||'';
+  } else {
+    document.getElementById('kazanimFormTitle').textContent='Kazanım Ekle — '+fmt(w.monday)+'\'lü Hafta';
+    dersSelect.value='';
+    document.getElementById('kaz-text').value='';
+    document.getElementById('kaz-note').value='';
+  }
+  openOverlay('kazanimOverlay');
+}
+
+function saveKazanim(){
+  const ders=document.getElementById('kaz-ders').value;
+  const text=document.getElementById('kaz-text').value.trim();
+  const note=document.getElementById('kaz-note').value.trim();
+  if(!ders){showToast('Lütfen ders seçin');return;}
+  if(!text){showToast('Lütfen kazanımı yazın');return;}
+  const w=weeks[editingWeekIdx];
+  const key=weekPlanKey(w);
+  let plan=ls(key,{items:[]});
+  const item={ders,kazanim:text,note,done:false,addedAt:Date.now()};
+  if(editingItemIdx>=0){
+    item.done=plan.items[editingItemIdx].done;
+    plan.items[editingItemIdx]=item;
+  } else {
+    plan.items.push(item);
+  }
+  lsSet(key,plan);
+  closeOverlay('kazanimOverlay');
+  renderWeek(currentWeekIndex);
+  buildClassGrid(); // kazanım sayısını güncelle
+  showToast(editingItemIdx>=0?'✓ Kazanım güncellendi':'✓ Kazanım eklendi');
+}
+
+function editKazanim(wi,ii){ openKazanimForm(wi,ii); }
+
+function deleteKazanim(wi,ii){
+  if(!confirm('Bu kazanımı silmek istiyor musunuz?'))return;
+  const w=weeks[wi];
+  const key=weekPlanKey(w);
+  let plan=ls(key,{items:[]});
+  plan.items.splice(ii,1);
+  lsSet(key,plan);
+  renderWeek(currentWeekIndex);
+  buildClassGrid();
+  showToast('Kazanım silindi');
+}
+
+function toggleKazanim(wi,ii){
+  const w=weeks[wi];
+  const key=weekPlanKey(w);
+  let plan=ls(key,{items:[]});
+  plan.items[ii].done=!plan.items[ii].done;
+  lsSet(key,plan);
+  renderWeek(currentWeekIndex);
+  renderDefter();
+}
+
+// ══════════════════════════════════════════════════════════
+// PLANLAR & CLASS MODAL
+// ══════════════════════════════════════════════════════════
+function getClassKazanimCount(className){
+  let total=0, done=0;
+  weeks.forEach(w=>{
+    const plan=ls(weekPlanKey(w),{items:[]});
+    const items=(plan.items||[]).filter(it=>it.ders && CLASS_DATA[className]?.dersler.includes(it.ders));
+    total+=items.length;
+    done+=items.filter(i=>i.done).length;
+  });
+  return {total,done};
+}
+
+function buildClassGrid(){
+  const grid=document.getElementById('classGrid');
+  grid.innerHTML='';
+  Object.entries(CLASS_DATA).forEach(([name,data])=>{
+    const {total}=getClassKazanimCount(name);
+    const div=document.createElement('div');
+    div.className='class-card';
+    div.onclick=()=>openClassModal(name);
+    div.innerHTML=`
+      ${total>0?`<div class="class-plan-count">${total}</div>`:''}
+      <div class="class-emoji">${data.emoji}</div>
+      <div class="class-name">${name}</div>
+      <div class="class-hours">${data.toplam} saat/hafta</div>
+      <div class="class-badge">✓ Çizelge Mevcut</div>`;
+    grid.appendChild(div);
   });
 }
 
-// global erişim (inline onclick'ler için)
-window.switchScreen    = switchScreen;
-window.switchTab       = switchTab;
-window.changeWeek      = changeWeek;
-window.filterPlans     = filterPlans;
-window.downloadPlan    = downloadPlan;
-window.deletePlan      = deletePlan;
-window.syncDrive       = syncDrive;
-window.finishOnboarding= finishOnboarding;
-window.editProfile     = editProfile;
-window.saveProfile     = saveProfile;
-window.editDriveUrl    = editDriveUrl;
-window.saveDriveUrl    = saveDriveUrl;
-window.saveYearStart   = saveYearStart;
-window.resetAll        = resetAll;
-window.closeModal      = closeModal;
+function openClassModal(name){
+  activeClassForKazanim=name;
+  const data=CLASS_DATA[name];
+  document.getElementById('classModalTitle').textContent=data.emoji+' '+name;
+  const driveUrl=settings.driveUrl||DRIVE_URL;
 
+  let h=`<div class="drive-card">
+    <span class="drive-icon">📥</span>
+    <div class="drive-text"><h4>Yıllık Plan İndir</h4><p>Drive'dan JSON aktarın</p></div>
+    <button class="btn-drive" onclick="openDriveImport('${name}')">Aktar</button>
+  </div>`;
+
+  h+=`<div class="ders-cat">ZORUNLU DERSLER</div>`;
+  h+=`<table class="ders-table"><thead><tr><th>Ders</th><th>Saat</th></tr></thead><tbody>`;
+  let z=0;
+  data.zorunlu.forEach(d=>{z+=d.saat;h+=`<tr><td>${d.ders}</td><td>${d.saat}</td></tr>`;});
+  h+=`<tr class="total"><td>Zorunlu Toplam</td><td>${z}</td></tr></tbody></table>`;
+  if(data.serbest) h+=`<table class="ders-table" style="margin-top:8px;"><tbody><tr><td>Serbest Etkinlikler</td><td>${data.serbest}</td></tr></tbody></table>`;
+  if(data.secmeli) h+=`<table class="ders-table" style="margin-top:4px;"><tbody><tr><td>Seçmeli Dersler Toplamı</td><td>${data.secmeli}</td></tr></tbody></table>`;
+  h+=`<table class="ders-table" style="margin-top:6px;"><tbody><tr class="total"><td>TOPLAM</td><td>${data.toplam}</td></tr></tbody></table>`;
+
+  document.getElementById('classModalBody').innerHTML=h;
+  openOverlay('classOverlay');
+}
+
+function openDriveImport(className){
+  closeOverlay('classOverlay');
+  document.getElementById('driveModalTitle').textContent=(className||'')+ ' Plan İçe Aktar';
+  document.getElementById('jsonClass').value=className||'';
+  document.getElementById('openDriveBtn').onclick=()=>window.open(settings.driveUrl||DRIVE_URL,'_blank');
+  document.getElementById('jsonPaste').value='';
+  openOverlay('driveOverlay');
+}
+
+function importJSON(){
+  const raw=document.getElementById('jsonPaste').value.trim();
+  const cls=document.getElementById('jsonClass').value;
+  if(!raw){showToast('JSON yapıştırın');return;}
+  if(!cls){showToast('Sınıf seçin');return;}
+  let data;
+  try{ data=JSON.parse(raw); }
+  catch(e){ showToast('⚠️ Geçersiz JSON formatı'); return; }
+  if(!Array.isArray(data)){showToast('JSON bir dizi olmalı');return;}
+  // Her hafta için kaydet
+  let imported=0;
+  data.forEach(haftaData=>{
+    if(!haftaData.hafta&&!haftaData.monday)return;
+    // Hafta numarasına veya tarihe göre eşleştir
+    let targetWeek=null;
+    if(haftaData.monday){
+      const d=new Date(haftaData.monday);
+      targetWeek=weeks.find(w=>{const m=new Date(w.monday);return m.toDateString()===d.toDateString();});
+    } else if(haftaData.hafta){
+      targetWeek=weeks.find(w=>w.schoolNum===haftaData.hafta&&!w.isHoliday);
+    }
+    if(!targetWeek)return;
+    const key=weekPlanKey(targetWeek);
+    let plan=ls(key,{items:[]});
+    (haftaData.items||[]).forEach(item=>{
+      if(item.kazanim) plan.items.push({ders:item.ders||'',kazanim:item.kazanim,note:item.note||'',done:false,addedAt:Date.now()});
+    });
+    lsSet(key,plan);
+    imported++;
+  });
+  closeOverlay('driveOverlay');
+  buildClassGrid();
+  renderWeek(currentWeekIndex);
+  showToast(`✓ ${imported} hafta içe aktarıldı`);
+}
+
+// ══════════════════════════════════════════════════════════
+// SINIF DEFTERİ
+// ══════════════════════════════════════════════════════════
+function renderDefter(){
+  const cls=document.getElementById('defterClass').value;
+  if(!cls){
+    document.getElementById('statTotal').textContent='—';
+    document.getElementById('statDone').textContent='—';
+    document.getElementById('statPct').textContent='—';
+    document.getElementById('defterLog').innerHTML=`<div class="empty-week" style="text-align:center;padding:30px 0;"><div class="empty-icon">📓</div><p>Sınıf seçin</p></div>`;
+    return;
+  }
+  const allItems=[];
+  weeks.forEach(w=>{
+    if(w.isHoliday)return;
+    const plan=ls(weekPlanKey(w),{items:[]});
+    (plan.items||[]).forEach(item=>{
+      allItems.push({...item, week:w});
+    });
+  });
+
+  const total=allItems.length, done=allItems.filter(i=>i.done).length;
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('statDone').textContent=done;
+  document.getElementById('statPct').textContent=total?Math.round(done/total*100)+'%':'—';
+
+  if(!allItems.length){
+    document.getElementById('defterLog').innerHTML=`<div class="empty-week" style="text-align:center;padding:30px 0;"><div class="empty-icon">📭</div><p>Henüz kazanım girilmedi</p><small>${cls} için plan ekleyin</small></div>`;
+    return;
+  }
+
+  let html='';
+  // Haftalara göre grupla
+  const byWeek={};
+  allItems.forEach(item=>{
+    const key=fmt(item.week.monday);
+    if(!byWeek[key])byWeek[key]={week:item.week,items:[]};
+    byWeek[key].items.push(item);
+  });
+
+  Object.entries(byWeek).reverse().forEach(([wKey,{week,items}])=>{
+    items.forEach(item=>{
+      html+=`<div class="log-item">
+        <div class="log-dot ${item.done?'done':'pending'}"></div>
+        <div class="log-meta">
+          <div class="log-week">${fmt(week.monday)} — ${week.schoolNum}. Hafta</div>
+          <div class="log-ders">${item.ders}</div>
+          <div class="log-kaz">${item.kazanim}</div>
+        </div>
+        <div class="log-status ${item.done?'done':'pending'}">${item.done?'✓ İşlendi':'Bekliyor'}</div>
+      </div>`;
+    });
+  });
+  document.getElementById('defterLog').innerHTML=html||'<div class="empty-week"><p>Veri yok</p></div>';
+}
+
+// ══════════════════════════════════════════════════════════
+// NAVİGASYON
+// ══════════════════════════════════════════════════════════
+function gotoPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page)?.classList.add('active');
+  document.getElementById('mainContent').scrollTop=0;
+  if(page==='defter')renderDefter();
+}
+
+// ══════════════════════════════════════════════════════════
+// OVERLAY YÖNETİMİ
+// ══════════════════════════════════════════════════════════
+function openOverlay(id){ document.getElementById(id).classList.add('open'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('open'); }
+// Overlay dışı tık ile kapat
+['classOverlay','kazanimOverlay','driveOverlay'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){
+    if(e.target===this||e.target.classList.contains('sheet-wrap'))closeOverlay(id);
+  });
+});
+
+// ══════════════════════════════════════════════════════════
+// CHANGELOG
+// ══════════════════════════════════════════════════════════
+let dontShow=false;
+function buildChangelog(){
+  document.getElementById('changelogItems').innerHTML=CHANGELOG.map(c=>
+    `<div class="cl-item"><span class="cl-icon">${c.icon}</span><div><h4>${c.title}</h4><p>${c.desc}</p></div></div>`
+  ).join('');
+}
+function toggleDontShow(){
+  dontShow=!dontShow;
+  const el=document.getElementById('dontShowChk');
+  el.className='cl-check'+(dontShow?' on':'');
+  el.textContent=dontShow?'✓':'';
+}
+function closeChangelog(){
+  if(dontShow)lsSet('sk_seen_ver',APP_VERSION);
+  closeOverlay('changelogOverlay');
+}
+function checkChangelog(){
+  if(ls('sk_seen_ver','')!==APP_VERSION)openOverlay('changelogOverlay');
+}
+
+// ══════════════════════════════════════════════════════════
+// PWA
+// ══════════════════════════════════════════════════════════
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredPrompt=e;
+  if(!ls('sk_pwa_hidden',false)) document.getElementById('pwaBar').classList.add('show');
+});
+document.getElementById('pwaInstallBtn').addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  const{outcome}=await deferredPrompt.userChoice;
+  if(outcome==='accepted')showToast('✓ Ana ekrana eklendi!');
+  deferredPrompt=null;
+  hidePWA();
+});
+function hidePWA(){ lsSet('sk_pwa_hidden',true); document.getElementById('pwaBar').classList.remove('show'); }
+
+// PWA Manifest inline
+(()=>{
+  const m={name:'S-Kazanım',short_name:'S-Kazanım',start_url:'./',display:'standalone',background_color:'#0a0e1a',theme_color:'#0a0e1a',description:'Öğretmenler için akıllı ders planlama',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%230a0e1a"/><text y=".9em" font-size="80" x="10">📚</text></svg>',sizes:'any',type:'image/svg+xml'}]};
+  const blob=new Blob([JSON.stringify(m)],{type:'application/json'});
+  document.getElementById('pwaManifest').href=URL.createObjectURL(blob);
+})();
+
+// ══════════════════════════════════════════════════════════
+// TOAST & YARDIMCILAR
+// ══════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function updateGreeting(){
+  const h=new Date().getHours();
+  document.getElementById('greeting').textContent=h<12?'Günaydın ☀️':h<17?'İyi günler 🌤':h<21?'İyi akşamlar 🌆':'İyi geceler 🌙';
+}
+
+document.getElementById('mainContent').addEventListener('scroll',function(){
+  const p=this.scrollHeight-this.clientHeight;
+  document.getElementById('scrollBar').style.width=(p>0?this.scrollTop/p*100:0)+'%';
+});
+
+document.getElementById('mailBtn').addEventListener('click',e=>{
+  e.preventDefault();
+  window.location.href='mailto:?subject='+encodeURIComponent('sebasmobil s-kazanım iletişim')+'&body='+encodeURIComponent('Merhaba,\n\nS-Kazanım uygulaması hakkında iletişime geçmek istiyorum.\n\n');
+});
+
+// ══════════════════════════════════════════════════════════
+// BAŞLATMA
+// ══════════════════════════════════════════════════════════
+function init(){
+  updateGreeting();
+  applyTheme(settings.theme||'dark', settings.color||'blue');
+  buildChangelog();
+  loadSettingsUI();
+  buildCalendar();
+  renderWeek(currentWeekIndex);
+  buildClassGrid();
+  checkChangelog();
+  scheduleNotifications();
+  setTimeout(checkWeeklyBanner, 1500);
+}
+
+init();
 </script>
 </body>
 </html>
