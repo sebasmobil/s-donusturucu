@@ -1,6 +1,6 @@
 <!--
   S-Kazanım - Öğretmenler için Akıllı Ders Planlama Uygulaması
-  Versiyon: Beta 1.2
+  Versiyon: Beta 1.3
   Telif Hakkı (C) 2025 S-Kazanım / sebasmobil
   GNU Affero Genel Kamu Lisansı v3.0 — https://www.gnu.org/licenses/agpl-3.0.html
 -->
@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="S-Kazanım">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0a0e1a" id="themeColorMeta">
-<title>S-Kazanım Beta 1.2</title>
+<title>S-Kazanım Beta 1.3</title>
 <link rel="manifest" id="pwaManifest">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -382,7 +382,7 @@ input[type="text"].settings-input{width:140px}
 <div class="topbar">
   <div class="tl">
     <span class="appname">S-Kazanım</span>
-    <span class="ver">Beta 1.2</span>
+    <span class="ver">Beta 1.3</span>
   </div>
   <div class="tr">
     <span class="greeting" id="greeting"></span>
@@ -583,12 +583,12 @@ input[type="text"].settings-input{width:140px}
     <div class="about-content">
       <div class="about-hero">
         <div class="about-logo-txt">S-<span style="color:var(--accent2)">Kazanım</span></div>
-        <div class="about-ver-txt">Beta 1.2 · Nisan 2025</div>
+        <div class="about-ver-txt">Beta 1.3 · Nisan 2025</div>
         <p class="about-desc-txt">Öğretmenler için geliştirilmiş<br>akıllı ders planlama uygulaması.</p>
       </div>
       <div class="about-card">
-        <h3>🎯 Beta 1.2 Yenilikleri</h3>
-        <p>• Öğretmen profili & sınıf yönetimi<br>• Ulusal tatil & resmi tatil takvimi<br>• Haftalık plan yazdırma / PDF<br>• Kazanım arama & ders filtresi<br>• Dönem sonu istatistik raporu<br>• Hata düzeltmeleri & stabilite artışı</p>
+        <h3>🎯 Beta 1.3 Yenilikleri</h3>
+        <p>• Drive Akıllı Plan Yöneticisi<br>• Mevcut planları listeleme & silme<br>• Sınıf + ders bazlı plan durumu<br>• Otomatik Drive→JSON aktarımı<br>• Tüm Beta 1.2 özellikleri devam ediyor</p>
       </div>
       <div class="about-card">
         <h3>📧 İletişim</h3>
@@ -645,21 +645,71 @@ input[type="text"].settings-input{width:140px}
   </div>
 </div>
 
-<!-- DRIVE IMPORT -->
+<!-- DRIVE PLAN YÖNETİCİSİ -->
 <div class="overlay sheet-wrap" id="driveOverlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-header"><div class="sheet-title" id="driveModalTitle">Plan İçe Aktar</div><button class="sheet-close" onclick="closeOverlay('driveOverlay')">✕</button></div>
+    <div class="sheet-header"><div class="sheet-title" id="driveModalTitle">☁️ Plan Yöneticisi</div><button class="sheet-close" onclick="closeOverlay('driveOverlay')">✕</button></div>
     <div class="sheet-body">
-      <div class="drive-card"><span class="drive-icon">☁️</span><div class="drive-text"><h4>Google Drive</h4><p>Klasörü açın, JSON'ı kopyalayın</p></div><button class="btn-drive" id="openDriveBtn">Aç</button></div>
-      <div class="form-group"><label class="form-label">JSON Yapıştırın</label><textarea class="json-textarea" id="jsonPaste" placeholder='[{"hafta":1,"items":[{"ders":"Türkçe","kazanim":"..."}]}]'></textarea></div>
-      <div class="form-group"><label class="form-label">Sınıf</label>
-        <select class="form-select" id="jsonClass"><option value="">-- Sınıf --</option><option>1. Sınıf</option><option>2. Sınıf</option><option>3. Sınıf</option><option>4. Sınıf</option><option>5. Sınıf</option><option>6. Sınıf</option><option>7. Sınıf</option><option>8. Sınıf</option></select>
+
+      <!-- Tab bar -->
+      <div style="display:flex;gap:6px;margin-bottom:14px;">
+        <button class="donem-tab active" id="driveTab1" onclick="setDriveTab('yukle')" style="flex:1">📥 Plan Yükle</button>
+        <button class="donem-tab" id="driveTab2" onclick="setDriveTab('mevcut')" style="flex:1">📋 Mevcut Planlar</button>
       </div>
-      <div class="form-actions">
-        <button class="btn-secondary" onclick="closeOverlay('driveOverlay')">İptal</button>
-        <button class="btn-primary" onclick="importJSON()">📥 İçe Aktar</button>
+
+      <!-- YÜKLE PANEL -->
+      <div id="drivePanelYukle">
+        <!-- Adım 1: Drive linki -->
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:12px 13px;margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">ADIM 1 — Drive'dan JSON indir</div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:10px;">YillikPlan uygulamasından oluşturduğunuz JSON dosyasının Drive paylaşım linkini yapıştırın veya Drive'ı açıp dosyayı bulun.</div>
+          <div style="display:flex;gap:7px;margin-bottom:8px;">
+            <input type="text" class="form-input" id="driveLinkInput" placeholder="https://drive.google.com/file/d/..." style="font-size:11px;">
+            <button class="btn-primary" onclick="indirDriveLink()" style="white-space:nowrap;padding:9px 12px;font-size:11px;flex-shrink:0;" id="btnDriveIndir">İndir</button>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-secondary" onclick="window.open(driveKlasorUrl,'_blank')" style="flex:1;font-size:10px;padding:7px;">📂 Drive Klasörünü Aç</button>
+          </div>
+          <div id="driveLinkMsg" style="display:none;margin-top:8px;padding:7px 10px;border-radius:7px;font-size:11px;"></div>
+        </div>
+
+        <!-- Adım 2: Manuel yapıştır -->
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:12px 13px;margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">ADIM 2 — JSON İçeriği</div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">YillikPlan uygulamasından JSON kopyalayıp buraya yapıştırın <em>veya</em> yukarıdan otomatik indirin.</div>
+          <textarea class="json-textarea" id="jsonPaste" style="height:100px;" placeholder='{"meta":{"sinif":"1. Sınıf","seciliDersler":[...]},"haftalik":[{"hafta":"1","Kazanım":"..."}]}'></textarea>
+          <div id="jsonParseInfo" style="font-size:10px;color:var(--text3);margin-top:5px;"></div>
+        </div>
+
+        <!-- Adım 3: Eşleştirme -->
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:12px 13px;margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">ADIM 3 — Eşleştirme</div>
+          <div class="form-group" style="margin-bottom:9px;">
+            <label class="form-label">Sınıf</label>
+            <select class="form-select" id="jsonClass"><option value="">-- Sınıf --</option><option>1. Sınıf</option><option>2. Sınıf</option><option>3. Sınıf</option><option>4. Sınıf</option><option>5. Sınıf</option><option>6. Sınıf</option><option>7. Sınıf</option><option>8. Sınıf</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:9px;">
+            <label class="form-label">Kazanım Sütunu</label>
+            <select class="form-select" id="kazanimSutun"><option value="">-- JSON yüklenince otomatik dolar --</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Ders Bilgisi</label>
+            <select class="form-select" id="dersSutun"><option value="meta">Meta'dan al (önerilen)</option><option value="manuel">Manuel ata</option></select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-secondary" onclick="closeOverlay('driveOverlay')">İptal</button>
+          <button class="btn-primary" onclick="importJSONv2()">📥 Planı Yükle</button>
+        </div>
       </div>
+
+      <!-- MEVCUT PLANLAR PANEL -->
+      <div id="drivePanelMevcut" style="display:none;">
+        <div id="mevcutPlanlar"></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -676,7 +726,7 @@ input[type="text"].settings-input{width:140px}
 <!-- CHANGELOG -->
 <div class="overlay center-wrap" id="changelogOverlay">
   <div class="center-modal">
-    <div class="cl-header"><div class="cl-ver-badge">🚀 Beta 1.2</div><div class="cl-title">Yenilikler</div><div class="cl-sub">S-Kazanım Beta 1.2 ile gelen özellikler</div></div>
+    <div class="cl-header"><div class="cl-ver-badge">🚀 Beta 1.3</div><div class="cl-title">Yenilikler</div><div class="cl-sub">S-Kazanım Beta 1.3 ile gelen özellikler</div></div>
     <div class="cl-body"><div class="cl-items" id="changelogItems"></div></div>
     <div class="cl-footer">
       <div class="cl-check-row" onclick="toggleDontShow()"><div class="cl-check" id="dontShowChk"></div><span class="cl-check-label">Bu sürüm için bir daha gösterme</span></div>
@@ -746,7 +796,7 @@ function closeOverlay(id) { try { document.getElementById(id).classList.remove('
 // ══════════════════════════════════════════════════════════
 // 3. SABİTLER
 // ══════════════════════════════════════════════════════════
-var APP_VERSION = 'beta-1.2';
+var APP_VERSION = 'beta-1.3';
 var DRIVE_URL = 'https://drive.google.com/drive/folders/1CmFIyuuuQ9hz3CFlv8Kz9Tm_ttw5rm0L';
 
 // Ulusal tatiller (Türkiye - sabit her yıl)
@@ -761,12 +811,12 @@ var NATIONAL_HOLIDAYS = [
 ];
 
 var CHANGELOG = [
-  {icon:'👤', title:'Öğretmen Profili', desc:'Ad, okul, branş ve sorumlu olunan sınıfları kaydedin. Profil sayfasından yönetin.'},
-  {icon:'🇹🇷', title:'Ulusal Tatil Takvimi', desc:'Tüm resmi tatiller otomatik olarak haftalık planda görünür ve kırmızı ile işaretlenir.'},
-  {icon:'🖨️', title:'Haftalık Plan Yazdırma', desc:'O haftanın kazanımlarını PDF olarak kaydedebilir veya yazıcıya gönderebilirsiniz.'},
-  {icon:'🔍', title:'Kazanım Arama & Filtre', desc:'Ana sayfada arama kutusuna yazın, ders filtresini kullanarak hızlıca bulun.'},
-  {icon:'📊', title:'Dönem Sonu Raporu', desc:'Sınıf defterinden "Rapor" butonuna basarak ders bazlı detaylı istatistik görün.'},
-  {icon:'🐛', title:'Hata Düzeltmeleri', desc:'Hata yakalayıcı kökten yeniden yazıldı. Tüm fonksiyonlar try-catch ile korunuyor.'},
+  {icon:'☁️', title:'Drive Akıllı Plan Yöneticisi', desc:'Drive linkini yapıştır, sınıf & dersi seç — plan otomatik indirilir ve uygulanır.'},
+  {icon:'📋', title:'Mevcut Planları Görüntüle', desc:'Hangi sınıf ve ders için plan yüklendiğini anında görürsünüz.'},
+  {icon:'🗑️', title:'Plan Silme & Yenileme', desc:'Yüklü planları tek tıkla silebilir, aynı sınıf için yeni plan ekleyebilirsiniz.'},
+  {icon:'👤', title:'Öğretmen Profili', desc:'Ad, okul, branş ve sorumlu olunan sınıfları kaydedin.'},
+  {icon:'🇹🇷', title:'Ulusal Tatil Takvimi', desc:'Tüm resmi tatiller otomatik işaretlenir.'},
+  {icon:'🖨️', title:'Haftalık Plan Yazdırma', desc:'O haftanın kazanımlarını PDF olarak kaydedin.'},
 ];
 
 var CLASS_DATA = {
@@ -789,7 +839,7 @@ function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){}
 // ══════════════════════════════════════════════════════════
 // 5. AYARLAR
 // ══════════════════════════════════════════════════════════
-var settings = ls('sk_settings2', {
+var settings = ls('sk_settings3', {
   openDate:'2024-09-09', closeDate:'2025-06-13',
   semBreakStart:'2025-01-20', semBreakEnd:'2025-02-02',
   break1Start:'2024-11-04', break1End:'2024-11-08',
@@ -813,7 +863,7 @@ function saveSettings(){
   ['openDate','closeDate','semBreakStart','semBreakEnd','break1Start','break1End','break2Start','break2End','driveUrl','notifTime'].forEach(function(k){
     var el=document.getElementById('set-'+k); if(el) settings[k]=el.value;
   });
-  lsSet('sk_settings2',settings); buildCalendar(); renderWeek(currentWeekIndex); scheduleNotifications(); showToast('✓ Ayarlar kaydedildi');
+  lsSet('sk_settings3',settings); buildCalendar(); renderWeek(currentWeekIndex); scheduleNotifications(); showToast('✓ Ayarlar kaydedildi');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -832,9 +882,9 @@ function setTheme(t){
   var td=document.getElementById('toggleDark'),tl=document.getElementById('toggleLight');
   if(td) td.classList.toggle('active',t!=='light');
   if(tl) tl.classList.toggle('active',t==='light');
-  lsSet('sk_settings2',settings); showToast(t==='light'?'☀️ Açık tema':'🌙 Koyu tema');
+  lsSet('sk_settings3',settings); showToast(t==='light'?'☀️ Açık tema':'🌙 Koyu tema');
 }
-function setColor(c,el){ settings.color=c; applyTheme(settings.theme,c); document.querySelectorAll('.color-swatch').forEach(function(s){ s.classList.toggle('active',s.dataset.color===c); }); lsSet('sk_settings2',settings); }
+function setColor(c,el){ settings.color=c; applyTheme(settings.theme,c); document.querySelectorAll('.color-swatch').forEach(function(s){ s.classList.toggle('active',s.dataset.color===c); }); lsSet('sk_settings3',settings); }
 try{ document.getElementById('themeBtn').addEventListener('click',function(){ setTheme(settings.theme==='light'?'dark':'light'); }); }catch(e){}
 
 // ══════════════════════════════════════════════════════════
@@ -1044,7 +1094,7 @@ function printWeek(){
         rows+='<tr><td style="width:24px;text-align:center">'+(it.done?'✓':'○')+'</td><td style="color:#6366f1;font-weight:700;font-size:11px">'+escHtml(it.ders)+'</td><td>'+escHtml(it.kazanim)+(it.note?'<br><small style="color:#94a3b8">'+escHtml(it.note)+'</small>':'')+'</td></tr>';
       });
     } else { rows='<tr><td colspan="3" style="text-align:center;color:#94a3b8;padding:20px">Bu haftaya kazanım girilmemiş</td></tr>'; }
-    printWin.document.write('<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"><title>Haftalık Plan — '+fmt(w.monday)+'</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:24px;color:#0f172a;font-size:13px}.header{border-bottom:2px solid #4f8ef7;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end}.app-name{font-size:20px;font-weight:700;color:#4f8ef7}.week-title{font-size:14px;font-weight:700}.week-dates{font-size:11px;color:#64748b;margin-top:2px}.teacher{font-size:11px;color:#64748b}table{width:100%;border-collapse:collapse}th{background:#f0f4ff;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;border:1px solid #d1daf0}td{padding:8px 10px;border:1px solid #e2e8f0;vertical-align:top}.footer{margin-top:20px;font-size:10px;color:#94a3b8;text-align:center}@media print{body{padding:12px}}</style></head><body><div class="header"><div><div class="app-name">S-Kazanım</div><div class="teacher">'+escHtml(teacherName)+(profil.school?' · '+escHtml(profil.school):'')+'</div></div><div style="text-align:right"><div class="week-title">'+w.schoolNum+'. Okul Haftası ('+w.totalNum+'. Hafta)</div><div class="week-dates">'+fmt(w.monday)+' – '+fmt(w.friday)+(w.isNational?' 🇹🇷 '+escHtml(w.nationalName):'')+'</div></div></div><table><thead><tr><th style="width:28px"></th><th style="width:120px">Ders</th><th>Kazanım</th></tr></thead><tbody>'+rows+'</tbody></table><div class="footer">S-Kazanım Beta 1.2 · sebasmobil · Basım Tarihi: '+fmt(new Date())+'</div></body></html>');
+    printWin.document.write('<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"><title>Haftalık Plan — '+fmt(w.monday)+'</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;padding:24px;color:#0f172a;font-size:13px}.header{border-bottom:2px solid #4f8ef7;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end}.app-name{font-size:20px;font-weight:700;color:#4f8ef7}.week-title{font-size:14px;font-weight:700}.week-dates{font-size:11px;color:#64748b;margin-top:2px}.teacher{font-size:11px;color:#64748b}table{width:100%;border-collapse:collapse}th{background:#f0f4ff;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;border:1px solid #d1daf0}td{padding:8px 10px;border:1px solid #e2e8f0;vertical-align:top}.footer{margin-top:20px;font-size:10px;color:#94a3b8;text-align:center}@media print{body{padding:12px}}</style></head><body><div class="header"><div><div class="app-name">S-Kazanım</div><div class="teacher">'+escHtml(teacherName)+(profil.school?' · '+escHtml(profil.school):'')+'</div></div><div style="text-align:right"><div class="week-title">'+w.schoolNum+'. Okul Haftası ('+w.totalNum+'. Hafta)</div><div class="week-dates">'+fmt(w.monday)+' – '+fmt(w.friday)+(w.isNational?' 🇹🇷 '+escHtml(w.nationalName):'')+'</div></div></div><table><thead><tr><th style="width:28px"></th><th style="width:120px">Ders</th><th>Kazanım</th></tr></thead><tbody>'+rows+'</tbody></table><div class="footer">S-Kazanım Beta 1.3 · sebasmobil · Basım Tarihi: '+fmt(new Date())+'</div></body></html>');
     printWin.document.close();
     printWin.focus();
     setTimeout(function(){ printWin.print(); },400);
@@ -1176,26 +1226,306 @@ function openDriveImport(className){
   }catch(e){ showError('Drive import hatası',e); }
 }
 
-function importJSON(){
+// ── DRIVE LİNK YÖNETİMİ ──
+var driveKlasorUrl = 'https://drive.google.com/drive/folders/1CmFIyuuuQ9hz3CFlv8Kz9Tm_ttw5rm0L';
+var parsedJsonData = null; // Son parse edilen JSON
+
+// Drive link'inden dosya ID çıkar
+function driveFileIdAl(url) {
+  try {
+    var m = url.match(/\/d\/([a-zA-Z0-9_-]{25,})/);
+    if(m) return m[1];
+    m = url.match(/id=([a-zA-Z0-9_-]{25,})/);
+    if(m) return m[1];
+    return null;
+  } catch(e){ return null; }
+}
+
+// Drive dosyasını doğrudan indir (CORS bypass ile)
+function indirDriveLink() {
+  try {
+    var url = document.getElementById('driveLinkInput') ? document.getElementById('driveLinkInput').value.trim() : '';
+    if(!url){ driveLinkMsg('Drive linki girin','err'); return; }
+    var fileId = driveFileIdAl(url);
+    if(!fileId){ driveLinkMsg('Geçerli bir Drive linki değil','err'); return; }
+    var directUrl = 'https://drive.google.com/uc?export=download&id=' + fileId;
+    driveLinkMsg('⏳ İndiriliyor...','info');
+    // Drive'dan fetch — CORS nedeniyle no-cors, blob olarak al
+    fetch(directUrl, {mode:'cors'})
+      .then(function(r){
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        return r.text();
+      })
+      .then(function(text){
+        // BOM varsa temizle
+        if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+        var ta=document.getElementById('jsonPaste');
+        if(ta) ta.value=text;
+        parseJsonPreview(text);
+        driveLinkMsg('✓ Dosya indirildi! Aşağıdan devam edin.','ok');
+      })
+      .catch(function(err){
+        // CORS engellediyse Drive'ı aç, kullanıcı manuel kopyalasın
+        driveLinkMsg("⚠️ Otomatik indirme engellendi (CORS). Drive klasörünü açıp JSON içeriğini kopyalayın, aşağıya yapıştırın.","warn");
+        window.open('https://drive.google.com/file/d/'+fileId+'/view','_blank');
+      });
+  }catch(e){ showError('Drive indirme hatası',e); }
+}
+
+function driveLinkMsg(msg, tip) {
+  try {
+    var el=document.getElementById('driveLinkMsg'); if(!el) return;
+    el.style.display='block';
+    el.textContent=msg;
+    var colors = {ok:'rgba(16,185,129,.15)',err:'rgba(239,68,68,.15)',info:'rgba(79,142,247,.15)',warn:'rgba(245,158,11,.15)'};
+    var textColors = {ok:'var(--green)',err:'var(--red)',info:'var(--accent)',warn:'#f59e0b'};
+    el.style.background=colors[tip]||colors.info;
+    el.style.color=textColors[tip]||textColors.info;
+    el.style.border='1px solid '+el.style.color;
+    el.style.borderRadius='7px';
+    el.style.padding='7px 10px';
+  }catch(e){}
+}
+
+// JSON yapıştırıldığında otomatik parse et
+try {
+  var jpa=document.getElementById('jsonPaste');
+  if(jpa) jpa.addEventListener('input',function(){ parseJsonPreview(this.value); });
+}catch(e){}
+
+function parseJsonPreview(raw) {
+  try {
+    var info=document.getElementById('jsonParseInfo'); if(!info) return;
+    if(!raw||!raw.trim()){ parsedJsonData=null; info.textContent=''; return; }
+    var text=raw.trim(); if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+    var data=JSON.parse(text);
+    parsedJsonData=data;
+    // Tespit: YillikPlan v2.5 formatı mı, yoksa eski dizi formatı mı?
+    if(data && data.meta && data.haftalik) {
+      // YillikPlan v2.5 formatı
+      var meta=data.meta, haftalik=data.haftalik;
+      var sinif=meta.sinif||'?';
+      var dersler=(meta.seciliDersler||[]).map(function(d){return d.ders;}).join(', ')||'—';
+      var haftaSayisi=haftalik.length;
+      info.textContent='✓ Format: YillikPlan v2.5 | Sınıf: '+sinif+' | '+haftaSayisi+' hafta | Dersler: '+dersler;
+      info.style.color='var(--green)';
+      // Sınıfı otomatik seç
+      var sc=document.getElementById('jsonClass'); if(sc&&sinif&&sinif!=='?') sc.value=sinif;
+      // Sütunları doldur
+      doldurKazanimSutunlari(haftalik);
+    } else if(Array.isArray(data)) {
+      // Eski dizi formatı
+      parsedJsonData={haftalik:data, meta:{sinif:'',seciliDersler:[]}};
+      info.textContent='✓ Format: Eski dizi | '+data.length+' hafta';
+      info.style.color='var(--accent)';
+      doldurKazanimSutunlari(data);
+    } else {
+      parsedJsonData=null;
+      info.textContent='⚠️ Tanınmayan format';
+      info.style.color='var(--red)';
+    }
+  }catch(e){ 
+    parsedJsonData=null;
+    var info2=document.getElementById('jsonParseInfo'); 
+    if(info2){info2.textContent='⚠️ Geçersiz JSON: '+e.message; info2.style.color='var(--red)';}
+  }
+}
+
+function doldurKazanimSutunlari(haftalik) {
+  try {
+    if(!haftalik||!haftalik.length) return;
+    var keys=Object.keys(haftalik[0]).filter(function(k){return k!=='hafta';});
+    var sel=document.getElementById('kazanimSutun'); if(!sel) return;
+    sel.innerHTML='';
+    keys.forEach(function(k){
+      var opt=document.createElement('option'); opt.value=k;
+      // Kazanım veya konu içeren sütunları öne al
+      var isKaz=/kazan|konu|içerik|topic|content/i.test(k);
+      opt.textContent=k+(isKaz?' ⭐':'');
+      if(isKaz) sel.insertBefore(opt,sel.firstChild);
+      else sel.appendChild(opt);
+    });
+    // İlk yıldızlı seçili kalsın
+  }catch(e){}
+}
+
+// ── PLAN YÜKLE (v2 — YillikPlan formatı destekli) ──
+function importJSONv2() {
   try {
     var raw=document.getElementById('jsonPaste')?document.getElementById('jsonPaste').value.trim():'';
+    if(!raw){ showToast('JSON yapıştırın'); return; }
+    if(!parsedJsonData){ parseJsonPreview(raw); if(!parsedJsonData){ showToast('⚠️ JSON parse edilemedi'); return; } }
     var cls=document.getElementById('jsonClass')?document.getElementById('jsonClass').value:'';
-    if(!raw){ showToast('JSON yapıştırın'); return; } if(!cls){ showToast('Sınıf seçin'); return; }
-    var data; try{ data=JSON.parse(raw); }catch(e){ showToast('⚠️ Geçersiz JSON'); return; }
-    if(!Array.isArray(data)){ showToast('JSON bir dizi olmalı'); return; }
+    if(!cls){ showToast('Sınıf seçin'); return; }
+    var kazSutun=document.getElementById('kazanimSutun')?document.getElementById('kazanimSutun').value:'';
+    var dersSutunMod=document.getElementById('dersSutun')?document.getElementById('dersSutun').value:'meta';
+    var haftalik=parsedJsonData.haftalik||[];
+    var meta=parsedJsonData.meta||{};
+    var seciliDersler=meta.seciliDersler||[];
     var imported=0;
-    data.forEach(function(hd){
+    haftalik.forEach(function(hd){
+      var haftaNo=parseInt(hd.hafta)||parseInt(hd.Hafta)||0;
+      if(!haftaNo && typeof hd.hafta==='string') haftaNo=parseInt(hd.hafta.replace(/[^0-9]/g,''));
       var tw=null;
-      if(hd.monday){ var d=new Date(hd.monday); for(var i=0;i<weeks.length;i++){ if(new Date(weeks[i].monday).toDateString()===d.toDateString()){tw=weeks[i];break;} } }
-      else if(hd.hafta){ for(var i=0;i<weeks.length;i++){ if(weeks[i].schoolNum===hd.hafta&&!weeks[i].isHoliday){tw=weeks[i];break;} } }
+      if(haftaNo){ for(var i=0;i<weeks.length;i++){ if(weeks[i].schoolNum===haftaNo&&!weeks[i].isHoliday){tw=weeks[i];break;} } }
       if(!tw) return;
+      // Kazanım metni
+      var kazanim='';
+      if(kazSutun && hd[kazSutun]) kazanim=String(hd[kazSutun]).trim();
+      else {
+        // Otomatik bul — kazanım içeren sütun
+        var keys=Object.keys(hd);
+        for(var ki=0;ki<keys.length;ki++){
+          if(/kazan|konu|içerik/i.test(keys[ki])&&hd[keys[ki]]){kazanim=String(hd[keys[ki]]).trim();break;}
+        }
+        if(!kazanim){
+          // İlk boş olmayan sütunu al (hafta hariç)
+          for(var ki2=0;ki2<keys.length;ki2++){
+            if(keys[ki2]!=='hafta'&&keys[ki2]!=='Hafta'&&hd[keys[ki2]]){kazanim=String(hd[keys[ki2]]).trim();break;}
+          }
+        }
+      }
+      if(!kazanim) return;
+      // Ders adı belirle
+      var dersAd='';
+      if(dersSutunMod==='meta' && seciliDersler.length===1){
+        dersAd=seciliDersler[0].ders;
+      } else if(dersSutunMod==='meta' && seciliDersler.length>1){
+        // Hafta satırına göre ders ata — meta'dan sırala
+        var haftaIdx=haftalik.indexOf(hd);
+        // Basit: ilk ders
+        dersAd=seciliDersler[0]?seciliDersler[0].ders:'';
+      } else {
+        // manuel seçilmişse kazSutun'dan ders al
+        dersAd=hd['Ders']||hd['ders']||hd['DERS']||'';
+      }
+      // Her kazanım cümlesi için ayrı item ekle
+      var cumleciList = kazanim.split('\n').join('|SKZ|').replace(/[•–]/g,'|SKZ|').split('|SKZ|').map(function(s){return s.trim();}).filter(function(s){return s.length>5;});
+      if(!cumleciList.length) cumleciList=[kazanim];
       var key=weekPlanKey(tw), plan=ls(key,{items:[]});
-      (hd.items||[]).forEach(function(it){ if(it.kazanim) plan.items.push({ders:it.ders||'',kazanim:it.kazanim,note:it.note||'',done:false,addedAt:Date.now()}); });
+      cumleciList.forEach(function(cumleci){
+        plan.items.push({ders:dersAd||cls,kazanim:cumleci,note:'',done:false,addedAt:Date.now(),kaynak:'drive'});
+      });
       lsSet(key,plan); imported++;
     });
-    closeOverlay('driveOverlay'); buildClassGrid(); renderWeek(currentWeekIndex); showToast('✓ '+imported+' hafta içe aktarıldı');
+    // Plan kaydını güncelle
+    var planKayit=ls('sk_plan_kayit',[]);
+    var zatenVar=planKayit.findIndex(function(p){return p.sinif===cls&&p.ders===(seciliDersler[0]?seciliDersler[0].ders:'');});
+    var kayit={
+      sinif:cls, ders:seciliDersler.map(function(d){return d.ders;}).join(', ')||cls,
+      haftaSayisi:imported, yuklenmeTarihi:new Date().toISOString().slice(0,10),
+      toplamKazanim:haftalik.length
+    };
+    if(zatenVar>=0) planKayit[zatenVar]=kayit; else planKayit.push(kayit);
+    lsSet('sk_plan_kayit',planKayit);
+    closeOverlay('driveOverlay'); buildClassGrid(); renderWeek(currentWeekIndex);
+    showToast('✓ '+imported+' hafta · '+(cumleciList?cumleciList.length:0)+' kazanım yüklendi');
   }catch(e){ showError('JSON aktarım hatası',e); }
 }
+
+// ── ESKİ importJSON (uyumluluk) ──
+function importJSON(){ importJSONv2(); }
+
+// ── DRIVE TAB YÖNETİMİ ──
+function setDriveTab(tab) {
+  try {
+    var t1=document.getElementById('driveTab1'), t2=document.getElementById('driveTab2');
+    var p1=document.getElementById('drivePanelYukle'), p2=document.getElementById('drivePanelMevcut');
+    if(tab==='yukle'){
+      if(t1) t1.classList.add('active'); if(t2) t2.classList.remove('active');
+      if(p1) p1.style.display=''; if(p2) p2.style.display='none';
+    } else {
+      if(t1) t1.classList.remove('active'); if(t2) t2.classList.add('active');
+      if(p1) p1.style.display='none'; if(p2) p2.style.display='';
+      renderMevcutPlanlar();
+    }
+  }catch(e){}
+}
+
+// ── MEVCUT PLANLAR ──
+function renderMevcutPlanlar() {
+  try {
+    var container=document.getElementById('mevcutPlanlar'); if(!container) return;
+    var kayitlar=ls('sk_plan_kayit',[]);
+    // Sınıf bazlı grupla
+    var siniflar=Object.keys(CLASS_DATA);
+    var html='';
+    siniflar.forEach(function(sinif){
+      var data=CLASS_DATA[sinif];
+      var sinifKayitlar=kayitlar.filter(function(k){return k.sinif===sinif;});
+      // Bu sınıf için kaç hafta yüklü?
+      var yukluHafta=0;
+      weeks.forEach(function(w){
+        if(w.isHoliday) return;
+        var plan=ls(weekPlanKey(w),{items:[]});
+        if(plan.items&&plan.items.length) yukluHafta++;
+      });
+      html+='<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:9px;overflow:hidden;">';
+      html+='<div style="padding:10px 13px;display:flex;align-items:center;gap:10px;">';
+      html+='<span style="font-size:20px;">'+data.emoji+'</span>';
+      html+='<div style="flex:1"><div style="font-size:12px;font-weight:700;">'+sinif+'</div>';
+      if(sinifKayitlar.length){
+        html+='<div style="font-size:10px;color:var(--text3);margin-top:1px;">'+sinifKayitlar.length+' plan yüklü</div>';
+      } else {
+        html+='<div style="font-size:10px;color:var(--text3);margin-top:1px;">Plan yüklenmedi</div>';
+      }
+      html+='</div>';
+      html+='<button data-sinif="'+sinif+'" onclick="openDriveImportV2(this.dataset.sinif)" style="padding:5px 10px;border-radius:7px;background:var(--accent);color:#fff;border:none;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;">+ Ekle</button>';
+      html+='</div>';
+      if(sinifKayitlar.length){
+        sinifKayitlar.forEach(function(k,ki){
+          html+='<div style="border-top:1px solid var(--border);padding:8px 13px;display:flex;align-items:center;gap:8px;">';
+          html+='<div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>';
+          html+='<div style="flex:1;min-width:0;">';
+          html+='<div style="font-size:11px;font-weight:600;color:var(--text);">'+escHtml(k.ders||'—')+'</div>';
+          html+='<div style="font-size:9px;color:var(--text3);">'+k.haftaSayisi+' hafta · '+escHtml(k.yuklenmeTarihi||'')+'</div>';
+          html+='</div>';
+          html+='<button data-sinif="'+sinif+'" data-ki="'+ki+'" onclick="planSil(this.dataset.sinif,parseInt(this.dataset.ki))" style="padding:3px 8px;border-radius:5px;background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;">Sil</button>';
+          html+='</div>';
+        });
+      }
+      // Ders durumu
+      html+='<div style="border-top:1px solid var(--border);padding:8px 13px;">';
+      html+='<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Ders Durumu</div>';
+      html+='<div style="display:flex;flex-wrap:wrap;gap:4px;">';
+      data.dersler.forEach(function(ders){
+        var var_mi=kayitlar.some(function(k){return k.sinif===sinif&&k.ders&&k.ders.indexOf(ders)!==-1;});
+        html+='<span style="padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;background:'+(var_mi?'rgba(16,185,129,.12)':'rgba(100,116,139,.1)')+';color:'+(var_mi?'var(--green)':'var(--text3)')+';border:1px solid '+(var_mi?'rgba(16,185,129,.2)':'var(--border)')+';">'+escHtml(ders)+(var_mi?' ✓':' —')+'</span>';
+      });
+      html+='</div></div>';
+      html+='</div>';
+    });
+    if(!html) html='<div class="empty-week"><div class="empty-icon">📭</div><p>Henüz plan yüklenmedi</p></div>';
+    container.innerHTML=html;
+  }catch(e){ showError('Mevcut planlar hatası',e); }
+}
+
+function planSil(sinif, ki) {
+  try {
+    if(!confirm('Bu planı silmek istiyor musunuz? Haftalardaki kazanımlar silinmez.')) return;
+    var kayitlar=ls('sk_plan_kayit',[]);
+    var sinifKayitlar=kayitlar.filter(function(k){return k.sinif===sinif;});
+    if(!sinifKayitlar[ki]) return;
+    var idx=kayitlar.indexOf(sinifKayitlar[ki]);
+    kayitlar.splice(idx,1);
+    lsSet('sk_plan_kayit',kayitlar);
+    renderMevcutPlanlar();
+    showToast('Plan kaydı silindi');
+  }catch(e){ showError('Plan silme hatası',e); }
+}
+
+// ── CLASS MODAL'dan plan yöneticisini aç ──
+function openDriveImportV2(className) {
+  try {
+    closeOverlay('classOverlay');
+    var sc=document.getElementById('jsonClass'); if(sc) sc.value=className||'';
+    var te=document.getElementById('driveModalTitle'); if(te) te.textContent='☁️ '+className+' — Plan Yöneticisi';
+    setDriveTab('yukle');
+    openOverlay('driveOverlay');
+  }catch(e){ showError('Drive import açma hatası',e); }
+}
+
+function openDriveImport(className){ openDriveImportV2(className); }
 
 // ══════════════════════════════════════════════════════════
 // 15. SINIF DEFTERİ & RAPOR
@@ -1293,11 +1623,11 @@ function toggleNotif(){
   if(!settings.notifEnabled){
     if(!('Notification' in window)){ showToast('Tarayıcı bildirimleri desteklemiyor'); return; }
     Notification.requestPermission().then(function(p){
-      if(p==='granted'){ settings.notifEnabled=true; var nt=document.getElementById('notifToggle'); if(nt) nt.classList.add('on'); lsSet('sk_settings2',settings); showToast('🔔 Bildirimler açıldı'); scheduleNotifications(); }
+      if(p==='granted'){ settings.notifEnabled=true; var nt=document.getElementById('notifToggle'); if(nt) nt.classList.add('on'); lsSet('sk_settings3',settings); showToast('🔔 Bildirimler açıldı'); scheduleNotifications(); }
       else { showToast('Bildirim izni reddedildi'); }
     });
   } else {
-    settings.notifEnabled=false; var nt=document.getElementById('notifToggle'); if(nt) nt.classList.remove('on'); lsSet('sk_settings2',settings); showToast('🔕 Bildirimler kapatıldı');
+    settings.notifEnabled=false; var nt=document.getElementById('notifToggle'); if(nt) nt.classList.remove('on'); lsSet('sk_settings3',settings); showToast('🔕 Bildirimler kapatıldı');
   }
 }
 function scheduleNotifications(){
